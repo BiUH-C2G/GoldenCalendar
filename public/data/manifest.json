@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "2026Autumn-2025-CS",
+      "file": "Timetable_2026Autumn_2025CS.xlsx",
+      "term": "2026Autumn",
+      "grade": "2025",
+      "major": "CS",
+      "path": "2026Autumn/2025CS.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "2026Autumn-2025-DT",
+      "file": "Timetable_2026Autumn_2025DT.xlsx",
+      "term": "2026Autumn",
+      "grade": "2025",
+      "major": "DT",
+      "path": "2026Autumn/2025DT.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "2026Autumn-2026-BA",
+      "file": "Timetable_2026Autumn_2026BA.xlsx",
+      "term": "2026Autumn",
+      "grade": "2026",
+      "major": "BA",
+      "path": "2026Autumn/2026BA.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "2026Autumn-2026-CS",
+      "file": "Timetable_2026Autumn_2026CS.xlsx",
+      "term": "2026Autumn",
+      "grade": "2026",
+      "major": "CS",
+      "path": "2026Autumn/2026CS.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "2026Autumn-2026-DT",
+      "file": "Timetable_2026Autumn_2026DT.xlsx",
+      "term": "2026Autumn",
+      "grade": "2026",
+      "major": "DT",
+      "path": "2026Autumn/2026DT.json",
+      "groups": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "id": "2026Autumn-2026-EE",
+      "file": "Timetable_2026Autumn_2026EE.xlsx",
+      "term": "2026Autumn",
+      "grade": "2026",
+      "major": "EE",
+      "path": "2026Autumn/2026EE.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "2026Autumn-2026-LE",
+      "file": "Timetable_2026Autumn_2026LE.xlsx",
+      "term": "2026Autumn",
+      "grade": "2026",
+      "major": "LE",
+      "path": "2026Autumn/2026LE.json",
+      "groups": [
+        "1"
+      ]
+    },
+    {
+      "id": "2026Autumn-2026-SE",
+      "file": "Timetable_2026Autumn_2026SE.xlsx",
+      "term": "2026Autumn",
+      "grade": "2026",
+      "major": "SE",
+      "path": "2026Autumn/2026SE.json",
+      "groups": [
+        "1"
+      ]
+    }
+  ]
+}
