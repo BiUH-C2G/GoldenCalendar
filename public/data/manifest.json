@@ -2,6 +2,32 @@
   "schemaVersion": 1,
   "sources": [
     {
+      "id": "2026Autumn-2024-CS",
+      "file": "Timetable_2026Autumn_2024CS.xlsx",
+      "term": "2026Autumn",
+      "grade": "2024",
+      "major": "CS",
+      "path": "2026Autumn/2024CS.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
+      "id": "2026Autumn-2024-DT",
+      "file": "Timetable_2026Autumn_2024DT.xlsx",
+      "term": "2026Autumn",
+      "grade": "2024",
+      "major": "DT",
+      "path": "2026Autumn/2024DT.json",
+      "groups": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    {
       "id": "2026Autumn-2025-CS",
       "file": "Timetable_2026Autumn_2025CS.xlsx",
       "term": "2026Autumn",
@@ -34,6 +60,18 @@
       "grade": "2025",
       "major": "IE",
       "path": "2026Autumn/2025IE.json",
+      "groups": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "id": "2026Autumn-2025-LE",
+      "file": "Timetable_2026Autumn_2025LE.xlsx",
+      "term": "2026Autumn",
+      "grade": "2025",
+      "major": "LE",
+      "path": "2026Autumn/2025LE.json",
       "groups": [
         "1",
         "2"
