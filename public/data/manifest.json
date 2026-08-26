@@ -28,6 +28,18 @@
       ]
     },
     {
+      "id": "2026Autumn-2025-IE",
+      "file": "Timetable_2026Autumn_2025IE.xlsx",
+      "term": "2026Autumn",
+      "grade": "2025",
+      "major": "IE",
+      "path": "2026Autumn/2025IE.json",
+      "groups": [
+        "1",
+        "2"
+      ]
+    },
+    {
       "id": "2026Autumn-2026-BA",
       "file": "Timetable_2026Autumn_2026BA.xlsx",
       "term": "2026Autumn",
