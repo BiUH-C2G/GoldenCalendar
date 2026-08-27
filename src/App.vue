@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
   CalendarDays,
+  CalendarPlus,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
@@ -10,6 +11,7 @@ import {
 import SetupDialog from '@/components/SetupDialog.vue'
 import FittedText from '@/components/FittedText.vue'
 import { loadManifest, loadSchedule } from '@/data'
+import { importCalendar } from '@/calendar'
 import {
   DEFAULT_SESSION_TIMES,
   formatDate,
@@ -152,6 +154,11 @@ function openSettings() {
   setupOpen.value = true
 }
 
+function addToCalendar() {
+  if (!schedule.value || !group.value) return
+  importCalendar(schedule.value, group.value)
+}
+
 function scrollToWeek(week: number, behavior: ScrollBehavior = 'smooth') {
   if (!pager.value) return
   pager.value.scrollTo({ left: (week - 1) * pager.value.clientWidth, behavior })
@@ -221,8 +228,21 @@ function eventStyle(title: string) {
         <CalendarDays :size="20" stroke-width="2.2" />
         <h1>课程表</h1>
       </div>
-      <div class="context-label">
+      <div class="topbar-actions">
+        <button
+          class="calendar-import-button"
+          type="button"
+          title="导入日历"
+          aria-label="导入日历"
+          :disabled="!schedule || !group"
+          @click="addToCalendar"
+        >
+          <CalendarPlus :size="16" />
+          <span>导入日历</span>
+        </button>
+        <div class="context-label">
         <span v-if="selection">{{ selection.grade }}级 · {{ selection.majorCode }} · {{ selection.groupId }}班</span>
+        </div>
       </div>
     </header>
 

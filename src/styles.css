@@ -50,7 +50,11 @@ button:focus-visible, [role="combobox"]:focus-visible { outline: 2px solid hsl(v
 .topbar { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .brand-line { display: flex; align-items: center; gap: 10px; color: hsl(var(--foreground)); }
 .brand-line h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0; }
+.topbar-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 0; }
 .context-label { color: hsl(var(--muted-foreground)); font-size: 13px; }
+.calendar-import-button { height: 34px; display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; border: 1px solid hsl(var(--border)); border-radius: 6px; padding: 0 9px; color: hsl(var(--foreground)); background: hsl(var(--panel)); font-size: 12px; cursor: pointer; }
+.calendar-import-button:hover:not(:disabled) { background: hsl(var(--subtle)); }
+.calendar-import-button:disabled { color: hsl(var(--disabled)); cursor: not-allowed; }
 .week-toolbar { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 10px 0 16px; }
 .week-heading { display: grid; min-width: 128px; text-align: center; gap: 3px; cursor: default; }
 .week-heading strong { font-size: 16px; }
@@ -155,6 +159,8 @@ button:focus-visible, [role="combobox"]:focus-visible { outline: 2px solid hsl(v
   .week-pager { width: calc(100% + 20px); margin-left: -10px; margin-right: -10px; }
   .topbar { min-height: 60px; }
   .context-label { font-size: 12px; }
+  .topbar-actions { gap: 8px; }
+  .calendar-import-button { padding: 0 7px; }
   .week-toolbar { padding-top: 8px; }
   .exam-week-state { min-height: 60vh; font-size: 64px; }
   .holiday-overlay { font-size: 32px; }
