@@ -152,7 +152,7 @@
           "week": 1,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -161,7 +161,7 @@
           "week": 1,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -359,7 +359,7 @@
           "week": 2,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -368,7 +368,7 @@
           "week": 2,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -566,7 +566,7 @@
           "week": 3,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -575,7 +575,7 @@
           "week": 3,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -863,7 +863,7 @@
           "week": 6,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -872,7 +872,7 @@
           "week": 6,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -1016,7 +1016,7 @@
           "week": 7,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -1025,7 +1025,7 @@
           "week": 7,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -1187,7 +1187,7 @@
           "week": 8,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -1196,7 +1196,7 @@
           "week": 8,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B404"
         },
@@ -1367,7 +1367,7 @@
           "week": 9,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B307"
         },
@@ -1376,7 +1376,7 @@
           "week": 9,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LUO Keyuan",
           "room": "B307"
         },
@@ -1943,7 +1943,7 @@
           "week": 12,
           "weekday": 2,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -1952,7 +1952,7 @@
           "week": 12,
           "weekday": 2,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -1961,7 +1961,7 @@
           "week": 12,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -1970,7 +1970,7 @@
           "week": 12,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -2033,7 +2033,7 @@
           "week": 12,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2042,7 +2042,7 @@
           "week": 12,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2051,7 +2051,7 @@
           "week": 12,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2060,7 +2060,7 @@
           "week": 12,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2843,7 +2843,7 @@
           "week": 16,
           "weekday": 2,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2852,7 +2852,7 @@
           "week": 16,
           "weekday": 2,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2861,7 +2861,7 @@
           "week": 16,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -2870,7 +2870,7 @@
           "week": 16,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B404"
         },
@@ -2933,7 +2933,7 @@
           "week": 16,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2942,7 +2942,7 @@
           "week": 16,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2951,7 +2951,7 @@
           "week": 16,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },
@@ -2960,7 +2960,7 @@
           "week": 16,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "LIU Peifeng",
           "room": "B404"
         },

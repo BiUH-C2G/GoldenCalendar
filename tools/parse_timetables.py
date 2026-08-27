@@ -91,11 +91,11 @@ def normalize_course_title(value: Any) -> str | None:
     text = re.sub(
         r"\s*\(\s*([^()]*)\s*\)\s*",
         lambda match: (
-            "\n"
+            " "
             if match.group(1).strip().upper() == "SSS"
-            else f"\n{match.group(1).strip()}\n"
+            else f" {match.group(1).strip()} "
             if match.group(1).strip()
-            else "\n"
+            else " "
         ),
         text,
     )

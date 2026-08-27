@@ -308,9 +308,9 @@ function eventStyle(title: string) {
                   :class="{ 'single-element': !event.teacher && !event.room }"
                   :style="eventStyle(event.title)"
                 >
-                  <FittedText class="course-title" :text="event.title" :min-size="12" :max-size="20" :spacing-cap="1" />
-                  <FittedText v-if="event.teacher" class="course-teacher" :text="event.teacher" :min-size="10" :max-size="16" :spacing-cap="1" />
-                  <FittedText v-if="event.room" class="course-room" :text="event.room" :min-size="10" :max-size="15" :spacing-cap="2.5" />
+                  <FittedText class="course-title" :text="event.title" :max-size="20" :spacing-cap="1" />
+                  <FittedText v-if="event.teacher" class="course-teacher" :text="event.teacher" :max-size="16" :spacing-cap="1" />
+                  <FittedText v-if="event.room" class="course-room" :text="event.room" :max-size="15" :spacing-cap="2.5" />
                 </div>
               </template>
             </div>

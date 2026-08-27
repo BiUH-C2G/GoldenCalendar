@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.8",
     "lucide-vue-next": "^0.468.0",
     "reka-ui": "^2.5.0",
     "vue": "^3.5.13"

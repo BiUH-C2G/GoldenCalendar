@@ -80,7 +80,7 @@
           "week": 1,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -89,7 +89,7 @@
           "week": 1,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -269,7 +269,7 @@
           "week": 2,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -278,7 +278,7 @@
           "week": 2,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -494,7 +494,7 @@
           "week": 3,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -503,7 +503,7 @@
           "week": 3,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -701,7 +701,7 @@
           "week": 4,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -710,7 +710,7 @@
           "week": 4,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -845,7 +845,7 @@
           "week": 5,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -854,7 +854,7 @@
           "week": 5,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -1016,7 +1016,7 @@
           "week": 7,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -1025,7 +1025,7 @@
           "week": 7,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -1223,7 +1223,7 @@
           "week": 8,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -1232,7 +1232,7 @@
           "week": 8,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -1457,7 +1457,7 @@
           "week": 9,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -1466,7 +1466,7 @@
           "week": 9,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -1691,7 +1691,7 @@
           "week": 10,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -1700,7 +1700,7 @@
           "week": 10,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -1871,7 +1871,7 @@
           "week": 11,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -1880,7 +1880,7 @@
           "week": 11,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -2069,7 +2069,7 @@
           "week": 12,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -2078,7 +2078,7 @@
           "week": 12,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -2303,7 +2303,7 @@
           "week": 13,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -2312,7 +2312,7 @@
           "week": 13,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -2519,7 +2519,7 @@
           "week": 14,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -2528,7 +2528,7 @@
           "week": 14,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B403"
         },
@@ -2699,7 +2699,7 @@
           "week": 15,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -2708,7 +2708,7 @@
           "week": 15,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -2915,7 +2915,7 @@
           "week": 16,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -2924,7 +2924,7 @@
           "week": 16,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B403"
         },
@@ -3267,7 +3267,7 @@
           "week": 1,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3276,7 +3276,7 @@
           "week": 1,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3474,7 +3474,7 @@
           "week": 2,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3483,7 +3483,7 @@
           "week": 2,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3699,7 +3699,7 @@
           "week": 3,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3708,7 +3708,7 @@
           "week": 3,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3888,7 +3888,7 @@
           "week": 4,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -3897,7 +3897,7 @@
           "week": 4,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4014,7 +4014,7 @@
           "week": 6,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4023,7 +4023,7 @@
           "week": 6,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4185,7 +4185,7 @@
           "week": 7,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4194,7 +4194,7 @@
           "week": 7,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4410,7 +4410,7 @@
           "week": 8,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -4419,7 +4419,7 @@
           "week": 8,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -4644,7 +4644,7 @@
           "week": 9,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4653,7 +4653,7 @@
           "week": 9,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -4860,7 +4860,7 @@
           "week": 10,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -4869,7 +4869,7 @@
           "week": 10,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -5058,7 +5058,7 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -5067,7 +5067,7 @@
           "week": 11,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -5256,7 +5256,7 @@
           "week": 12,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -5265,7 +5265,7 @@
           "week": 12,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -5490,7 +5490,7 @@
           "week": 13,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -5499,7 +5499,7 @@
           "week": 13,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -5706,7 +5706,7 @@
           "week": 14,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -5715,7 +5715,7 @@
           "week": 14,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "自习课",
           "room": "B401"
         },
@@ -5886,7 +5886,7 @@
           "week": 15,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -5895,7 +5895,7 @@
           "week": 15,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -6102,7 +6102,7 @@
           "week": 16,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },
@@ -6111,7 +6111,7 @@
           "week": 16,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 1\nPython",
+          "title": "Programming 1 Python",
           "teacher": "ZHANG Feng",
           "room": "B401"
         },

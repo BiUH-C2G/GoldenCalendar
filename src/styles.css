@@ -117,7 +117,6 @@ button:focus-visible, [role="combobox"]:focus-visible { outline: 2px solid hsl(v
 .fit-text { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: center; }
 .fit-line { display: block; width: 100%; min-width: 0; overflow-wrap: normal; white-space: nowrap; text-align: center; }
 .fit-glyph { position: relative; left: 50%; display: block; width: max-content; max-width: none; margin: 0; white-space: nowrap; transform-origin: center; }
-.fit-measure { position: fixed; left: -10000px; top: -10000px; visibility: hidden; white-space: nowrap; }
 .course-title, .course-teacher, .course-room { overflow-wrap: anywhere; }
 .course-title { color: var(--course-title); line-height: 1.35; font-weight: 750; }
 .course-teacher { color: var(--course-teacher); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.3; font-weight: 600; }
