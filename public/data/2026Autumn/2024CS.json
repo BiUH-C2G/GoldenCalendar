@@ -233,8 +233,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 2,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -242,8 +242,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -251,8 +251,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -422,8 +422,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 2,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -431,8 +431,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -440,8 +440,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -458,8 +458,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 2,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -467,8 +467,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -476,8 +476,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -530,8 +530,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 2,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -539,8 +539,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -548,8 +548,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -836,8 +836,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 2,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -845,8 +845,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -854,8 +854,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -1025,8 +1025,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 2,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -1034,8 +1034,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -1043,8 +1043,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -1061,8 +1061,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 2,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1070,8 +1070,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1079,8 +1079,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1106,8 +1106,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 2,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1115,8 +1115,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1124,8 +1124,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1421,8 +1421,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1430,8 +1430,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1457,8 +1457,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -1466,8 +1466,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -1493,8 +1493,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -1502,8 +1502,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -1529,8 +1529,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1538,8 +1538,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2194,8 +2194,8 @@
           "week": 2,
           "weekday": 4,
           "slot": 2,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -2203,8 +2203,8 @@
           "week": 2,
           "weekday": 4,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -2212,8 +2212,8 @@
           "week": 2,
           "weekday": 4,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -2275,8 +2275,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 2,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -2284,8 +2284,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -2293,8 +2293,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -2383,8 +2383,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 2,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2392,8 +2392,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2401,8 +2401,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2491,8 +2491,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 2,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -2500,8 +2500,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -2509,8 +2509,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -2797,8 +2797,8 @@
           "week": 7,
           "weekday": 4,
           "slot": 2,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -2806,8 +2806,8 @@
           "week": 7,
           "weekday": 4,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -2815,8 +2815,8 @@
           "week": 7,
           "weekday": 4,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -2878,8 +2878,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 2,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -2887,8 +2887,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -2896,8 +2896,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -2986,8 +2986,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 2,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2995,8 +2995,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -3004,8 +3004,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -3067,8 +3067,8 @@
           "week": 9,
           "weekday": 3,
           "slot": 2,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -3076,8 +3076,8 @@
           "week": 9,
           "weekday": 3,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -3085,8 +3085,8 @@
           "week": 9,
           "weekday": 3,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -3346,8 +3346,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -3355,8 +3355,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B412"
         },
         {
@@ -3382,8 +3382,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -3391,8 +3391,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -3418,8 +3418,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -3427,8 +3427,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -3454,8 +3454,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -3463,8 +3463,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4155,8 +4155,8 @@
           "week": 2,
           "weekday": 5,
           "slot": 2,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -4164,8 +4164,8 @@
           "week": 2,
           "weekday": 5,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -4173,8 +4173,8 @@
           "week": 2,
           "weekday": 5,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -4200,8 +4200,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 2,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -4209,8 +4209,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -4218,8 +4218,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -4236,8 +4236,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 2,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4245,8 +4245,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4254,8 +4254,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4452,8 +4452,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 2,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -4461,8 +4461,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -4470,8 +4470,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -4758,8 +4758,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 2,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -4767,8 +4767,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -4776,8 +4776,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -4803,8 +4803,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 2,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -4812,8 +4812,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -4821,8 +4821,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -4839,8 +4839,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 2,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4848,8 +4848,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4857,8 +4857,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5028,8 +5028,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 2,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -5037,8 +5037,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -5046,8 +5046,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -5271,8 +5271,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 3,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -5280,8 +5280,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 4,
-          "title": "Software Engineering\n自习课",
-          "teacher": null,
+          "title": "Software Engineering",
+          "teacher": "自习课",
           "room": "B414"
         },
         {
@@ -5307,8 +5307,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 3,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5316,8 +5316,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 4,
-          "title": "Computer Networks\n自习课",
-          "teacher": null,
+          "title": "Computer Networks",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5343,8 +5343,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -5352,8 +5352,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 4,
-          "title": "Embedded Systems\n100/C++\n自习课",
-          "teacher": null,
+          "title": "Embedded Systems\n100/C++",
+          "teacher": "自习课",
           "room": "B415"
         },
         {
@@ -5379,8 +5379,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 3,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -5388,8 +5388,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 4,
-          "title": "Deep Learning for Large Language Models\n自习课",
-          "teacher": null,
+          "title": "Deep Learning for Large Language Models",
+          "teacher": "自习课",
           "room": "B308"
         },
         {

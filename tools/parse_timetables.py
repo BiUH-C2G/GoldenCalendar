@@ -91,7 +91,9 @@ def normalize_course_title(value: Any) -> str | None:
     text = re.sub(
         r"\s*\(\s*([^()]*)\s*\)\s*",
         lambda match: (
-            f"\n{'自习课' if match.group(1).strip().upper() == 'SSS' else match.group(1).strip()}\n"
+            "\n"
+            if match.group(1).strip().upper() == "SSS"
+            else f"\n{match.group(1).strip()}\n"
             if match.group(1).strip()
             else "\n"
         ),
@@ -316,7 +318,7 @@ def parse_group(
                 continue
             raw_title = ws.cell(row, start_column).value
             title = normalize_course_title(raw_title)
-            teacher = None if is_self_study_title(raw_title) else clean(ws.cell(row, start_column + 1).value)
+            teacher = "自习课" if is_self_study_title(raw_title) else clean(ws.cell(row, start_column + 1).value)
             room = clean(ws.cell(row, start_column + 2).value)
             if not any(value is not None for value in (title, teacher, room)):
                 continue

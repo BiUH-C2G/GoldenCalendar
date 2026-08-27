@@ -926,8 +926,8 @@
           "week": 7,
           "weekday": 4,
           "slot": 1,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -935,8 +935,8 @@
           "week": 7,
           "weekday": 4,
           "slot": 2,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1205,8 +1205,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -1214,8 +1214,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -1385,8 +1385,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 1,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1394,8 +1394,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 2,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1655,8 +1655,8 @@
           "week": 10,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -1664,8 +1664,8 @@
           "week": 10,
           "weekday": 5,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -1799,8 +1799,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 1,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1808,8 +1808,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 2,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2051,8 +2051,8 @@
           "week": 12,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -2060,8 +2060,8 @@
           "week": 12,
           "weekday": 5,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -2231,8 +2231,8 @@
           "week": 13,
           "weekday": 4,
           "slot": 1,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2240,8 +2240,8 @@
           "week": 13,
           "weekday": 4,
           "slot": 2,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2519,8 +2519,8 @@
           "week": 14,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -2528,8 +2528,8 @@
           "week": 14,
           "weekday": 5,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -4122,8 +4122,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -4131,8 +4131,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -4194,8 +4194,8 @@
           "week": 8,
           "weekday": 1,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4203,8 +4203,8 @@
           "week": 8,
           "weekday": 1,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4590,8 +4590,8 @@
           "week": 9,
           "weekday": 5,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -4599,8 +4599,8 @@
           "week": 9,
           "weekday": 5,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -4662,8 +4662,8 @@
           "week": 10,
           "weekday": 1,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4671,8 +4671,8 @@
           "week": 10,
           "weekday": 1,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5004,8 +5004,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -5013,8 +5013,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -5040,8 +5040,8 @@
           "week": 12,
           "weekday": 1,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5049,8 +5049,8 @@
           "week": 12,
           "weekday": 1,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5436,8 +5436,8 @@
           "week": 13,
           "weekday": 5,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -5445,8 +5445,8 @@
           "week": 13,
           "weekday": 5,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -5508,8 +5508,8 @@
           "week": 14,
           "weekday": 1,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5517,8 +5517,8 @@
           "week": 14,
           "weekday": 1,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7138,8 +7138,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -7147,8 +7147,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -7363,8 +7363,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7372,8 +7372,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7579,8 +7579,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -7588,8 +7588,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -7831,8 +7831,8 @@
           "week": 10,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7840,8 +7840,8 @@
           "week": 10,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7993,8 +7993,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -8002,8 +8002,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -8209,8 +8209,8 @@
           "week": 12,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8218,8 +8218,8 @@
           "week": 12,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8425,8 +8425,8 @@
           "week": 13,
           "weekday": 1,
           "slot": 3,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -8434,8 +8434,8 @@
           "week": 13,
           "weekday": 1,
           "slot": 4,
-          "title": "Operating System\nLinux\n自习课",
-          "teacher": null,
+          "title": "Operating System\nLinux",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -8677,8 +8677,8 @@
           "week": 14,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8686,8 +8686,8 @@
           "week": 14,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {

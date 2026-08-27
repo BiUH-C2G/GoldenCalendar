@@ -23,6 +23,7 @@ const root = ref<HTMLElement | null>(null)
 const measureNode = ref<HTMLElement | null>(null)
 const lines = ref<FitLine[]>([])
 let resizeObserver: ResizeObserver | null = null
+const MIN_SCALE_X = 0.8
 
 function weightFor(fontSize: number) {
   const progress = Math.min(
@@ -67,7 +68,8 @@ function breakLongToken(token: string, width: number) {
   let offset = 0
   for (let index = 0; index < lineCount; index += 1) {
     const length = shortLineLength + (index < longLineCount ? 1 : 0)
-    chunks.push(characters.slice(offset, offset + length).join(''))
+    const chunk = characters.slice(offset, offset + length).join('')
+    chunks.push(index < lineCount - 1 ? `${chunk}-` : chunk)
     offset += length
   }
   return chunks
@@ -134,7 +136,7 @@ function fitLines() {
       fontSize,
       fontWeight,
       letterSpacing: spacing,
-      scaleX: width / Math.max(fittedWidth, 1),
+      scaleX: Math.max(MIN_SCALE_X, width / Math.max(fittedWidth, 1)),
     }
   })
 }
@@ -161,14 +163,18 @@ onUnmounted(() => resizeObserver?.disconnect())
       v-for="line in lines"
       :key="line.text"
       class="fit-line"
-      :style="{
-        fontSize: `${line.fontSize}px`,
-        fontWeight: line.fontWeight,
-        fontVariationSettings: variationFor(line.fontWeight),
-        letterSpacing: `${line.letterSpacing}px`,
-        transform: `scaleX(${line.scaleX})`,
-      }"
-    >{{ line.text }}</span>
+    >
+      <span
+        class="fit-glyph"
+        :style="{
+          fontSize: `${line.fontSize}px`,
+          fontWeight: line.fontWeight,
+          fontVariationSettings: variationFor(line.fontWeight),
+          letterSpacing: `${line.letterSpacing}px`,
+          transform: `translateX(-50%) scaleX(${line.scaleX})`,
+        }"
+      >{{ line.text }}</span>
+    </span>
     <span ref="measureNode" class="fit-measure" aria-hidden="true" />
   </span>
 </template>

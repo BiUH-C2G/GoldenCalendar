@@ -78,7 +78,7 @@ button:focus-visible, [role="combobox"]:focus-visible { outline: 2px solid hsl(v
 .day-date { color: hsl(var(--muted-foreground)); font-size: 11px; }
 .time-cell { min-height: 88px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: hsl(var(--muted-foreground)); background: hsl(var(--background)); }
 .time-cell span { width: 1em; color: hsl(var(--foreground)); font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 12px; font-weight: 600; text-align: center; word-break: break-all; line-height: 1.1; }
-.course-cell { min-width: 0; min-height: 88px; padding: 4px; background: hsl(var(--panel)); }
+.course-cell { min-width: 0; min-height: 88px; display: flex; padding: 4px; background: hsl(var(--panel)); }
 .course-cell.today { background: hsl(var(--today-column)); }
 .holiday-overlay { position: absolute; top: 0; bottom: 0; left: calc(18px + (100% - 18px) / var(--day-count) * var(--holiday-index)); width: calc((100% - 18px) / var(--day-count)); z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: hsl(34 24% 42%); background: hsl(38 30% 92% / .78); font-family: "Kaiti SC", "STKaiti", "KaiTi", serif; font-size: 42px; font-weight: 700; line-height: 1.05; pointer-events: none; backdrop-filter: saturate(.75) blur(1px); }
 .dark .holiday-overlay { color: hsl(345 52% 78%); background: hsl(222 24% 12% / .8); }
@@ -88,12 +88,14 @@ button:focus-visible, [role="combobox"]:focus-visible { outline: 2px solid hsl(v
   --course-teacher: hsl(calc(var(--course-hue) + 24) 48% 38%);
   --course-room: hsl(calc(var(--course-hue) + 198) 52% 38%);
   min-height: 78px;
+  flex: 1 1 auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  overflow: hidden;
+  justify-content: space-between;
+  gap: 8px;
+  overflow: visible;
   border-radius: 5px;
   padding: 9px 7px;
   text-align: center;
@@ -107,8 +109,10 @@ button:focus-visible, [role="combobox"]:focus-visible { outline: 2px solid hsl(v
   --course-room: hsl(calc(var(--course-hue) + 198) 62% 80%);
   background: linear-gradient(135deg, hsl(var(--course-hue) 54% 34% / .92) 0%, hsl(calc(var(--course-hue) + 28) 48% 26% / .9) 52%, hsl(calc(var(--course-hue) + 58) 38% 19% / .96) 100%), var(--course-bg);
 }
+.course-tile.single-element { justify-content: center; }
 .fit-text { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: center; }
-.fit-line { display: block; width: 100%; min-width: 0; overflow-wrap: normal; white-space: nowrap; text-align: center; transform-origin: center; }
+.fit-line { display: block; width: 100%; min-width: 0; overflow-wrap: normal; white-space: nowrap; text-align: center; }
+.fit-glyph { position: relative; left: 50%; display: block; width: max-content; max-width: none; margin: 0; white-space: nowrap; transform-origin: center; }
 .fit-measure { position: fixed; left: -10000px; top: -10000px; visibility: hidden; white-space: nowrap; }
 .course-title, .course-teacher, .course-room { overflow-wrap: anywhere; }
 .course-title { color: var(--course-title); line-height: 1.35; font-weight: 750; }

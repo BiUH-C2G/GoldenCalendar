@@ -80,8 +80,8 @@
           "week": 1,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -233,8 +233,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -422,8 +422,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -431,8 +431,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -440,8 +440,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 3,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -575,8 +575,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -629,8 +629,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -638,8 +638,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -647,8 +647,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -719,8 +719,8 @@
           "week": 5,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1043,8 +1043,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1061,8 +1061,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -1070,8 +1070,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -1079,8 +1079,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 3,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -1214,8 +1214,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1268,8 +1268,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -1277,8 +1277,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -1286,8 +1286,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -1547,8 +1547,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 2,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1556,8 +1556,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1574,8 +1574,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -1583,8 +1583,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -1610,8 +1610,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -1619,8 +1619,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -2149,8 +2149,8 @@
           "week": 1,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2302,8 +2302,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2491,8 +2491,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -2500,8 +2500,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -2509,8 +2509,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 3,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -2554,8 +2554,8 @@
           "week": 4,
           "weekday": 1,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -2563,8 +2563,8 @@
           "week": 4,
           "weekday": 1,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -2572,8 +2572,8 @@
           "week": 4,
           "weekday": 1,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -2644,8 +2644,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2788,8 +2788,8 @@
           "week": 5,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -3112,8 +3112,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -3130,8 +3130,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -3139,8 +3139,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -3148,8 +3148,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 3,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -3193,8 +3193,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3202,8 +3202,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3211,8 +3211,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3283,8 +3283,8 @@
           "week": 9,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -3535,8 +3535,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3544,8 +3544,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3616,8 +3616,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 2,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -3625,8 +3625,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -3643,8 +3643,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -3652,8 +3652,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4191,8 +4191,8 @@
           "week": 1,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -4344,8 +4344,8 @@
           "week": 2,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -4551,8 +4551,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4560,8 +4560,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4569,8 +4569,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 3,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -4596,8 +4596,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -4605,8 +4605,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -4614,8 +4614,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -4686,8 +4686,8 @@
           "week": 4,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -4830,8 +4830,8 @@
           "week": 6,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -5154,8 +5154,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -5190,8 +5190,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5199,8 +5199,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5208,8 +5208,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 3,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5235,8 +5235,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -5244,8 +5244,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -5253,8 +5253,8 @@
           "week": 9,
           "weekday": 2,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -5325,8 +5325,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -5577,8 +5577,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 1,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -5586,8 +5586,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B110"
         },
         {
@@ -5658,8 +5658,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 2,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -5667,8 +5667,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Algorithms and Data Structures\n自习课",
-          "teacher": null,
+          "title": "Algorithms and Data Structures",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -5685,8 +5685,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 1,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -5694,8 +5694,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 2,
-          "title": "Databases\n自习课",
-          "teacher": null,
+          "title": "Databases",
+          "teacher": "自习课",
           "room": "B405"
         },
         {

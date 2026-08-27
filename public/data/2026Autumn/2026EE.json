@@ -1097,8 +1097,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -1106,8 +1106,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -1565,8 +1565,8 @@
           "week": 10,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -1574,8 +1574,8 @@
           "week": 10,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -1943,8 +1943,8 @@
           "week": 12,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -1952,8 +1952,8 @@
           "week": 12,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -2411,8 +2411,8 @@
           "week": 14,
           "weekday": 2,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -2420,8 +2420,8 @@
           "week": 14,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B403"
         },
         {
@@ -4302,8 +4302,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4311,8 +4311,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4770,8 +4770,8 @@
           "week": 10,
           "weekday": 3,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4779,8 +4779,8 @@
           "week": 10,
           "weekday": 3,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5148,8 +5148,8 @@
           "week": 12,
           "weekday": 3,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5157,8 +5157,8 @@
           "week": 12,
           "weekday": 3,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5634,8 +5634,8 @@
           "week": 14,
           "weekday": 3,
           "slot": 3,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -5643,8 +5643,8 @@
           "week": 14,
           "weekday": 3,
           "slot": 4,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7489,8 +7489,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7498,8 +7498,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7939,8 +7939,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -7948,8 +7948,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8335,8 +8335,8 @@
           "week": 12,
           "weekday": 4,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8344,8 +8344,8 @@
           "week": 12,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8803,8 +8803,8 @@
           "week": 14,
           "weekday": 4,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -8812,8 +8812,8 @@
           "week": 14,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B402"
         },
         {

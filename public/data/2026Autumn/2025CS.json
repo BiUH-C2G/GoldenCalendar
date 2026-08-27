@@ -134,8 +134,8 @@
           "week": 2,
           "weekday": 1,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -143,8 +143,8 @@
           "week": 2,
           "weekday": 1,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -152,8 +152,8 @@
           "week": 2,
           "weekday": 1,
           "slot": 4,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -512,8 +512,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -521,8 +521,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -530,8 +530,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 4,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -809,8 +809,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -818,8 +818,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -827,8 +827,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -845,8 +845,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -854,8 +854,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -863,8 +863,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 4,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1079,8 +1079,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1088,8 +1088,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1097,8 +1097,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1160,8 +1160,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -1169,8 +1169,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -1178,8 +1178,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -1304,8 +1304,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1313,8 +1313,8 @@
           "week": 9,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -1538,8 +1538,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1547,8 +1547,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1592,8 +1592,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -1601,8 +1601,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -2230,8 +2230,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -2239,8 +2239,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -2248,8 +2248,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 4,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -2500,8 +2500,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -2509,8 +2509,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -2518,8 +2518,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 4,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -2842,8 +2842,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -2851,8 +2851,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -2860,8 +2860,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -2914,8 +2914,8 @@
           "week": 7,
           "weekday": 2,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -2923,8 +2923,8 @@
           "week": 7,
           "weekday": 2,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -2932,8 +2932,8 @@
           "week": 7,
           "weekday": 2,
           "slot": 4,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -3166,8 +3166,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3175,8 +3175,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3184,8 +3184,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 4,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3193,8 +3193,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -3202,8 +3202,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -3211,8 +3211,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -3391,8 +3391,8 @@
           "week": 9,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3400,8 +3400,8 @@
           "week": 9,
           "weekday": 5,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B411"
         },
         {
@@ -3607,8 +3607,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -3616,8 +3616,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -3661,8 +3661,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -3670,8 +3670,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B209"
         },
         {
@@ -4299,8 +4299,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4308,8 +4308,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4317,8 +4317,8 @@
           "week": 2,
           "weekday": 3,
           "slot": 4,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4479,8 +4479,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -4488,8 +4488,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -4497,8 +4497,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -4821,8 +4821,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -4830,8 +4830,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -4839,8 +4839,8 @@
           "week": 6,
           "weekday": 6,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -4929,8 +4929,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4938,8 +4938,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4947,8 +4947,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 4,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -5172,8 +5172,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 2,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -5181,8 +5181,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -5190,8 +5190,8 @@
           "week": 8,
           "weekday": 6,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B105"
         },
         {
@@ -5460,8 +5460,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -5469,8 +5469,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -5478,8 +5478,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 4,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -5622,8 +5622,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 2,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -5631,8 +5631,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 3,
-          "title": "Data Analytics & Machine Learning\n自习课",
-          "teacher": null,
+          "title": "Data Analytics & Machine Learning",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -5658,8 +5658,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 2,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -5667,8 +5667,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Programming 3\nC++\n自习课",
-          "teacher": null,
+          "title": "Programming 3\nC++",
+          "teacher": "自习课",
           "room": "B413"
         },
         {
@@ -5703,8 +5703,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 3,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B308"
         },
         {
@@ -5712,8 +5712,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 4,
-          "title": "Web Technologies\n自习课",
-          "teacher": null,
+          "title": "Web Technologies",
+          "teacher": "自习课",
           "room": "B308"
         },
         {

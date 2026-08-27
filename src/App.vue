@@ -176,7 +176,7 @@ function eventAt(groupEvents: ScheduleEvent[], weekday: number, slot: number) {
 }
 
 function isToday(week: number, weekday: number) {
-  return week === currentWeek.value && weekday === todayWeekday
+  return weekday === todayWeekday
 }
 
 function displayNotices(currentGroup: NonNullable<typeof group.value>, week: number) {
@@ -282,7 +282,12 @@ function eventStyle(title: string) {
               }"
             >
               <template v-for="event in [eventAt(getEvents(group, week), day.value, slot)]" :key="event ? `${event.date}-${event.slot}` : 'empty'">
-                <div v-if="event" class="course-tile" :style="eventStyle(event.title)">
+                <div
+                  v-if="event"
+                  class="course-tile"
+                  :class="{ 'single-element': !event.teacher && !event.room }"
+                  :style="eventStyle(event.title)"
+                >
                   <FittedText class="course-title" :text="event.title" :min-size="12" :max-size="20" :spacing-cap="1" />
                   <FittedText v-if="event.teacher" class="course-teacher" :text="event.teacher" :min-size="10" :max-size="16" :spacing-cap="1" />
                   <FittedText v-if="event.room" class="course-room" :text="event.room" :min-size="10" :max-size="15" :spacing-cap="2.5" />

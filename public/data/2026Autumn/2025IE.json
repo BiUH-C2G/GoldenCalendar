@@ -161,8 +161,8 @@
           "week": 2,
           "weekday": 1,
           "slot": 2,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -170,8 +170,8 @@
           "week": 2,
           "weekday": 1,
           "slot": 3,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -179,8 +179,8 @@
           "week": 2,
           "weekday": 1,
           "slot": 4,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -395,8 +395,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 2,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -404,8 +404,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 3,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -413,8 +413,8 @@
           "week": 3,
           "weekday": 2,
           "slot": 4,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -467,8 +467,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -476,8 +476,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 3,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -485,8 +485,8 @@
           "week": 3,
           "weekday": 4,
           "slot": 4,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -593,8 +593,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 2,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -602,8 +602,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 3,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -611,8 +611,8 @@
           "week": 4,
           "weekday": 2,
           "slot": 4,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -872,8 +872,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 2,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -881,8 +881,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 3,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -890,8 +890,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 4,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -1097,8 +1097,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 3,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1106,8 +1106,8 @@
           "week": 8,
           "weekday": 2,
           "slot": 4,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -1160,8 +1160,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1169,8 +1169,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 3,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1178,8 +1178,8 @@
           "week": 8,
           "weekday": 4,
           "slot": 4,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1520,8 +1520,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 3,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -1529,8 +1529,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 4,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -1574,8 +1574,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 3,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1583,8 +1583,8 @@
           "week": 11,
           "weekday": 4,
           "slot": 4,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -2176,8 +2176,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 2,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -2185,8 +2185,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 3,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -2194,8 +2194,8 @@
           "week": 2,
           "weekday": 2,
           "slot": 4,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -2410,8 +2410,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 2,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2419,8 +2419,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 3,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2428,8 +2428,8 @@
           "week": 3,
           "weekday": 3,
           "slot": 4,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2500,8 +2500,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -2509,8 +2509,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 3,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -2518,8 +2518,8 @@
           "week": 3,
           "weekday": 5,
           "slot": 4,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -2608,8 +2608,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 2,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2617,8 +2617,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 3,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2626,8 +2626,8 @@
           "week": 4,
           "weekday": 3,
           "slot": 4,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2887,8 +2887,8 @@
           "week": 7,
           "weekday": 2,
           "slot": 2,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -2896,8 +2896,8 @@
           "week": 7,
           "weekday": 2,
           "slot": 3,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -2905,8 +2905,8 @@
           "week": 7,
           "weekday": 2,
           "slot": 4,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -3112,8 +3112,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 3,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -3121,8 +3121,8 @@
           "week": 8,
           "weekday": 3,
           "slot": 4,
-          "title": "Cost and Investment Accounting\n自习课",
-          "teacher": null,
+          "title": "Cost and Investment Accounting",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -3193,8 +3193,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -3202,8 +3202,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 3,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -3211,8 +3211,8 @@
           "week": 8,
           "weekday": 5,
           "slot": 4,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -3508,8 +3508,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 3,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -3517,8 +3517,8 @@
           "week": 11,
           "weekday": 2,
           "slot": 4,
-          "title": "Fundamentals of Electrical Engineering\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of Electrical Engineering",
+          "teacher": "自习课",
           "room": "B406"
         },
         {
@@ -3562,8 +3562,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 3,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {
@@ -3571,8 +3571,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 4,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B109"
         },
         {

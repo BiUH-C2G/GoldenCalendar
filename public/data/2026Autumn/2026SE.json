@@ -359,8 +359,8 @@
           "week": 2,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -368,8 +368,8 @@
           "week": 2,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1016,8 +1016,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1025,8 +1025,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1961,8 +1961,8 @@
           "week": 12,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -1970,8 +1970,8 @@
           "week": 12,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -2285,8 +2285,8 @@
           "week": 13,
           "weekday": 5,
           "slot": 1,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2294,8 +2294,8 @@
           "week": 13,
           "weekday": 5,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2519,8 +2519,8 @@
           "week": 14,
           "weekday": 5,
           "slot": 1,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2528,8 +2528,8 @@
           "week": 14,
           "weekday": 5,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2717,8 +2717,8 @@
           "week": 15,
           "weekday": 5,
           "slot": 1,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2726,8 +2726,8 @@
           "week": 15,
           "weekday": 5,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -2861,8 +2861,8 @@
           "week": 16,
           "weekday": 3,
           "slot": 1,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -2870,8 +2870,8 @@
           "week": 16,
           "weekday": 3,
           "slot": 2,
-          "title": "Programming 1\nPython\n自习课",
-          "teacher": null,
+          "title": "Programming 1\nPython",
+          "teacher": "自习课",
           "room": "B404"
         },
         {
@@ -3041,8 +3041,8 @@
           "week": 17,
           "weekday": 3,
           "slot": 1,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {
@@ -3050,8 +3050,8 @@
           "week": 17,
           "weekday": 3,
           "slot": 2,
-          "title": "Fundamentals of AI\n自习课",
-          "teacher": null,
+          "title": "Fundamentals of AI",
+          "teacher": "自习课",
           "room": "B405"
         },
         {

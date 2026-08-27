@@ -1124,8 +1124,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1133,8 +1133,8 @@
           "week": 7,
           "weekday": 5,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1565,8 +1565,8 @@
           "week": 9,
           "weekday": 5,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1574,8 +1574,8 @@
           "week": 9,
           "weekday": 5,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1691,8 +1691,8 @@
           "week": 10,
           "weekday": 3,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -1700,8 +1700,8 @@
           "week": 10,
           "weekday": 3,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -1943,8 +1943,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -1952,8 +1952,8 @@
           "week": 11,
           "weekday": 5,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -2033,8 +2033,8 @@
           "week": 12,
           "weekday": 3,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -2042,8 +2042,8 @@
           "week": 12,
           "weekday": 3,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -2339,8 +2339,8 @@
           "week": 13,
           "weekday": 5,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -2348,8 +2348,8 @@
           "week": 13,
           "weekday": 5,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -2465,8 +2465,8 @@
           "week": 14,
           "weekday": 3,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -2474,8 +2474,8 @@
           "week": 14,
           "weekday": 3,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -2861,8 +2861,8 @@
           "week": 16,
           "weekday": 3,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -2870,8 +2870,8 @@
           "week": 16,
           "weekday": 3,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B402"
         },
         {
@@ -4203,8 +4203,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -4212,8 +4212,8 @@
           "week": 7,
           "weekday": 3,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -4617,8 +4617,8 @@
           "week": 9,
           "weekday": 3,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -4626,8 +4626,8 @@
           "week": 9,
           "weekday": 3,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -4887,8 +4887,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 3,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4896,8 +4896,8 @@
           "week": 10,
           "weekday": 4,
           "slot": 4,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -4995,8 +4995,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -5004,8 +5004,8 @@
           "week": 11,
           "weekday": 3,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -5247,8 +5247,8 @@
           "week": 12,
           "weekday": 4,
           "slot": 3,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -5256,8 +5256,8 @@
           "week": 12,
           "weekday": 4,
           "slot": 4,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -5391,8 +5391,8 @@
           "week": 13,
           "weekday": 3,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -5400,8 +5400,8 @@
           "week": 13,
           "weekday": 3,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B208"
         },
         {
@@ -5679,8 +5679,8 @@
           "week": 14,
           "weekday": 4,
           "slot": 3,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -5688,8 +5688,8 @@
           "week": 14,
           "weekday": 4,
           "slot": 4,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -6075,8 +6075,8 @@
           "week": 16,
           "weekday": 4,
           "slot": 3,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -6084,8 +6084,8 @@
           "week": 16,
           "weekday": 4,
           "slot": 4,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B309"
         },
         {
@@ -7237,8 +7237,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -7246,8 +7246,8 @@
           "week": 7,
           "weekday": 1,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -7642,8 +7642,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -7651,8 +7651,8 @@
           "week": 9,
           "weekday": 1,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -8020,8 +8020,8 @@
           "week": 10,
           "weekday": 5,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -8029,8 +8029,8 @@
           "week": 10,
           "weekday": 5,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -8056,8 +8056,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -8065,8 +8065,8 @@
           "week": 11,
           "weekday": 1,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -8398,8 +8398,8 @@
           "week": 12,
           "weekday": 5,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -8407,8 +8407,8 @@
           "week": 12,
           "weekday": 5,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -8470,8 +8470,8 @@
           "week": 13,
           "weekday": 1,
           "slot": 1,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -8479,8 +8479,8 @@
           "week": 13,
           "weekday": 1,
           "slot": 2,
-          "title": "Introduction to Business Administration\n自习课",
-          "teacher": null,
+          "title": "Introduction to Business Administration",
+          "teacher": "自习课",
           "room": "B206"
         },
         {
@@ -8830,8 +8830,8 @@
           "week": 14,
           "weekday": 5,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -8839,8 +8839,8 @@
           "week": 14,
           "weekday": 5,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -9226,8 +9226,8 @@
           "week": 16,
           "weekday": 5,
           "slot": 1,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
@@ -9235,8 +9235,8 @@
           "week": 16,
           "weekday": 5,
           "slot": 2,
-          "title": "Accounting and Finance\n自习课",
-          "teacher": null,
+          "title": "Accounting and Finance",
+          "teacher": "自习课",
           "room": "B207"
         },
         {
