@@ -22,21 +22,11 @@ export interface ScheduleGroup {
   notices: ScheduleNotice[]
 }
 
-export interface ScheduleSource {
-  id: string
-  file: string
-  term: string
-  grade: string
-  major: string
-  path: string
-  groups: string[]
-}
-
 export interface ScheduleData {
-  schemaVersion: number
   source: {
     term: string
     grade: string
+    majorCode: string
     major: string
   }
   calendar: {
@@ -44,16 +34,79 @@ export interface ScheduleData {
     weekCount: number
     sessions: string[]
   }
-  groups: ScheduleGroup[]
+  group: ScheduleGroup
 }
 
-export interface Manifest {
-  schemaVersion: number
-  sources: ScheduleSource[]
+export interface LanguageMeeting {
+  startWeek: number
+  endWeek: number
+  weekday: number
+  slot: number
+  teachers: string[]
+  room: string
+}
+
+export interface LanguageClass {
+  code: string
+  meetings: LanguageMeeting[]
+}
+
+export interface SelectedLanguageClasses {
+  english: LanguageClass | null
+  englishCatchup: LanguageClass | null
+  german: LanguageClass
 }
 
 export interface Selection {
+  term: string
   grade: string
   majorCode: string
   groupId: string
+  englishClassNumber: string | null
+  englishCatchupEnabled: boolean
+  englishCatchupClassNumber: string | null
+  germanLevel: string
+  germanClassNumber: string
+}
+
+export type ContractFileKind = 'administrative' | 'english' | 'englishCatchup' | 'german'
+
+export interface MajorContract {
+  code: string
+  name: string
+  groups: string[]
+}
+
+export interface GradeContract {
+  grade: string
+  english: boolean
+  germanSection: string
+  majors: MajorContract[]
+}
+
+export interface GermanContractLevel {
+  level: string
+  classes: string[]
+}
+
+export interface GermanContractSection {
+  section: string
+  levels: GermanContractLevel[]
+}
+
+export interface DataContract {
+  term: string
+  files: Record<ContractFileKind, string>
+  grades: GradeContract[]
+  languages: {
+    english: {
+      section: string
+      classes: Array<{
+        numbers: string[]
+        eligibleMajorCodes: string[]
+      }>
+      catchupClasses: string[]
+    }
+    german: GermanContractSection[]
+  }
 }

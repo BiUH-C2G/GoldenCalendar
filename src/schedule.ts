@@ -1,4 +1,11 @@
-import type { ScheduleData, ScheduleEvent, ScheduleGroup, ScheduleNotice } from './types'
+import type {
+  LanguageClass,
+  ScheduleData,
+  ScheduleEvent,
+  ScheduleGroup,
+  ScheduleNotice,
+  SelectedLanguageClasses,
+} from './types'
 
 export const WEEKDAYS = [
   { value: 1, label: '周一', short: '一' },
@@ -107,4 +114,96 @@ export function isExamWeek(group: ScheduleGroup, week: number) {
   return getNoticeForWeek(group, week).some(
     (notice) => notice.label === '考试周' || /exam weeks?/i.test(notice.label),
   )
+}
+
+const LANGUAGE_PLACEHOLDERS = new Set(['English', 'English Catchup', 'German'])
+
+export interface ScheduleLayers {
+  administrative: boolean
+  english: boolean
+  englishCatchup: boolean
+  german: boolean
+}
+
+export const DEFAULT_SCHEDULE_LAYERS: ScheduleLayers = {
+  administrative: true,
+  english: true,
+  englishCatchup: true,
+  german: true,
+}
+
+function activeDates(group: ScheduleGroup, title: string) {
+  return new Set(group.events.filter((event) => event.title === title).map((event) => event.date))
+}
+
+function languageEvents(
+  data: ScheduleData,
+  course: LanguageClass | undefined,
+  enabledDates: Set<string>,
+): ScheduleEvent[] {
+  if (!course) return []
+  const events: ScheduleEvent[] = []
+  for (const meeting of course.meetings) {
+    for (let week = meeting.startWeek; week <= meeting.endWeek; week += 1) {
+      const date = getWeekDates(data, week)[meeting.weekday - 1]
+      if (!date || !enabledDates.has(date)) continue
+      events.push({
+        date,
+        week,
+        weekday: meeting.weekday,
+        slot: meeting.slot,
+        title: course.code,
+        teacher: meeting.teachers.join(', ') || null,
+        room: meeting.room || null,
+      })
+    }
+  }
+  return events
+}
+
+export function composeScheduleLayers(
+  data: ScheduleData,
+  group: ScheduleGroup,
+  languages: SelectedLanguageClasses,
+  layers: ScheduleLayers = DEFAULT_SCHEDULE_LAYERS,
+): ScheduleGroup {
+  const englishDates = activeDates(group, 'English')
+  const catchupDates = activeDates(group, 'English Catchup')
+  const germanDates = activeDates(group, 'German')
+  const patchedPlaceholder = {
+    English: layers.english,
+    'English Catchup': layers.englishCatchup,
+    German: layers.german,
+  } as const
+  const baseEvents = layers.administrative
+    ? group.events.filter((event) => (
+        !LANGUAGE_PLACEHOLDERS.has(event.title)
+        || !patchedPlaceholder[event.title as keyof typeof patchedPlaceholder]
+      ))
+    : []
+  const patchedEvents = [
+    ...baseEvents,
+    ...(layers.english
+      ? languageEvents(data, languages.english ?? undefined, englishDates)
+      : []),
+    ...(layers.german
+      ? languageEvents(data, languages.german, germanDates)
+      : []),
+    ...(layers.englishCatchup
+      ? languageEvents(data, languages.englishCatchup ?? undefined, catchupDates)
+      : []),
+  ]
+  const uniqueEvents = new Map<string, ScheduleEvent>()
+  for (const event of patchedEvents) {
+    const key = [event.date, event.slot, event.title, event.teacher ?? '', event.room ?? ''].join('|')
+    uniqueEvents.set(key, event)
+  }
+  return {
+    ...group,
+    events: [...uniqueEvents.values()].sort((left, right) => (
+      left.date.localeCompare(right.date)
+      || left.slot - right.slot
+      || left.title.localeCompare(right.title)
+    )),
+  }
 }

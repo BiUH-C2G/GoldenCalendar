@@ -4,17 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "data:build": "python3 tools/parse_timetables.py --input raw --output public/data",
+    "data:build": "python tools/parse_timetables.py --input raw --output public/data --clean && python tools/parse_language_timetables.py --input \"raw/Timetable_2026Autumn_ English and German.xlsx\" --output public/data",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "deploy": "pnpm build && wrangler pages deploy dist --project-name campus-timetable",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chenglou/pretext": "^0.0.8",
-    "lucide-vue-next": "^0.468.0",
-    "reka-ui": "^2.5.0",
-    "source-han-sans-sc-vf": "^0.0.1",
     "vue": "^3.5.13"
   },
   "devDependencies": {

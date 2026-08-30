@@ -94,7 +94,7 @@ export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
   events.forEach((event, index) => {
     lines.push(
       'BEGIN:VEVENT',
-      `UID:${data.source.term}-${data.source.grade}-${data.source.major}-${group.groupId}-${event.start}-${index}@campus-timetable`,
+      `UID:${data.source.term}-${data.source.grade}-${data.source.majorCode}-${group.groupId}-${event.start}-${index}@campus-timetable`,
       `DTSTAMP:${stamp}`,
       `DTSTART:${event.start}`,
       `DTEND:${event.end}`,
@@ -110,7 +110,7 @@ export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
 }
 
 export function importCalendar(data: ScheduleData, group: ScheduleGroup) {
-  const fileName = `${data.source.grade}${data.source.major}-${group.groupId}.ics`
+  const fileName = `${data.source.grade}${data.source.majorCode}-${group.groupId}.ics`
   const blob = new Blob([buildCalendarFile(data, group)], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')

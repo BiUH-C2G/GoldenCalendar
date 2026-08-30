@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import {
-  CalendarDays,
-  CalendarPlus,
-  ChevronLeft,
-  ChevronRight,
-  CircleAlert,
-  Settings2,
-} from 'lucide-vue-next'
 import SetupDialog from '@/components/SetupDialog.vue'
-import FittedText from '@/components/FittedText.vue'
-import { loadManifest, loadSchedule } from '@/data'
+import { dataContract, getEnglishClassNumbers, getGermanSection, getGrade, getMajor } from '@/contract'
+import { loadAdministrativeSchedule, loadSelectedLanguages } from '@/data'
 import { importCalendar } from '@/calendar'
 import {
+  DEFAULT_SCHEDULE_LAYERS,
   DEFAULT_SESSION_TIMES,
+  composeScheduleLayers,
   formatDate,
-  getCourseHue,
   getCurrentWeek,
   getEvents,
   getNoticeForWeek,
@@ -26,14 +19,21 @@ import {
   isHolidayNotice,
   isExamWeek,
 } from '@/schedule'
-import type { Manifest, ScheduleData, ScheduleEvent, Selection } from '@/types'
+import type { ScheduleLayers } from '@/schedule'
+import type { ScheduleData, ScheduleEvent, SelectedLanguageClasses, Selection } from '@/types'
+
+const props = withDefaults(defineProps<{
+  debug?: boolean
+}>(), {
+  debug: false,
+})
 
 const STORAGE_KEY = 'campus-timetable-selection'
 const THEME_STORAGE_KEY = 'campus-timetable-theme'
 type ThemePreference = 'system' | 'light' | 'dark'
 
-const manifest = ref<Manifest | null>(null)
 const schedule = ref<ScheduleData | null>(null)
+const languages = ref<SelectedLanguageClasses | null>(null)
 const selection = ref<Selection | null>(readSelection())
 const setupOpen = ref(false)
 const loading = ref(true)
@@ -42,18 +42,20 @@ const currentWeek = ref(1)
 const pager = ref<HTMLElement | null>(null)
 const themePreference = ref<ThemePreference>(readThemePreference())
 const systemPrefersDark = ref(false)
+const layers = ref<ScheduleLayers>({ ...DEFAULT_SCHEDULE_LAYERS })
 let themeMediaQuery: MediaQueryList | null = null
+let loadRequest = 0
 
 const source = computed(() => {
-  if (!manifest.value || !selection.value) return null
-  return manifest.value.sources.find(
-    (item) => item.grade === selection.value?.grade && item.major === selection.value?.majorCode,
-  ) ?? null
+  if (!selection.value) return null
+  return getMajor(selection.value.grade, selection.value.majorCode) ?? null
 })
-const group = computed(() => schedule.value?.groups.find(
-  (item) => item.groupId === selection.value?.groupId,
-) ?? null)
+const group = computed(() => {
+  if (!schedule.value || !languages.value || !hasValidSelection()) return null
+  return composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value)
+})
 const weeks = computed(() => Array.from({ length: schedule.value?.calendar.weekCount ?? 0 }, (_, index) => index + 1))
+const ready = computed(() => Boolean(!loading.value && schedule.value && group.value && hasValidSelection()))
 const todayWeekday = getTodayWeekday()
 const isBeforeSemester = computed(() => {
   if (!schedule.value?.calendar.startDate) return false
@@ -64,20 +66,11 @@ onMounted(async () => {
   themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
   systemPrefersDark.value = themeMediaQuery.matches
   themeMediaQuery.addEventListener('change', handleSystemThemeChange)
-  try {
-    manifest.value = await loadManifest()
-    if (!selection.value) setupOpen.value = true
+  if (hasValidSelection()) {
     await loadSelectedSchedule()
-    if (schedule.value && selection.value) {
-      currentWeek.value = getCurrentWeek(schedule.value)
-      if (!hasValidSelection()) setupOpen.value = true
-    }
-    await nextTick()
-    scrollToWeek(currentWeek.value, 'auto')
-  } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : '课程表加载失败'
-  } finally {
+  } else {
     loading.value = false
+    setupOpen.value = true
   }
 })
 
@@ -88,28 +81,60 @@ onUnmounted(() => {
 watch([themePreference, systemPrefersDark], applyTheme, { immediate: true })
 
 watch(selection, async () => {
-  if (!selection.value || !manifest.value) return
+  if (!hasValidSelection()) {
+    loading.value = false
+    setupOpen.value = true
+    return
+  }
   await loadSelectedSchedule()
-  currentWeek.value = schedule.value ? getCurrentWeek(schedule.value) : 1
-  await nextTick()
-  scrollToWeek(currentWeek.value, 'auto')
 })
 
 async function loadSelectedSchedule() {
-  if (!source.value) return
+  const value = selection.value
+  if (!value || !hasValidSelection(value)) return
+  const request = ++loadRequest
   loading.value = true
+  schedule.value = null
+  languages.value = null
   error.value = ''
   try {
-    schedule.value = await loadSchedule(source.value.path)
+    const [nextSchedule, nextLanguages] = await Promise.all([
+      loadAdministrativeSchedule(value),
+      loadSelectedLanguages(value),
+    ])
+    if (request !== loadRequest) return
+    schedule.value = nextSchedule
+    languages.value = nextLanguages
+    currentWeek.value = getCurrentWeek(nextSchedule)
+    await nextTick()
+    scrollToWeek(currentWeek.value, 'auto')
   } catch (cause) {
+    if (request !== loadRequest) return
     error.value = cause instanceof Error ? cause.message : '课程表加载失败'
+    setupOpen.value = true
   } finally {
-    loading.value = false
+    if (request === loadRequest) loading.value = false
   }
 }
 
-function hasValidSelection() {
-  return Boolean(source.value?.groups.includes(selection.value?.groupId ?? ''))
+function hasValidSelection(value: Selection | null = selection.value) {
+  if (!value || value.term !== dataContract.term) return false
+  const grade = getGrade(value.grade)
+  const major = getMajor(value.grade, value.majorCode)
+  if (!grade || !major?.groups.includes(value.groupId)) return false
+  const germanSection = getGermanSection(value.grade)
+  const germanLevel = germanSection?.levels.find((item) => item.level === value.germanLevel)
+  if (!germanLevel?.classes.includes(value.germanClassNumber)) return false
+  if (typeof value.englishCatchupEnabled !== 'boolean') return false
+  if (!grade.english) {
+    return value.englishClassNumber === null && value.englishCatchupEnabled === false && value.englishCatchupClassNumber === null
+  }
+  if (!value.englishClassNumber || !getEnglishClassNumbers(value.majorCode).includes(value.englishClassNumber)) return false
+  if (!value.englishCatchupEnabled) return value.englishCatchupClassNumber === null
+  return Boolean(
+    value.englishCatchupClassNumber
+    && dataContract.languages.english.catchupClasses.includes(value.englishCatchupClassNumber),
+  )
 }
 
 function readSelection(): Selection | null {
@@ -145,6 +170,9 @@ function setTheme(value: unknown) {
 }
 
 function saveSelection(value: Selection) {
+  loading.value = true
+  schedule.value = null
+  languages.value = null
   selection.value = value
   localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
   setupOpen.value = false
@@ -152,6 +180,12 @@ function saveSelection(value: Selection) {
 
 function openSettings() {
   setupOpen.value = true
+}
+
+function resetDebugData() {
+  localStorage.removeItem(STORAGE_KEY)
+  localStorage.removeItem(THEME_STORAGE_KEY)
+  window.location.reload()
 }
 
 function addToCalendar() {
@@ -178,8 +212,8 @@ function handlePagerScroll() {
   if (nextWeek !== currentWeek.value) currentWeek.value = nextWeek
 }
 
-function eventAt(groupEvents: ScheduleEvent[], weekday: number, slot: number) {
-  return groupEvents.find((event) => event.weekday === weekday && event.slot === slot)
+function eventsAt(groupEvents: ScheduleEvent[], weekday: number, slot: number) {
+  return groupEvents.filter((event) => event.weekday === weekday && event.slot === slot)
 }
 
 function isToday(week: number, weekday: number) {
@@ -214,57 +248,55 @@ function currentDateForWeek(week: number) {
   return date ? `${formatDate(date)} - ${formatDate(getWeekDates(schedule.value!, week)[6])}` : ''
 }
 
-function eventStyle(title: string) {
-  return {
-    '--course-hue': getCourseHue(title),
-  }
-}
 </script>
 
 <template>
   <main class="app-shell">
     <header class="topbar">
-      <div class="brand-line">
-        <CalendarDays :size="20" stroke-width="2.2" />
-        <h1>课程表</h1>
-      </div>
+      <h1>课程表</h1>
       <div class="topbar-actions">
         <button
           class="calendar-import-button"
           type="button"
           title="导入日历"
           aria-label="导入日历"
-          :disabled="!schedule || !group"
+          :disabled="!ready"
           @click="addToCalendar"
         >
-          <CalendarPlus :size="16" />
-          <span>导入日历</span>
+          导入日历
         </button>
         <div class="context-label">
-        <span v-if="selection">{{ selection.grade }}级 · {{ selection.majorCode }} · {{ selection.groupId }}班</span>
+        <span v-if="selection">{{ selection.grade }}级 · {{ source?.name ?? selection.majorCode }} · {{ selection.groupId }}班</span>
         </div>
       </div>
     </header>
 
+    <section v-if="props.debug" class="debug-layers" aria-label="课程表图层">
+      <strong>视图叠合</strong>
+      <label><input v-model="layers.administrative" type="checkbox">行政班</label>
+      <label><input v-model="layers.english" type="checkbox">英语</label>
+      <label><input v-model="layers.englishCatchup" type="checkbox">英语补课</label>
+      <label><input v-model="layers.german" type="checkbox">德语</label>
+      <a href="/">退出 Debug</a>
+    </section>
+
     <section class="week-toolbar" aria-label="周次导航">
       <button class="icon-button" type="button" title="上一周" aria-label="上一周" :disabled="currentWeek <= 1" @click="changeWeek(-1)">
-        <ChevronLeft :size="19" />
+        上一周
       </button>
       <div class="week-heading" title="双击回到本周" @dblclick="returnToCurrentWeek">
         <strong>第 {{ currentWeek }} 周</strong>
         <span v-if="schedule">{{ currentDateForWeek(currentWeek) }}</span>
       </div>
       <button class="icon-button" type="button" title="下一周" aria-label="下一周" :disabled="currentWeek >= weeks.length" @click="changeWeek(1)">
-        <ChevronRight :size="19" />
+        下一周
       </button>
     </section>
 
-    <div v-if="loading && !schedule" class="state-panel">正在加载课程表</div>
-    <div v-else-if="error" class="state-panel error-state">
-      <CircleAlert :size="20" />
+    <div v-if="error" class="state-panel error-state">
       {{ error }}
     </div>
-    <div v-else-if="!selection" class="state-panel">请选择你的课程表</div>
+    <div v-else-if="!ready" class="state-panel">《加载中》</div>
 
     <section v-else ref="pager" class="week-pager" aria-label="每周课程表" @scroll.passive="handlePagerScroll">
       <article v-for="week in weeks" :key="week" class="week-page">
@@ -301,16 +333,17 @@ function eventStyle(title: string) {
                 'last-row': slot === 6,
               }"
             >
-              <template v-for="event in [eventAt(getEvents(group, week), day.value, slot)]" :key="event ? `${event.date}-${event.slot}` : 'empty'">
+              <template
+                v-for="(event, eventIndex) in eventsAt(getEvents(group, week), day.value, slot)"
+                :key="`${event.date}-${event.slot}-${event.title}-${eventIndex}`"
+              >
                 <div
-                  v-if="event"
                   class="course-tile"
                   :class="{ 'single-element': !event.teacher && !event.room }"
-                  :style="eventStyle(event.title)"
                 >
-                  <FittedText class="course-title" :text="event.title" :max-size="20" :spacing-cap="1" role="title" />
-                  <FittedText v-if="event.teacher" class="course-teacher" :text="event.teacher" :max-size="16" :spacing-cap="1" role="teacher" />
-                  <FittedText v-if="event.room" class="course-room" :text="event.room" :max-size="15" :spacing-cap="2.5" role="room" />
+                  <strong class="course-title">{{ event.title }}</strong>
+                  <span v-if="event.teacher" class="course-teacher">{{ event.teacher }}</span>
+                  <span v-if="event.room" class="course-room">{{ event.room }}</span>
                 </div>
               </template>
             </div>
@@ -331,20 +364,18 @@ function eventStyle(title: string) {
       </article>
     </section>
 
-    <div v-if="isBeforeSemester && schedule" class="status-note">当前还未进入本学期，已显示第 1 周</div>
-    <button class="floating-button" type="button" title="打开课程表设置" aria-label="打开课程表设置" @click="openSettings">
-      <Settings2 :size="20" />
-    </button>
+    <div v-if="isBeforeSemester && ready" class="status-note">当前还未进入本学期，已显示第 1 周</div>
+    <button class="settings-button" type="button" @click="openSettings">设置</button>
 
     <SetupDialog
-      v-if="manifest"
       v-model:open="setupOpen"
-      :manifest="manifest"
       :selection="selection"
-      :required="!selection || !hasValidSelection()"
+      :required="!hasValidSelection()"
       :theme="themePreference"
+      :debug="props.debug"
       @update:theme="setTheme"
       @save="saveSelection"
+      @reset="resetDebugData"
     />
   </main>
 </template>

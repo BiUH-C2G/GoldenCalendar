@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from openpyxl import load_workbook
+from data_contract import find_major, format_file, load_contract
 
 
 PARSER_VERSION = "0.2.0"
@@ -374,8 +375,13 @@ def parse_group(
     return group, warnings
 
 
-def parse_workbook(path: Path) -> tuple[dict[str, Any], list[str]]:
+def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     source = parse_source_name(path)
+    if source["term"] != contract["term"]:
+        raise ValueError(
+            f"workbook term {source['term']!r} does not match contract term {contract['term']!r}"
+        )
+    major = find_major(contract, source["grade"], source["major"])
     workbook = load_workbook(path, data_only=False, read_only=False)
     values_workbook = load_workbook(path, data_only=True, read_only=False)
     timetable_sheets = [sheet for sheet in workbook.worksheets if sheet.max_row > 1]
@@ -415,7 +421,8 @@ def parse_workbook(path: Path) -> tuple[dict[str, Any], list[str]]:
         "source": {
             "term": source["term"],
             "grade": source["grade"],
-            "major": source["major"],
+            "majorCode": source["major"],
+            "major": major["name"],
         },
         "calendar": {
             "startDate": first_event_date,
@@ -454,42 +461,78 @@ def parse_workbook(path: Path) -> tuple[dict[str, Any], list[str]]:
 def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+        json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+
+
+def clean_generated_json(output: Path, term: str) -> None:
+    output_root = output.resolve()
+    term_root = (output / term).resolve()
+    if output_root not in term_root.parents:
+        raise ValueError(f"refusing to clean outside output root: {term_root}")
+    if term_root.exists():
+        for path in term_root.glob("*.json"):
+            path.unlink()
+    legacy_manifest = output_root / "manifest.json"
+    if legacy_manifest.exists():
+        legacy_manifest.unlink()
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=Path("raw"))
     parser.add_argument("--output", type=Path, default=Path("parsed"))
+    parser.add_argument("--contract", type=Path, default=Path("data-contract.json"))
+    parser.add_argument("--clean", action="store_true")
     args = parser.parse_args()
 
-    files = sorted(args.input.glob("*.xlsx"))
+    contract = load_contract(args.contract)
+    if args.clean:
+        clean_generated_json(args.output, contract["term"])
+
+    files = sorted(
+        path
+        for path in args.input.glob("*.xlsx")
+        if re.fullmatch(r"Timetable_[^_]+_\d{4}[A-Za-z]+\.xlsx", path.name)
+    )
     if not files:
         print(f"error: no .xlsx files found in {args.input}", file=sys.stderr)
         return 1
 
-    manifest_sources = []
     total_warnings = 0
     for path in files:
         try:
-            result, warnings = parse_workbook(path)
+            result, warnings = parse_workbook(path, contract)
         except Exception as error:  # noqa: BLE001 - report a source-specific failure
             print(f"ERROR {path.name}: {error}", file=sys.stderr)
             return 1
         source = result["source"]
-        relative_path = Path(source["term"]) / f"{source['grade']}{source['major']}.json"
-        write_json(args.output / relative_path, result)
-        manifest_sources.append(
-            {
-                "id": f"{source['term']}-{source['grade']}-{source['major']}",
-                "file": path.name,
-                **source,
-                "path": relative_path.as_posix(),
-                "groups": [group["groupId"] for group in result["groups"]],
-            }
-        )
+        declared_major = find_major(contract, source["grade"], source["majorCode"])
+        parsed_group_ids = [group["groupId"] for group in result["groups"]]
+        if parsed_group_ids != declared_major["groups"]:
+            print(
+                f"ERROR {path.name}: parsed groups {parsed_group_ids} do not match "
+                f"contract groups {declared_major['groups']}",
+                file=sys.stderr,
+            )
+            return 1
+        for group in result["groups"]:
+            file_name = format_file(
+                contract,
+                "administrative",
+                grade=source["grade"],
+                majorCode=source["majorCode"],
+                groupId=group["groupId"],
+            )
+            write_json(
+                args.output / source["term"] / file_name,
+                {
+                    "calendar": result["calendar"],
+                    "events": group["events"],
+                    "notices": group["notices"],
+                },
+            )
         total_warnings += len(warnings)
         print(
             f"OK {path.name}: "
@@ -501,12 +544,7 @@ def main() -> int:
         for warning in warnings:
             print(f"  warning: {warning}")
 
-    manifest = {
-        "schemaVersion": 1,
-        "sources": manifest_sources,
-    }
-    write_json(args.output / "manifest.json", manifest)
-    print(f"Wrote {len(manifest_sources)} sources to {args.output} (warnings={total_warnings})")
+    print(f"Wrote coordinate files to {args.output / contract['term']} (warnings={total_warnings})")
     return 0
 
 

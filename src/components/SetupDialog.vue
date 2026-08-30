@@ -1,95 +1,153 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogOverlay,
-  DialogPortal,
-  DialogRoot,
-  DialogTitle,
-  SelectContent,
-  SelectItem,
-  SelectItemIndicator,
-  SelectItemText,
-  SelectPortal,
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport,
-  RadioGroupIndicator,
-  RadioGroupItem,
-  RadioGroupRoot,
-} from 'reka-ui'
-import { Check, ChevronDown, Monitor, Moon, Sun, X } from 'lucide-vue-next'
-import type { Manifest, ScheduleSource, Selection } from '@/types'
+  dataContract,
+  getEnglishClassNumbers,
+  getGermanSection,
+  getGrade,
+  getMajor,
+} from '@/contract'
+import type { Selection } from '@/types'
 
 type ThemePreference = 'system' | 'light' | 'dark'
 
 const props = defineProps<{
   open: boolean
-  manifest: Manifest
   selection: Selection | null
   required: boolean
   theme: ThemePreference
+  debug: boolean
 }>()
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
   'update:theme': [value: ThemePreference]
   save: [selection: Selection]
+  reset: []
 }>()
 
 const grade = ref('')
 const majorCode = ref('')
 const groupId = ref('')
-const themeOptions: Array<{ value: ThemePreference; label: string; icon: typeof Monitor }> = [
-  { value: 'system', label: '跟随系统', icon: Monitor },
-  { value: 'light', label: '月之亮面', icon: Sun },
-  { value: 'dark', label: '月之暗面', icon: Moon },
-]
+const englishClassNumber = ref('')
+const englishCatchupEnabled = ref(false)
+const englishCatchupClassNumber = ref('')
+const germanLevel = ref('')
+const germanClassNumber = ref('')
 
-const grades = computed(() => [...new Set(props.manifest.sources.map((source) => source.grade))].sort())
-const majors = computed(() => {
-  return [...new Set(
-    props.manifest.sources
-      .filter((source) => source.grade === grade.value)
-      .map((source) => source.major),
-  )].sort()
-})
-const source = computed<ScheduleSource | undefined>(() => props.manifest.sources.find(
-  (item) => item.grade === grade.value && item.major === majorCode.value,
+const grades = computed(() => dataContract.grades)
+const gradeContract = computed(() => getGrade(grade.value))
+const majors = computed(() => gradeContract.value?.majors ?? [])
+const groups = computed(() => getMajor(grade.value, majorCode.value)?.groups ?? [])
+const isEnglishGrade = computed(() => Boolean(gradeContract.value?.english))
+const englishClasses = computed(() => getEnglishClassNumbers(majorCode.value))
+const catchupClasses = computed(() => dataContract.languages.english.catchupClasses)
+const germanSection = computed(() => getGermanSection(grade.value))
+const germanLevels = computed(() => germanSection.value?.levels.map((item) => item.level) ?? [])
+const germanClasses = computed(() => (
+  germanSection.value?.levels.find((item) => item.level === germanLevel.value)?.classes ?? []
 ))
-const groups = computed(() => source.value?.groups ?? [])
-const canSave = computed(() => Boolean(grade.value && majorCode.value && groupId.value))
+
+const canSave = computed(() => Boolean(
+  grade.value
+  && majorCode.value
+  && groupId.value
+  && germanClassNumber.value
+  && (!isEnglishGrade.value || englishClassNumber.value)
+  && (!englishCatchupEnabled.value || englishCatchupClassNumber.value),
+))
 
 watch(() => props.open, (open) => {
   if (!open) return
-  grade.value = props.selection?.grade ?? grades.value[0] ?? ''
+  grade.value = props.selection?.grade ?? grades.value[0]?.grade ?? ''
   majorCode.value = props.selection?.majorCode ?? ''
   groupId.value = props.selection?.groupId ?? ''
-  if (!majorCode.value || !majors.value.includes(majorCode.value)) majorCode.value = majors.value[0] ?? ''
-  if (!groupId.value || !groups.value.includes(groupId.value)) {
-    groupId.value = groups.value[0] ?? ''
-  }
+  englishClassNumber.value = props.selection?.englishClassNumber ?? ''
+  englishCatchupEnabled.value = Boolean(props.selection?.englishCatchupEnabled)
+  englishCatchupClassNumber.value = props.selection?.englishCatchupClassNumber ?? ''
+  germanLevel.value = props.selection?.germanLevel ?? ''
+  germanClassNumber.value = props.selection?.germanClassNumber ?? ''
+  normalizeMajor()
+  normalizeGroup()
+  normalizeEnglishClass()
+  normalizeGermanLevel()
+  normalizeCatchupClass()
 })
 
 watch(grade, () => {
-  if (!majors.value.includes(majorCode.value)) majorCode.value = majors.value[0] ?? ''
+  normalizeMajor()
+  normalizeGroup()
+  normalizeEnglishClass()
+  normalizeGermanLevel()
 })
-
 watch(majorCode, () => {
-  if (!groups.value.includes(groupId.value)) groupId.value = groups.value[0] ?? ''
+  normalizeGroup()
+  normalizeEnglishClass()
 })
+watch(germanLevel, normalizeGermanClass)
+watch(englishCatchupEnabled, normalizeCatchupClass)
+
+function normalizeMajor() {
+  if (!majors.value.some((major) => major.code === majorCode.value)) majorCode.value = majors.value[0]?.code ?? ''
+}
+
+function normalizeGroup() {
+  if (!groups.value.includes(groupId.value)) groupId.value = groups.value[0] ?? ''
+}
+
+function normalizeEnglishClass() {
+  if (!isEnglishGrade.value) {
+    englishClassNumber.value = ''
+    englishCatchupEnabled.value = false
+    englishCatchupClassNumber.value = ''
+    return
+  }
+  if (!englishClasses.value.includes(englishClassNumber.value)) {
+    englishClassNumber.value = englishClasses.value[0] ?? ''
+  }
+}
+
+function normalizeCatchupClass() {
+  if (!englishCatchupEnabled.value) {
+    englishCatchupClassNumber.value = ''
+    return
+  }
+  if (!catchupClasses.value.includes(englishCatchupClassNumber.value)) {
+    englishCatchupClassNumber.value = catchupClasses.value[0] ?? ''
+  }
+}
+
+function normalizeGermanLevel() {
+  if (!germanLevels.value.includes(germanLevel.value)) germanLevel.value = germanLevels.value[0] ?? ''
+  normalizeGermanClass()
+}
+
+function normalizeGermanClass() {
+  if (!germanClasses.value.includes(germanClassNumber.value)) {
+    germanClassNumber.value = germanClasses.value[0] ?? ''
+  }
+}
 
 function save() {
   if (!canSave.value) return
-  emit('save', { grade: grade.value, majorCode: majorCode.value, groupId: groupId.value })
+  emit('save', {
+    term: dataContract.term,
+    grade: grade.value,
+    majorCode: majorCode.value,
+    groupId: groupId.value,
+    englishClassNumber: isEnglishGrade.value ? englishClassNumber.value : null,
+    englishCatchupEnabled: isEnglishGrade.value && englishCatchupEnabled.value,
+    englishCatchupClassNumber: isEnglishGrade.value && englishCatchupEnabled.value
+      ? englishCatchupClassNumber.value
+      : null,
+    germanLevel: germanLevel.value,
+    germanClassNumber: germanClassNumber.value,
+  })
 }
 
-function updateTheme(value: unknown) {
-  if (value !== 'system' && value !== 'light' && value !== 'dark') return
-  emit('update:theme', value)
+function setTheme(event: Event) {
+  const value = (event.target as HTMLSelectElement).value
+  if (value === 'system' || value === 'light' || value === 'dark') emit('update:theme', value)
 }
 
 function close() {
@@ -98,102 +156,90 @@ function close() {
 </script>
 
 <template>
-  <DialogRoot :open="open" @update:open="emit('update:open', $event)">
-    <DialogPortal>
-      <DialogOverlay class="dialog-overlay" />
-      <DialogContent class="dialog-content">
-        <div class="dialog-heading">
-          <DialogTitle>选择课程表</DialogTitle>
-          <DialogDescription>选择你的年级、专业和班级</DialogDescription>
-        </div>
-        <DialogClose v-if="!required" class="icon-button dialog-close" aria-label="关闭" title="关闭" @click="close">
-          <X :size="18" />
-        </DialogClose>
+  <div v-if="open" class="dialog-overlay" @click.self="close">
+    <section class="dialog-content" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <header>
+        <h2 id="setup-title">设置课程表</h2>
+        <button v-if="!required" type="button" @click="close">关闭</button>
+      </header>
 
-        <div class="form-stack">
-          <label class="field-label" for="grade">年级</label>
-          <SelectRoot v-model="grade">
-            <SelectTrigger id="grade" class="select-trigger" aria-label="年级">
-              <SelectValue placeholder="选择年级" />
-              <ChevronDown :size="16" />
-            </SelectTrigger>
-            <SelectPortal>
-              <SelectContent class="select-content" position="popper" side="bottom" align="start" :side-offset="4">
-                <SelectViewport>
-                  <SelectItem v-for="item in grades" :key="item" :value="item" class="select-item">
-                    <SelectItemText>{{ item }}级</SelectItemText>
-                    <SelectItemIndicator>
-                      <Check :size="16" />
-                    </SelectItemIndicator>
-                  </SelectItem>
-                </SelectViewport>
-              </SelectContent>
-            </SelectPortal>
-          </SelectRoot>
+      <form @submit.prevent="save">
+        <fieldset>
+          <legend>行政班</legend>
+          <label>
+            年级
+            <select v-model="grade">
+              <option v-for="item in grades" :key="item.grade" :value="item.grade">{{ item.grade }}级</option>
+            </select>
+          </label>
+          <label>
+            专业
+            <select v-model="majorCode">
+              <option v-for="item in majors" :key="item.code" :value="item.code">{{ item.name }}</option>
+            </select>
+          </label>
+          <label>
+            班级
+            <select v-model="groupId">
+              <option v-for="item in groups" :key="item" :value="item">{{ item }}班</option>
+            </select>
+          </label>
+        </fieldset>
 
-          <label class="field-label" for="major">专业</label>
-          <SelectRoot v-model="majorCode">
-            <SelectTrigger id="major" class="select-trigger" aria-label="专业">
-              <SelectValue placeholder="选择专业" />
-              <ChevronDown :size="16" />
-            </SelectTrigger>
-            <SelectPortal>
-              <SelectContent class="select-content" position="popper" side="bottom" align="start" :side-offset="4">
-                <SelectViewport>
-                  <SelectItem v-for="item in majors" :key="item" :value="item" class="select-item">
-                    <SelectItemText>{{ item }}</SelectItemText>
-                    <SelectItemIndicator>
-                      <Check :size="16" />
-                    </SelectItemIndicator>
-                  </SelectItem>
-                </SelectViewport>
-              </SelectContent>
-            </SelectPortal>
-          </SelectRoot>
+        <fieldset v-if="isEnglishGrade">
+          <legend>英语</legend>
+          <label>
+            班级
+            <select v-model="englishClassNumber">
+              <option v-for="classNumber in englishClasses" :key="classNumber" :value="classNumber">
+                {{ classNumber }}班
+              </option>
+            </select>
+          </label>
+          <label class="checkbox-label">
+            <input v-model="englishCatchupEnabled" type="checkbox">
+            补课英语
+          </label>
+          <label v-if="englishCatchupEnabled">
+            补课班级
+            <select v-model="englishCatchupClassNumber">
+              <option v-for="classNumber in catchupClasses" :key="classNumber" :value="classNumber">
+                {{ classNumber }}班
+              </option>
+            </select>
+          </label>
+        </fieldset>
 
-          <label class="field-label" for="group">班级</label>
-          <SelectRoot v-model="groupId">
-            <SelectTrigger id="group" class="select-trigger" aria-label="班级">
-              <SelectValue placeholder="选择班级" />
-              <ChevronDown :size="16" />
-            </SelectTrigger>
-            <SelectPortal>
-              <SelectContent class="select-content" position="popper" side="bottom" align="start" :side-offset="4">
-                <SelectViewport>
-                  <SelectItem v-for="item in groups" :key="item" :value="item" class="select-item">
-                    <SelectItemText>{{ item }}班</SelectItemText>
-                    <SelectItemIndicator>
-                      <Check :size="16" />
-                    </SelectItemIndicator>
-                  </SelectItem>
-                </SelectViewport>
-              </SelectContent>
-            </SelectPortal>
-          </SelectRoot>
+        <fieldset>
+          <legend>德语</legend>
+          <label v-if="germanLevels.length > 1">
+            等级
+            <select v-model="germanLevel">
+              <option v-for="item in germanLevels" :key="item" :value="item">{{ item }}</option>
+            </select>
+          </label>
+          <label>
+            班级
+            <select v-model="germanClassNumber">
+              <option v-for="classNumber in germanClasses" :key="classNumber" :value="classNumber">
+                {{ classNumber }}班
+              </option>
+            </select>
+          </label>
+        </fieldset>
 
-          <span class="field-label">外观</span>
-          <RadioGroupRoot
-            class="theme-options"
-            aria-label="外观"
-            :model-value="theme"
-            orientation="horizontal"
-            @update:model-value="updateTheme"
-          >
-            <RadioGroupItem v-for="item in themeOptions" :key="item.value" :value="item.value" class="theme-option">
-              <component :is="item.icon" :size="16" stroke-width="1.8" />
-              <span>{{ item.label }}</span>
-              <RadioGroupIndicator class="theme-radio-indicator">
-                <Check :size="12" />
-              </RadioGroupIndicator>
-            </RadioGroupItem>
-          </RadioGroupRoot>
-        </div>
+        <label>
+          主题
+          <select :value="theme" @change="setTheme">
+            <option value="system">跟随系统</option>
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+          </select>
+        </label>
 
-        <button class="primary-button full-width" type="button" :disabled="!canSave" @click="save">
-          <Check :size="17" />
-          确认
-        </button>
-      </DialogContent>
-    </DialogPortal>
-  </DialogRoot>
+        <button type="submit" :disabled="!canSave">保存</button>
+        <button v-if="debug" type="button" @click="emit('reset')">清空数据并刷新</button>
+      </form>
+    </section>
+  </div>
 </template>
