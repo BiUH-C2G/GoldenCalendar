@@ -1,75 +1,31 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
-import { dataContract, getEnglishClassNumbers, getGermanSection, getGrade, getMajor } from '@/Contract'
+import { computed, ref, watch } from 'vue'
+import { draftFromSelection, getSelectionBlocker, getSelectionOptions, resolveSelectionDraft, selectionFromDraft, updateSelectionDraft } from '@/SelectionState'
+import type { SelectionDraft, SelectionField } from '@/SelectionState'
 import type { ScheduleLayers } from '@/Schedule'
 import type { Selection, ThemePreference } from '@/Types'
 
-const props = defineProps<{ open: boolean, selection: Selection | null, theme: ThemePreference, debug: boolean, layers: ScheduleLayers }>()
+const props = defineProps<{ open: boolean, initialDraft: SelectionDraft | null, selection: Selection | null, theme: ThemePreference, debug: boolean, layers: ScheduleLayers }>()
 const emit = defineEmits<{ save: [selection: Selection], cancel: [], reset: [], 'update:theme': [value: ThemePreference], 'update:layers': [value: ScheduleLayers] }>()
-const grade = ref('')
-const majorCode = ref('')
-const groupId = ref('')
-const englishClassNumber = ref('')
-const englishCatchupEnabled = ref(false)
-const englishCatchupClassNumber = ref('')
-const germanLevel = ref('')
-const germanClassNumber = ref('')
-const grades = computed(() => dataContract.grades)
-const gradeContract = computed(() => getGrade(grade.value))
-const majors = computed(() => gradeContract.value?.majors ?? [])
-const groups = computed(() => getMajor(grade.value, majorCode.value)?.groups ?? [])
-const isEnglishGrade = computed(() => Boolean(gradeContract.value?.english))
-const englishClasses = computed(() => getEnglishClassNumbers(majorCode.value))
-const catchupClasses = computed(() => dataContract.languages.english.catchupClasses)
-const germanSection = computed(() => getGermanSection(grade.value))
-const germanLevels = computed(() => germanSection.value?.levels.map((item) => item.level) ?? [])
-const germanClasses = computed(() => germanSection.value?.levels.find((item) => item.level === germanLevel.value)?.classes ?? [])
-const canSave = computed(() => Boolean(grade.value && majorCode.value && groupId.value && germanClassNumber.value && (!isEnglishGrade.value || englishClassNumber.value) && (!englishCatchupEnabled.value || englishCatchupClassNumber.value)))
-let loadingDraft = false
+const draft = ref(draftFromSelection(props.selection))
+const options = computed(() => getSelectionOptions(draft.value))
+const blocker = computed(() => getSelectionBlocker(draft.value))
 
-watch(() => props.open, async (open) => {
-  if (!open) return
-  loadingDraft = true
-  grade.value = props.selection?.grade ?? ''
-  majorCode.value = props.selection?.majorCode ?? ''
-  groupId.value = props.selection?.groupId ?? ''
-  englishClassNumber.value = props.selection?.englishClassNumber ?? ''
-  englishCatchupEnabled.value = Boolean(props.selection?.englishCatchupEnabled)
-  englishCatchupClassNumber.value = props.selection?.englishCatchupClassNumber ?? ''
-  germanLevel.value = props.selection?.germanLevel ?? ''
-  germanClassNumber.value = props.selection?.germanClassNumber ?? ''
-  await nextTick()
-  loadingDraft = false
+watch(() => props.open, (open) => {
+  if (open) draft.value = resolveSelectionDraft(props.initialDraft ? { ...props.initialDraft } : draftFromSelection(props.selection))
 }, { immediate: true })
 
-watch(grade, () => {
-  if (loadingDraft) return
-  majorCode.value = majors.value.length === 1 ? majors.value[0].code : ''
-  groupId.value = ''
-  englishClassNumber.value = ''
-  englishCatchupEnabled.value = false
-  englishCatchupClassNumber.value = ''
-  germanLevel.value = germanLevels.value.length === 1 ? germanLevels.value[0] : ''
-  germanClassNumber.value = ''
-})
-watch(majorCode, () => {
-  if (loadingDraft) return
-  groupId.value = groups.value.length === 1 ? groups.value[0] : ''
-  englishClassNumber.value = englishClasses.value.length === 1 ? englishClasses.value[0] : ''
-  englishCatchupEnabled.value = false
-  englishCatchupClassNumber.value = ''
-})
-watch(germanLevel, () => {
-  if (!loadingDraft) germanClassNumber.value = germanClasses.value.length === 1 ? germanClasses.value[0] : ''
-})
-watch(englishCatchupEnabled, (enabled) => {
-  if (loadingDraft) return
-  englishCatchupClassNumber.value = enabled && catchupClasses.value.length === 1 ? catchupClasses.value[0] : ''
-})
+function updateString(field: SelectionField, event: Event) {
+  draft.value = updateSelectionDraft(draft.value, field, (event.target as HTMLSelectElement).value)
+}
+
+function updateBoolean(field: SelectionField, event: Event) {
+  draft.value = updateSelectionDraft(draft.value, field, (event.target as HTMLInputElement).checked)
+}
 
 function save() {
-  if (!canSave.value) return
-  emit('save', { term: dataContract.term, grade: grade.value, majorCode: majorCode.value, groupId: groupId.value, englishClassNumber: isEnglishGrade.value ? englishClassNumber.value : null, englishCatchupEnabled: isEnglishGrade.value && englishCatchupEnabled.value, englishCatchupClassNumber: isEnglishGrade.value && englishCatchupEnabled.value ? englishCatchupClassNumber.value : null, germanLevel: germanLevel.value, germanClassNumber: germanClassNumber.value })
+  const selection = selectionFromDraft(draft.value)
+  if (selection) emit('save', selection)
 }
 
 function setTheme(value: ThemePreference) {
@@ -86,26 +42,27 @@ function setLayer(key: keyof ScheduleLayers, value: boolean) {
     <fieldset class="settings-group">
       <legend>行政班</legend>
       <div class="settings-fields">
-        <label v-if="grades.length > 1" class="field tone-green">年级<select v-model="grade" data-dialog-autofocus><option value="" disabled>请选择年级</option><option v-for="item in grades" :key="item.grade" :value="item.grade">{{ item.grade }}级</option></select></label>
-        <label v-if="grade && majors.length > 1" class="field tone-blue">专业<select v-model="majorCode"><option value="" disabled>请选择专业</option><option v-for="item in majors" :key="item.code" :value="item.code">{{ item.name }}</option></select></label>
-        <label v-if="majorCode && groups.length > 1" class="field tone-violet">班级<select v-model="groupId"><option value="" disabled>请选择班级</option><option v-for="item in groups" :key="item" :value="item">{{ item }}班</option></select></label>
+        <label v-if="options.grades.length > 1" class="field tone-green">年级<select :value="draft.grade" data-dialog-autofocus @change="updateString('grade', $event)"><option value="" disabled>请选择年级</option><option v-for="item in options.grades" :key="item" :value="item">{{ item }}级</option></select></label>
+        <label v-if="draft.grade && options.majors.length > 1" class="field tone-blue">专业<select :value="draft.majorCode" @change="updateString('majorCode', $event)"><option value="" disabled>请选择专业</option><option v-for="item in options.majors" :key="item.code" :value="item.code">{{ item.name }}</option></select></label>
+        <label v-if="draft.majorCode && options.groups.length > 1" class="field tone-violet">班级<select :value="draft.groupId" @change="updateString('groupId', $event)"><option value="" disabled>请选择班级</option><option v-for="item in options.groups" :key="item" :value="item">{{ item }}班</option></select></label>
       </div>
     </fieldset>
 
-    <fieldset v-if="isEnglishGrade" class="settings-group">
+    <fieldset v-if="options.hasEnglish" class="settings-group">
       <legend>英语</legend>
-      <div class="settings-fields">
-        <label v-if="majorCode && englishClasses.length > 1" class="field tone-blue">班级<select v-model="englishClassNumber"><option value="" disabled>请选择英语班级</option><option v-for="classNumber in englishClasses" :key="classNumber" :value="classNumber">{{ classNumber }}班</option></select></label>
-        <label v-if="englishClassNumber" class="field checkbox-field tone-warm"><span>要补课</span><input v-model="englishCatchupEnabled" type="checkbox"></label>
-        <label v-if="englishCatchupEnabled && catchupClasses.length > 1" class="field tone-green">补课班级<select v-model="englishCatchupClassNumber"><option value="" disabled>请选择补课班级</option><option v-for="classNumber in catchupClasses" :key="classNumber" :value="classNumber">{{ classNumber }}班</option></select></label>
+      <p v-if="!draft.majorCode" class="settings-hint">请先选择专业，再选择英语班级</p>
+      <div v-else class="settings-fields">
+        <label v-if="options.englishClasses.length > 1" class="field tone-blue">班级<select :value="draft.englishClassNumber" @change="updateString('englishClassNumber', $event)"><option value="" disabled>请选择英语班级</option><option v-for="classNumber in options.englishClasses" :key="classNumber" :value="classNumber">{{ classNumber }}班</option></select></label>
+        <label v-if="draft.englishClassNumber" class="field checkbox-field tone-warm"><span>要补课</span><input type="checkbox" :checked="draft.englishCatchupEnabled" @change="updateBoolean('englishCatchupEnabled', $event)"></label>
+        <label v-if="draft.englishCatchupEnabled && options.catchupClasses.length > 1" class="field tone-green">补课班级<select :value="draft.englishCatchupClassNumber" @change="updateString('englishCatchupClassNumber', $event)"><option value="" disabled>请选择补课班级</option><option v-for="classNumber in options.catchupClasses" :key="classNumber" :value="classNumber">{{ classNumber }}班</option></select></label>
       </div>
     </fieldset>
 
-    <fieldset v-if="germanSection" class="settings-group">
+    <fieldset v-if="options.hasGerman" class="settings-group">
       <legend>德语</legend>
       <div class="settings-fields">
-        <label v-if="germanLevels.length > 1" class="field tone-violet">等级<select v-model="germanLevel"><option value="" disabled>请选择德语等级</option><option v-for="item in germanLevels" :key="item" :value="item">{{ item }}</option></select></label>
-        <label v-if="germanLevel && germanClasses.length > 1" class="field tone-green">班级<select v-model="germanClassNumber"><option value="" disabled>请选择德语班级</option><option v-for="classNumber in germanClasses" :key="classNumber" :value="classNumber">{{ classNumber }}班</option></select></label>
+        <label v-if="options.germanLevels.length > 1" class="field tone-violet">等级<select :value="draft.germanLevel" @change="updateString('germanLevel', $event)"><option value="" disabled>请选择德语等级</option><option v-for="item in options.germanLevels" :key="item" :value="item">{{ item }}</option></select></label>
+        <label v-if="draft.germanLevel && options.germanClasses.length > 1" class="field tone-green">班级<select :value="draft.germanClassNumber" @change="updateString('germanClassNumber', $event)"><option value="" disabled>请选择德语班级</option><option v-for="classNumber in options.germanClasses" :key="classNumber" :value="classNumber">{{ classNumber }}班</option></select></label>
       </div>
     </fieldset>
 
@@ -129,7 +86,7 @@ function setLayer(key: keyof ScheduleLayers, value: boolean) {
 
     <div class="dialog-actions">
       <button v-if="selection" class="secondary-button" type="button" @click="emit('cancel')">取消</button>
-      <button class="primary-button" type="submit" :disabled="!canSave">保存</button>
+      <button class="primary-button" type="submit" :disabled="Boolean(blocker)">{{ blocker ?? '保存' }}</button>
     </div>
   </form>
 </template>

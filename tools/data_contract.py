@@ -1,4 +1,4 @@
-"""Shared timetable data contract used by every parser."""
+"""为所有课表解析器提供统一的数据约定"""
 
 from __future__ import annotations
 
@@ -19,14 +19,14 @@ def format_file(contract: dict[str, Any], kind: str, **coordinates: str) -> str:
     try:
         return contract["files"][kind].format(**coordinates)
     except KeyError as error:
-        raise ValueError(f"data contract cannot format {kind}: missing {error.args[0]}") from error
+        raise ValueError(f"数据约定无法生成 {kind} 文件名：缺少 {error.args[0]}") from error
 
 
 def find_grade(contract: dict[str, Any], grade: str) -> dict[str, Any]:
     for item in contract["grades"]:
         if item["grade"] == grade:
             return item
-    raise ValueError(f"grade {grade!r} is not declared in data-contract.json")
+    raise ValueError(f"data-contract.json 未声明年级 {grade!r}")
 
 
 def find_major(contract: dict[str, Any], grade: str, major_code: str) -> dict[str, Any]:
@@ -34,7 +34,7 @@ def find_major(contract: dict[str, Any], grade: str, major_code: str) -> dict[st
     for item in grade_item["majors"]:
         if item["code"] == major_code:
             return item
-    raise ValueError(f"major {grade}{major_code} is not declared in data-contract.json")
+    raise ValueError(f"data-contract.json 未声明专业 {grade}{major_code}")
 
 
 def major_name(contract: dict[str, Any], major_code: str) -> str:
@@ -46,4 +46,4 @@ def major_name(contract: dict[str, Any], major_code: str) -> str:
     try:
         return names[major_code.upper()]
     except KeyError as error:
-        raise ValueError(f"unknown major code {major_code!r}") from error
+        raise ValueError(f"未知专业代码 {major_code!r}") from error

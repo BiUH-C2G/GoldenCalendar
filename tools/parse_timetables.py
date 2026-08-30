@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-"""Convert the timetable workbooks in raw/ into web-friendly JSON.
+"""将 raw 目录中的课表工作簿转换为网页使用的 JSON
 
-The source unit is one workbook (term + grade + major). Each worksheet is
-preserved as a group because worksheets with suffixes such as CS1, CS2 and CS3
-contain different schedules.
+每个工作簿对应一个学期、年级和专业，每张工作表对应一个行政班
 """
 
 from __future__ import annotations
@@ -13,7 +11,7 @@ import json
 import re
 import sys
 from collections import Counter
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -133,7 +131,7 @@ def parse_source_name(path: Path) -> dict[str, str]:
         path.name,
     )
     if not match:
-        raise ValueError(f"cannot infer term/grade/major from {path.name}")
+        raise ValueError(f"无法从 {path.name} 推断学期、年级和专业")
     return match.groupdict()
 
 
@@ -145,7 +143,7 @@ def parse_group_name(sheet_name: str, source: dict[str, str]) -> dict[str, str]:
     if match:
         group_id = match.group("group")
     else:
-        # Keep an unexpected sheet name usable while reporting it to the caller.
+        # 保留无法识别的工作表名称，同时由调用方报告约定不一致
         group_id = sheet_name
     return {"groupId": group_id, "sheetName": sheet_name}
 
@@ -153,13 +151,13 @@ def parse_group_name(sheet_name: str, source: dict[str, str]) -> dict[str, str]:
 def parse_date_text(value: Any, year: int, previous: date | None) -> date:
     text = clean(value)
     if not isinstance(text, str):
-        raise ValueError(f"invalid date cell {value!r}")
+        raise ValueError(f"日期单元格无效：{value!r}")
     match = re.fullmatch(r"(?P<day>\d{1,2})\s+(?P<month>[A-Za-z]{3,9})\.?", text)
     if not match:
-        raise ValueError(f"unrecognised date text {text!r}")
+        raise ValueError(f"无法识别日期文本 {text!r}")
     month_name = match.group("month")[:3].lower()
     if month_name not in MONTHS:
-        raise ValueError(f"unrecognised month in {text!r}")
+        raise ValueError(f"无法识别 {text!r} 中的月份")
     current = date(year, MONTHS[month_name], int(match.group("day")))
     if previous is not None and current < previous:
         current = date(year + 1, current.month, current.day)
@@ -173,7 +171,7 @@ def parse_sessions(ws: Any) -> list[dict[str, Any]]:
         time_range = clean(ws.cell(3, start_column).value)
         if not title or not time_range:
             raise ValueError(
-                f"missing session header at {ws.title}!{ws.cell(2, start_column).coordinate}"
+                f"{ws.title}!{ws.cell(2, start_column).coordinate} 缺少节次标题"
             )
         sessions.append(
             {
@@ -192,11 +190,15 @@ def date_rows(ws: Any) -> tuple[int, int]:
         if clean(ws.cell(row, 2).value) is not None
     ]
     if not rows:
-        raise ValueError(f"{ws.title} has no timetable dates")
+        raise ValueError(f"{ws.title} 没有课表日期")
     return min(rows), max(rows)
 
 
-def build_row_context(ws: Any, source_year: int) -> tuple[dict[int, dict[str, Any]], list[str]]:
+def derive_calendar_start(current_date: date, week: int, weekday: int) -> date:
+    return current_date - timedelta(days=(week - 1) * 7 + weekday - 1)
+
+
+def build_row_context(ws: Any, source_year: int) -> tuple[dict[int, dict[str, Any]], list[str], date]:
     first_row, last_row = date_rows(ws)
     context: dict[int, dict[str, Any]] = {}
     warnings: list[str] = []
@@ -216,15 +218,15 @@ def build_row_context(ws: Any, source_year: int) -> tuple[dict[int, dict[str, An
             try:
                 previous_week = int(raw_week)
             except (TypeError, ValueError):
-                warnings.append(f"{ws.title}!A{row}: invalid week {raw_week!r}")
+                warnings.append(f"{ws.title}!A{row}：周次无效 {raw_week!r}")
         if previous_week is None:
-            warnings.append(f"{ws.title}!A{row}: missing week number")
+            warnings.append(f"{ws.title}!A{row}：缺少周次")
             continue
 
         weekday_text = clean(ws.cell(row, 3).value)
         weekday = WEEKDAY_NUMBERS.get(str(weekday_text).lower()) if weekday_text else None
         if weekday is None:
-            warnings.append(f"{ws.title}!C{row}: invalid weekday {weekday_text!r}")
+            warnings.append(f"{ws.title}!C{row}：星期无效 {weekday_text!r}")
             continue
 
         context[row] = {
@@ -233,7 +235,16 @@ def build_row_context(ws: Any, source_year: int) -> tuple[dict[int, dict[str, An
             "weekday": weekday,
         }
 
-    return context, warnings
+    anchors = {
+        derive_calendar_start(date.fromisoformat(item["date"]), item["week"], item["weekday"])
+        for item in context.values()
+    }
+    if not anchors:
+        raise ValueError(f"{ws.title} 没有可用于反推第一周周一的日期")
+    if len(anchors) != 1:
+        values = ", ".join(sorted(item.isoformat() for item in anchors))
+        raise ValueError(f"{ws.title} 的日期、周次与星期无法反推出同一个第一周周一：{values}")
+    return context, warnings, anchors.pop()
 
 
 def merge_ranges(ws: Any) -> list[Any]:
@@ -277,9 +288,9 @@ def parse_group(
     values_ws: Any,
     source: dict[str, str],
     sessions: list[dict[str, Any]],
-) -> tuple[dict[str, Any], list[str]]:
+) -> tuple[dict[str, Any], list[str], date]:
     source_year = int(source["term"][:4])
-    row_context, warnings = build_row_context(ws, source_year)
+    row_context, warnings, calendar_start = build_row_context(ws, source_year)
     merged = merge_ranges(ws)
     covered_cells = {
         (row, column)
@@ -291,13 +302,13 @@ def parse_group(
 
     for item in merged:
         if item.min_col != 4 or item.max_col != 21:
-            warnings.append(f"{ws.title}!{item}: unexpected timetable merge")
+            warnings.append(f"{ws.title}!{item}：出现不符合约定的课表合并区域")
             continue
         label = normalize_notice_label(ws.cell(item.min_row, item.min_col).value)
         start = row_context.get(item.min_row)
         end = row_context.get(item.max_row)
         if not label or not start or not end:
-            warnings.append(f"{ws.title}!{item}: cannot resolve merged notice")
+            warnings.append(f"{ws.title}!{item}：无法解析合并区域通知")
             continue
         notices.append(
             {
@@ -326,7 +337,7 @@ def parse_group(
             if title is None:
                 warnings.append(
                     f"{ws.title}!{ws.cell(row, start_column).coordinate}: "
-                    "teacher/room exists without course name"
+                    "存在教师或教室，但缺少课程名称"
                 )
                 continue
             events.append(
@@ -350,8 +361,7 @@ def parse_group(
         actual = event_counts[course["name"]]
         if isinstance(expected, (int, float)) and expected != actual:
             warnings.append(
-                f"{ws.title}: {course['name']!r} summary scheduledSessions={expected} "
-                f"but parsed events={actual}"
+                f"{ws.title}：{course['name']!r} 汇总表排课次数={expected}，实际解析次数={actual}"
             )
 
     group_info = parse_group_name(ws.title, source)
@@ -372,50 +382,45 @@ def parse_group(
             "warnings": warnings,
         },
     }
-    return group, warnings
+    return group, warnings, calendar_start
 
 
 def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     source = parse_source_name(path)
     if source["term"] != contract["term"]:
         raise ValueError(
-            f"workbook term {source['term']!r} does not match contract term {contract['term']!r}"
+            f"工作簿学期 {source['term']!r} 与数据约定学期 {contract['term']!r} 不一致"
         )
     major = find_major(contract, source["grade"], source["major"])
     workbook = load_workbook(path, data_only=False, read_only=False)
     values_workbook = load_workbook(path, data_only=True, read_only=False)
     timetable_sheets = [sheet for sheet in workbook.worksheets if sheet.max_row > 1]
     if not timetable_sheets:
-        raise ValueError(f"{path.name} has no timetable worksheets")
+        raise ValueError(f"{path.name} 没有课表工作表")
 
     sessions = parse_sessions(timetable_sheets[0])
     warnings: list[str] = []
     groups = []
+    calendar_starts = set()
     for ws in timetable_sheets:
         if ws.title not in values_workbook.sheetnames:
-            raise ValueError(f"missing values worksheet for {ws.title}")
+            raise ValueError(f"缺少 {ws.title} 对应的数值工作表")
         values_ws = values_workbook[ws.title]
         try:
             sheet_sessions = parse_sessions(ws)
             if sheet_sessions != sessions:
-                warnings.append(f"{ws.title}: session headers differ from first worksheet")
+                warnings.append(f"{ws.title}：节次标题与第一张工作表不一致")
         except ValueError as error:
             warnings.append(str(error))
-        group, group_warnings = parse_group(ws, values_ws, source, sessions)
+        group, group_warnings, calendar_start = parse_group(ws, values_ws, source, sessions)
         groups.append(group)
+        calendar_starts.add(calendar_start)
         warnings.extend(group_warnings)
 
-    first_event_date = min(
-        (
-            value
-            for group in groups
-            for value in [
-                *(event["date"] for event in group["events"]),
-                *(notice["startDate"] for notice in group["notices"]),
-            ]
-        ),
-        default=None,
-    )
+    if len(calendar_starts) != 1:
+        values = ", ".join(sorted(item.isoformat() for item in calendar_starts))
+        raise ValueError(f"{path.name} 的工作表无法反推出同一个第一周周一：{values}")
+    calendar_start = calendar_starts.pop().isoformat()
     result = {
         "schemaVersion": 1,
         "source": {
@@ -425,7 +430,7 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
             "major": major["name"],
         },
         "calendar": {
-            "startDate": first_event_date,
+            "startDate": calendar_start,
             "weekCount": max(
                 (group["stats"]["weekCount"] for group in groups),
                 default=0,
@@ -470,7 +475,7 @@ def clean_generated_json(output: Path, term: str) -> None:
     output_root = output.resolve()
     term_root = (output / term).resolve()
     if output_root not in term_root.parents:
-        raise ValueError(f"refusing to clean outside output root: {term_root}")
+        raise ValueError(f"拒绝清理输出目录之外的路径：{term_root}")
     if term_root.exists():
         for path in term_root.glob("*.json"):
             path.unlink()
@@ -497,23 +502,22 @@ def main() -> int:
         if re.fullmatch(r"Timetable_[^_]+_\d{4}[A-Za-z]+\.xlsx", path.name)
     )
     if not files:
-        print(f"error: no .xlsx files found in {args.input}", file=sys.stderr)
+        print(f"错误：{args.input} 中没有找到 .xlsx 文件", file=sys.stderr)
         return 1
 
     total_warnings = 0
     for path in files:
         try:
             result, warnings = parse_workbook(path, contract)
-        except Exception as error:  # noqa: BLE001 - report a source-specific failure
-            print(f"ERROR {path.name}: {error}", file=sys.stderr)
+        except Exception as error:  # noqa: BLE001
+            print(f"错误 {path.name}：{error}", file=sys.stderr)
             return 1
         source = result["source"]
         declared_major = find_major(contract, source["grade"], source["majorCode"])
         parsed_group_ids = [group["groupId"] for group in result["groups"]]
         if parsed_group_ids != declared_major["groups"]:
             print(
-                f"ERROR {path.name}: parsed groups {parsed_group_ids} do not match "
-                f"contract groups {declared_major['groups']}",
+                f"错误 {path.name}：解析到的行政班 {parsed_group_ids} 与数据约定 {declared_major['groups']} 不一致",
                 file=sys.stderr,
             )
             return 1
@@ -535,16 +539,16 @@ def main() -> int:
             )
         total_warnings += len(warnings)
         print(
-            f"OK {path.name}: "
-            f"groups={len(result['groups'])} "
-            f"events={sum(len(group['events']) for group in result['groups'])} "
-            f"notices={sum(len(group['notices']) for group in result['groups'])} "
-            f"warnings={len(warnings)}"
+            f"完成 {path.name}："
+            f"行政班={len(result['groups'])} "
+            f"课程={sum(len(group['events']) for group in result['groups'])} "
+            f"通知={sum(len(group['notices']) for group in result['groups'])} "
+            f"警告={len(warnings)}"
         )
         for warning in warnings:
-            print(f"  warning: {warning}")
+            print(f"  警告：{warning}")
 
-    print(f"Wrote coordinate files to {args.output / contract['term']} (warnings={total_warnings})")
+    print(f"已将坐标文件写入 {args.output / contract['term']}（警告={total_warnings}）")
     return 0
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Parse the term-level English and German timetable into language classes."""
+"""将学期英语和德语课表解析为语言班数据"""
 
 from __future__ import annotations
 
@@ -74,8 +74,7 @@ def normalize_level(raw: str) -> str:
 
 def parse_week_range(sheet_name: str) -> tuple[int, int] | None:
     if sheet_name.strip().casefold() == "english":
-        # The workbook does not label the English range. The administrative
-        # timetable remains the authoritative week mask when the web app patches it.
+        # 原始工作簿没有标注英语周次范围，网页合并课程时仍以行政班课表中的占位日期为准
         return 1, 17
     match = WEEK_RANGE_PATTERN.search(sheet_name)
     if not match:
@@ -160,12 +159,9 @@ def parse_course_line(line: str) -> dict[str, Any] | None:
 def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     source_match = SOURCE_PATTERN.fullmatch(path.name)
     if not source_match:
-        raise ValueError(f"cannot infer term from {path.name}")
+        raise ValueError(f"无法从 {path.name} 推断学期")
     if source_match.group("term") != contract["term"]:
-        raise ValueError(
-            f"workbook term {source_match.group('term')!r} does not match "
-            f"contract term {contract['term']!r}"
-        )
+        raise ValueError(f"工作簿学期 {source_match.group('term')!r} 与数据约定学期 {contract['term']!r} 不一致")
 
     workbook = load_workbook(path, data_only=True, read_only=False)
     classes: dict[str, dict[str, Any]] = {}
@@ -176,7 +172,7 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
     for worksheet in workbook.worksheets:
         week_range = parse_week_range(worksheet.title)
         if not week_range:
-            warnings.append(f"{worksheet.title}: cannot infer week range; sheet skipped")
+            warnings.append(f"{worksheet.title}：无法推断周次范围，已跳过工作表")
             continue
         start_week, end_week = week_range
 
@@ -210,7 +206,7 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
 
                     parsed = parse_course_line(line)
                     if not parsed:
-                        warnings.append(f"{worksheet.title}!{worksheet.cell(row, column).coordinate}: cannot parse {line!r}")
+                        warnings.append(f"{worksheet.title}!{worksheet.cell(row, column).coordinate}：无法解析 {line!r}")
                         continue
 
                     class_id = parsed["id"]
@@ -218,7 +214,7 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
                     if len(raw_number) > 2 and raw_number.startswith("0"):
                         warnings.append(
                             f"{worksheet.title}!{worksheet.cell(row, column).coordinate}: "
-                            f"normalized class number {raw_number!r} to {parsed['classNumber']!r}"
+                            f"已将班级编号 {raw_number!r} 规范为 {parsed['classNumber']!r}"
                         )
                     teachers = parsed.pop("teachers")
                     room = parsed.pop("room")
@@ -310,8 +306,7 @@ def validate_contract(classes: list[dict[str, Any]], contract: dict[str, Any]) -
     unexpected = sorted(set(actual) - set(expected))
     if missing or unexpected:
         raise ValueError(
-            f"language coordinates do not match data-contract.json; "
-            f"missing={missing}, unexpected={unexpected}"
+            f"语言坐标与 data-contract.json 不一致；缺失={missing}，意外出现={unexpected}"
         )
     mismatched_eligibility = [
         key for key in expected
@@ -319,8 +314,7 @@ def validate_contract(classes: list[dict[str, Any]], contract: dict[str, Any]) -
     ]
     if mismatched_eligibility:
         raise ValueError(
-            "English eligibility does not match data-contract.json for "
-            f"{mismatched_eligibility}"
+            f"英语专业适用范围与 data-contract.json 不一致：{mismatched_eligibility}"
         )
 
 
@@ -337,7 +331,7 @@ def main() -> int:
         result, warnings = parse_workbook(args.input, contract)
         validate_contract(result["classes"], contract)
     except Exception as error:  # noqa: BLE001
-        print(f"ERROR {args.input.name}: {error}", file=sys.stderr)
+        print(f"错误 {args.input.name}：{error}", file=sys.stderr)
         return 1
 
     term_root = args.output / contract["term"]
@@ -363,12 +357,12 @@ def main() -> int:
             encoding="utf-8",
         )
     print(
-        f"OK {args.input.name}: classes={len(result['classes'])} "
-        f"meetings={sum(len(item['meetings']) for item in result['classes'])} "
-        f"warnings={len(warnings)}"
+        f"完成 {args.input.name}：班级={len(result['classes'])} "
+        f"课程时段={sum(len(item['meetings']) for item in result['classes'])} "
+        f"警告={len(warnings)}"
     )
     for warning in warnings:
-        print(f"  warning: {warning}")
+        print(f"  警告：{warning}")
     return 0
 
 
