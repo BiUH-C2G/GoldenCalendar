@@ -74,18 +74,46 @@ function mergeEvents(data: ScheduleData, group: ScheduleGroup): CalendarEvent[] 
 
 function foldIcsLine(line: string) {
   const chunks: string[] = []
-  let remaining = line
-  while (remaining.length > 75) {
-    chunks.push(remaining.slice(0, 75))
-    remaining = ` ${remaining.slice(75)}`
+  const encoder = new TextEncoder()
+  let chunk = ''
+  let bytes = 0
+
+  for (const character of line) {
+    const characterBytes = encoder.encode(character).length
+    if (bytes + characterBytes > 75) {
+      chunks.push(chunk)
+      chunk = ` ${character}`
+      bytes = 1 + characterBytes
+    } else {
+      chunk += character
+      bytes += characterBytes
+    }
   }
-  chunks.push(remaining)
+  chunks.push(chunk)
   return chunks.join('\r\n')
 }
 
+function stableEventUid(data: ScheduleData, group: ScheduleGroup, event: CalendarEvent) {
+  const identity = [data.source.term, data.source.grade, data.source.majorCode, group.groupId, event.start, event.end, event.title, event.teacher ?? '', event.room ?? ''].join('|')
+  return `${hashText(identity, 2166136261)}${hashText(identity, 2246822519)}@campus-timetable`
+}
+
+function hashText(value: string, seed: number) {
+  let hash = seed >>> 0
+  for (let index = 0; index < value.length; index += 1) hash = Math.imul(hash ^ value.charCodeAt(index), 16777619) >>> 0
+  return hash.toString(16).padStart(8, '0')
+}
+
 export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
+  return buildCalendarContent(data, group, mergeEvents(data, group))
+}
+
+export function buildCourseCalendarFile(data: ScheduleData, group: ScheduleGroup, event: ScheduleEvent) {
+  return buildCalendarContent(data, group, mergeEvents(data, { ...group, events: [event] }))
+}
+
+function buildCalendarContent(data: ScheduleData, group: ScheduleGroup, events: CalendarEvent[]) {
   const stamp = formatIcsUtcDate(new Date())
-  const events = mergeEvents(data, group)
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -106,11 +134,12 @@ export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
     'END:VTIMEZONE',
   ]
 
-  events.forEach((event, index) => {
+  events.forEach((event) => {
     lines.push(
       'BEGIN:VEVENT',
-      `UID:${data.source.term}-${data.source.grade}-${data.source.majorCode}-${group.groupId}-${event.start}-${index}@campus-timetable`,
+      `UID:${stableEventUid(data, group, event)}`,
       `DTSTAMP:${stamp}`,
+      'SEQUENCE:0',
       `DTSTART;TZID=${CALENDAR_TIMEZONE}:${event.start}`,
       `DTEND;TZID=${CALENDAR_TIMEZONE}:${event.end}`,
       `SUMMARY:${escapeIcsText(event.title)}`,
@@ -126,7 +155,16 @@ export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
 
 export function importCalendar(data: ScheduleData, group: ScheduleGroup) {
   const fileName = `${data.source.grade}${data.source.majorCode}-${group.groupId}.ics`
-  const blob = new Blob([buildCalendarFile(data, group)], { type: 'text/calendar;charset=utf-8' })
+  openCalendarFile(fileName, buildCalendarFile(data, group))
+}
+
+export function importCourseCalendar(data: ScheduleData, group: ScheduleGroup, event: ScheduleEvent) {
+  const title = event.title.replace(/[\\/:*?"<>|]/g, '-').slice(0, 40) || '课程'
+  openCalendarFile(`${title}-${event.date}.ics`, buildCourseCalendarFile(data, group, event))
+}
+
+function openCalendarFile(fileName: string, content: string) {
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url

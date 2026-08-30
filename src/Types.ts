@@ -6,6 +6,7 @@ export interface ScheduleEvent {
   title: string
   teacher: string | null
   room: string | null
+  source: 'administrative' | 'language'
 }
 
 export interface ScheduleNotice {
