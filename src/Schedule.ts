@@ -5,7 +5,7 @@ import type {
   ScheduleGroup,
   ScheduleNotice,
   SelectedLanguageClasses,
-} from './types'
+} from './Types'
 
 export const WEEKDAYS = [
   { value: 1, label: '周一', short: '一' },

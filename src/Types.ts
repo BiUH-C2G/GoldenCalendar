@@ -69,6 +69,8 @@ export interface Selection {
   germanClassNumber: string
 }
 
+export type ThemePreference = 'system' | 'light' | 'dark'
+
 export type ContractFileKind = 'administrative' | 'english' | 'englishCatchup' | 'german'
 
 export interface MajorContract {

@@ -1,93 +1,85 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import SetupDialog from '@/components/SetupDialog.vue'
-import { dataContract, getEnglishClassNumbers, getGermanSection, getGrade, getMajor } from '@/contract'
-import { loadAdministrativeSchedule, loadSelectedLanguages } from '@/data'
-import { importCalendar } from '@/calendar'
-import {
-  DEFAULT_SCHEDULE_LAYERS,
-  DEFAULT_SESSION_TIMES,
-  composeScheduleLayers,
-  formatDate,
-  getCurrentWeek,
-  getEvents,
-  getNoticeForWeek,
-  getTodayWeekday,
-  getVisibleWeekdays,
-  getWeekDates,
-  isHolidayDate,
-  isHolidayNotice,
-  isExamWeek,
-} from '@/schedule'
-import type { ScheduleLayers } from '@/schedule'
-import type { ScheduleData, ScheduleEvent, SelectedLanguageClasses, Selection } from '@/types'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { importCalendar } from '@/Calendar'
+import { dataContract, getEnglishClassNumbers, getGermanSection, getGrade, getMajor } from '@/Contract'
+import { loadAdministrativeSchedule, loadSelectedLanguages } from '@/Data'
+import { DEFAULT_SCHEDULE_LAYERS, composeScheduleLayers, getCurrentWeek, getVisibleWeekdays, getWeekDates, parseLocalDate } from '@/Schedule'
+import type { ScheduleLayers } from '@/Schedule'
+import type { ScheduleData, SelectedLanguageClasses, Selection, ThemePreference } from '@/Types'
+import BottomBar from '@/view/BottomBar.vue'
+import type { BottomBarItem } from '@/view/BottomBar.vue'
+import Dialog from '@/view/Dialog.vue'
+import TimeTable from '@/view/TimeTable.vue'
+import WeekFiddler from '@/view/WeekFiddler.vue'
+import About from '@/view/dialog-content/About.vue'
+import Settings from '@/view/dialog-content/Settings.vue'
 
-const props = withDefaults(defineProps<{
-  debug?: boolean
-}>(), {
-  debug: false,
-})
-
+const props = withDefaults(defineProps<{ debug?: boolean }>(), { debug: false })
 const STORAGE_KEY = 'campus-timetable-selection'
 const THEME_STORAGE_KEY = 'campus-timetable-theme'
-type ThemePreference = 'system' | 'light' | 'dark'
-
 const schedule = ref<ScheduleData | null>(null)
 const languages = ref<SelectedLanguageClasses | null>(null)
 const selection = ref<Selection | null>(readSelection())
-const setupOpen = ref(false)
 const loading = ref(true)
 const error = ref('')
 const currentWeek = ref(1)
-const pager = ref<HTMLElement | null>(null)
+const activeDialog = ref<'settings' | 'about' | null>(null)
 const themePreference = ref<ThemePreference>(readThemePreference())
 const systemPrefersDark = ref(false)
 const layers = ref<ScheduleLayers>({ ...DEFAULT_SCHEDULE_LAYERS })
+const toastMessage = ref('')
 let themeMediaQuery: MediaQueryList | null = null
+let toastTimer = 0
 let loadRequest = 0
 
-const source = computed(() => {
-  if (!selection.value) return null
-  return getMajor(selection.value.grade, selection.value.majorCode) ?? null
-})
-const group = computed(() => {
-  if (!schedule.value || !languages.value || !hasValidSelection()) return null
-  return composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value)
-})
-const weeks = computed(() => Array.from({ length: schedule.value?.calendar.weekCount ?? 0 }, (_, index) => index + 1))
+const source = computed(() => selection.value ? getMajor(selection.value.grade, selection.value.majorCode) ?? null : null)
+const group = computed(() => schedule.value && languages.value && hasValidSelection() ? composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value) : null)
 const ready = computed(() => Boolean(!loading.value && schedule.value && group.value && hasValidSelection()))
-const todayWeekday = getTodayWeekday()
-const isBeforeSemester = computed(() => {
-  if (!schedule.value?.calendar.startDate) return false
-  return new Date() < new Date(`${schedule.value.calendar.startDate}T00:00:00`)
+const weekCount = computed(() => schedule.value?.calendar.weekCount ?? 1)
+const summary = computed(() => selection.value ? `${selection.value.grade}级 · ${source.value?.name ?? selection.value.majorCode} · ${selection.value.groupId}班` : '尚未设置课程表')
+const settingsOpen = computed({ get: () => activeDialog.value === 'settings', set: (open) => activeDialog.value = open ? 'settings' : null })
+const aboutOpen = computed({ get: () => activeDialog.value === 'about', set: (open) => activeDialog.value = open ? 'about' : null })
+const isBeforeSemester = computed(() => Boolean(schedule.value?.calendar.startDate && new Date() < parseLocalDate(schedule.value.calendar.startDate)))
+const bottomItems = computed<BottomBarItem[]>(() => [
+  { id: 'settings', label: '设置', icon: 'settings', tone: 'warm' },
+  { id: 'export', label: '导出到手机', icon: 'export', tone: 'green', disabled: !ready.value },
+  { id: 'about', label: '关于', icon: 'about', tone: 'blue' }
+])
+const dateRange = computed(() => {
+  if (!schedule.value || !group.value) return '等待课程数据'
+  const dates = getWeekDates(schedule.value, currentWeek.value)
+  const days = getVisibleWeekdays(group.value, currentWeek.value)
+  const start = dates[(days[0]?.value ?? 1) - 1]
+  const end = dates[(days.at(-1)?.value ?? 5) - 1]
+  return start && end ? formatDateRange(start, end) : '日期待定'
 })
 
 onMounted(async () => {
   themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
   systemPrefersDark.value = themeMediaQuery.matches
   themeMediaQuery.addEventListener('change', handleSystemThemeChange)
-  if (hasValidSelection()) {
-    await loadSelectedSchedule()
-  } else {
+  applyTheme()
+  if (hasValidSelection()) await loadSelectedSchedule()
+  else {
     loading.value = false
-    setupOpen.value = true
+    activeDialog.value = 'settings'
   }
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   themeMediaQuery?.removeEventListener('change', handleSystemThemeChange)
+  window.clearTimeout(toastTimer)
 })
-
-watch([themePreference, systemPrefersDark], applyTheme, { immediate: true })
 
 watch(selection, async () => {
   if (!hasValidSelection()) {
     loading.value = false
-    setupOpen.value = true
+    activeDialog.value = 'settings'
     return
   }
   await loadSelectedSchedule()
 })
+watch([themePreference, systemPrefersDark], applyTheme)
 
 async function loadSelectedSchedule() {
   const value = selection.value
@@ -98,20 +90,15 @@ async function loadSelectedSchedule() {
   languages.value = null
   error.value = ''
   try {
-    const [nextSchedule, nextLanguages] = await Promise.all([
-      loadAdministrativeSchedule(value),
-      loadSelectedLanguages(value),
-    ])
+    const [nextSchedule, nextLanguages] = await Promise.all([loadAdministrativeSchedule(value), loadSelectedLanguages(value)])
     if (request !== loadRequest) return
     schedule.value = nextSchedule
     languages.value = nextLanguages
     currentWeek.value = getCurrentWeek(nextSchedule)
-    await nextTick()
-    scrollToWeek(currentWeek.value, 'auto')
   } catch (cause) {
     if (request !== loadRequest) return
     error.value = cause instanceof Error ? cause.message : '课程表加载失败'
-    setupOpen.value = true
+    activeDialog.value = 'settings'
   } finally {
     if (request === loadRequest) loading.value = false
   }
@@ -122,19 +109,13 @@ function hasValidSelection(value: Selection | null = selection.value) {
   const grade = getGrade(value.grade)
   const major = getMajor(value.grade, value.majorCode)
   if (!grade || !major?.groups.includes(value.groupId)) return false
-  const germanSection = getGermanSection(value.grade)
-  const germanLevel = germanSection?.levels.find((item) => item.level === value.germanLevel)
+  const germanLevel = getGermanSection(value.grade)?.levels.find((item) => item.level === value.germanLevel)
   if (!germanLevel?.classes.includes(value.germanClassNumber)) return false
   if (typeof value.englishCatchupEnabled !== 'boolean') return false
-  if (!grade.english) {
-    return value.englishClassNumber === null && value.englishCatchupEnabled === false && value.englishCatchupClassNumber === null
-  }
+  if (!grade.english) return value.englishClassNumber === null && !value.englishCatchupEnabled && value.englishCatchupClassNumber === null
   if (!value.englishClassNumber || !getEnglishClassNumbers(value.majorCode).includes(value.englishClassNumber)) return false
   if (!value.englishCatchupEnabled) return value.englishCatchupClassNumber === null
-  return Boolean(
-    value.englishCatchupClassNumber
-    && dataContract.languages.english.catchupClasses.includes(value.englishCatchupClassNumber),
-  )
+  return Boolean(value.englishCatchupClassNumber && dataContract.languages.english.catchupClasses.includes(value.englishCatchupClassNumber))
 }
 
 function readSelection(): Selection | null {
@@ -152,19 +133,18 @@ function readThemePreference(): ThemePreference {
 }
 
 function applyTheme() {
-  const isDark = themePreference.value === 'dark'
-    || (themePreference.value === 'system' && systemPrefersDark.value)
-  document.documentElement.classList.toggle('dark', isDark)
-  document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#020817' : '#f8fafc')
+  if (themePreference.value === 'system') document.documentElement.removeAttribute('data-theme')
+  else document.documentElement.dataset.theme = themePreference.value
+  const dark = themePreference.value === 'dark' || themePreference.value === 'system' && systemPrefersDark.value
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#171817' : '#f7f3ed')
 }
 
 function handleSystemThemeChange(event: MediaQueryListEvent) {
   systemPrefersDark.value = event.matches
 }
 
-function setTheme(value: unknown) {
-  if (value !== 'system' && value !== 'light' && value !== 'dark') return
+function setTheme(value: ThemePreference) {
   themePreference.value = value
   localStorage.setItem(THEME_STORAGE_KEY, value)
 }
@@ -173,13 +153,10 @@ function saveSelection(value: Selection) {
   loading.value = true
   schedule.value = null
   languages.value = null
-  selection.value = value
   localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
-  setupOpen.value = false
-}
-
-function openSettings() {
-  setupOpen.value = true
+  selection.value = value
+  activeDialog.value = null
+  showToast('设置已保存')
 }
 
 function resetDebugData() {
@@ -188,194 +165,53 @@ function resetDebugData() {
   window.location.reload()
 }
 
-function addToCalendar() {
+function changeWeek(offset: number) {
+  currentWeek.value = Math.min(weekCount.value, Math.max(1, currentWeek.value + offset))
+}
+
+function handleBottomAction(id: string) {
+  if (id === 'settings') activeDialog.value = 'settings'
+  else if (id === 'about') activeDialog.value = 'about'
+  else if (id === 'export') exportCalendar()
+}
+
+function exportCalendar() {
   if (!schedule.value || !group.value) return
   importCalendar(schedule.value, group.value)
+  showToast('已生成日历文件')
 }
 
-function scrollToWeek(week: number, behavior: ScrollBehavior = 'smooth') {
-  if (!pager.value) return
-  pager.value.scrollTo({ left: (week - 1) * pager.value.clientWidth, behavior })
+function showToast(message: string) {
+  toastMessage.value = message
+  window.clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => toastMessage.value = '', 1800)
 }
 
-function changeWeek(offset: number) {
-  const nextWeek = Math.min(weeks.value.length, Math.max(1, currentWeek.value + offset))
-  currentWeek.value = nextWeek
-  scrollToWeek(nextWeek)
+function formatDateRange(startValue: string, endValue: string) {
+  const start = parseLocalDate(startValue)
+  const end = parseLocalDate(endValue)
+  if (start.getMonth() === end.getMonth()) return `${start.getMonth() + 1}月${start.getDate()}日 — ${end.getDate()}日`
+  return `${start.getMonth() + 1}月${start.getDate()}日 — ${end.getMonth() + 1}月${end.getDate()}日`
 }
-
-function handlePagerScroll() {
-  if (!pager.value) return
-  const width = pager.value.clientWidth
-  if (!width) return
-  const nextWeek = Math.min(weeks.value.length, Math.max(1, Math.round(pager.value.scrollLeft / width) + 1))
-  if (nextWeek !== currentWeek.value) currentWeek.value = nextWeek
-}
-
-function eventsAt(groupEvents: ScheduleEvent[], weekday: number, slot: number) {
-  return groupEvents.filter((event) => event.weekday === weekday && event.slot === slot)
-}
-
-function isToday(week: number, weekday: number) {
-  return weekday === todayWeekday
-}
-
-function displayNotices(currentGroup: NonNullable<typeof group.value>, week: number) {
-  return getNoticeForWeek(currentGroup, week).filter((notice) => !isHolidayNotice(notice))
-}
-
-function isHolidayDay(week: number, weekday: number) {
-  if (!group.value || !schedule.value) return false
-  const date = getWeekDates(schedule.value, week)[weekday - 1]
-  return Boolean(date && isHolidayDate(group.value, date))
-}
-
-function returnToCurrentWeek() {
-  if (!schedule.value) return
-  const week = getCurrentWeek(schedule.value)
-  currentWeek.value = week
-  nextTick(() => scrollToWeek(week))
-}
-
-function sessionLabel(slot: number) {
-  return ['八点半', '十点十五', '十四点半', '十六点十五', '十八点三十五', '二十点十五'][slot - 1]
-    ?? schedule.value?.calendar.sessions[slot - 1]?.split('-')[0]
-    ?? DEFAULT_SESSION_TIMES[slot - 1]
-}
-
-function currentDateForWeek(week: number) {
-  const date = schedule.value ? getWeekDates(schedule.value, week)[0] : null
-  return date ? `${formatDate(date)} - ${formatDate(getWeekDates(schedule.value!, week)[6])}` : ''
-}
-
 </script>
 
 <template>
-  <main class="app-shell">
-    <header class="topbar">
-      <h1>课程表</h1>
-      <div class="topbar-actions">
-        <button
-          class="calendar-import-button"
-          type="button"
-          title="导入日历"
-          aria-label="导入日历"
-          :disabled="!ready"
-          @click="addToCalendar"
-        >
-          导入日历
-        </button>
-        <div class="context-label">
-        <span v-if="selection">{{ selection.grade }}级 · {{ source?.name ?? selection.majorCode }} · {{ selection.groupId }}班</span>
-        </div>
+  <div class="app">
+    <main class="page">
+      <div class="shell">
+        <WeekFiddler :summary="summary" :current-week="currentWeek" :week-count="weekCount" :date-range="dateRange" @previous="changeWeek(-1)" @next="changeWeek(1)" />
+        <div v-if="error" class="state-card error-state"><strong>课程表加载失败</strong><span>{{ error }}</span></div>
+        <div v-else-if="!ready" class="state-card"><span>{{ loading ? '正在整理课程表' : '请先完成课程表设置' }}</span></div>
+        <TimeTable v-else-if="schedule && group" :schedule="schedule" :group="group" :week="currentWeek" />
+        <div v-if="isBeforeSemester && ready" class="status-note">当前还未进入本学期，已显示第1周</div>
       </div>
-    </header>
+    </main>
+    <BottomBar :items="bottomItems" @select="handleBottomAction" />
+  </div>
 
-    <section v-if="props.debug" class="debug-layers" aria-label="课程表图层">
-      <strong>视图叠合</strong>
-      <label><input v-model="layers.administrative" type="checkbox">行政班</label>
-      <label><input v-model="layers.english" type="checkbox">英语</label>
-      <label><input v-model="layers.englishCatchup" type="checkbox">英语补课</label>
-      <label><input v-model="layers.german" type="checkbox">德语</label>
-      <a href="/">退出 Debug</a>
-    </section>
-
-    <section class="week-toolbar" aria-label="周次导航">
-      <button class="icon-button" type="button" title="上一周" aria-label="上一周" :disabled="currentWeek <= 1" @click="changeWeek(-1)">
-        上一周
-      </button>
-      <div class="week-heading" title="双击回到本周" @dblclick="returnToCurrentWeek">
-        <strong>第 {{ currentWeek }} 周</strong>
-        <span v-if="schedule">{{ currentDateForWeek(currentWeek) }}</span>
-      </div>
-      <button class="icon-button" type="button" title="下一周" aria-label="下一周" :disabled="currentWeek >= weeks.length" @click="changeWeek(1)">
-        下一周
-      </button>
-    </section>
-
-    <div v-if="error" class="state-panel error-state">
-      {{ error }}
-    </div>
-    <div v-else-if="!ready" class="state-panel">《加载中》</div>
-
-    <section v-else ref="pager" class="week-pager" aria-label="每周课程表" @scroll.passive="handlePagerScroll">
-      <article v-for="week in weeks" :key="week" class="week-page">
-        <div v-if="group && isExamWeek(group, week)" class="exam-week-state">
-          <span>考试周</span><span class="exam-week-mark">！</span>
-        </div>
-        <template v-else>
-          <div v-if="group && displayNotices(group, week).length" class="notice-strip">
-            <span v-for="notice in displayNotices(group, week)" :key="`${notice.label}-${notice.startDate}`">{{ notice.label }}</span>
-          </div>
-          <div v-if="group" class="schedule-grid" :style="{ '--day-count': getVisibleWeekdays(group, week).length }">
-          <div class="corner-cell" />
-          <div
-            v-for="(day, index) in getVisibleWeekdays(group, week)"
-            :key="day.value"
-            class="day-header"
-            :class="{ today: isToday(week, day.value), 'last-column': index === getVisibleWeekdays(group, week).length - 1 }"
-          >
-            <span class="day-name">{{ day.short }}</span>
-            <span class="day-date">{{ formatDate(getWeekDates(schedule!, week)[day.value - 1]) }}</span>
-          </div>
-
-          <template v-for="slot in 6" :key="slot">
-            <div class="time-cell" :class="{ 'last-row': slot === 6 }">
-              <span>{{ sessionLabel(slot) }}</span>
-            </div>
-            <div
-              v-for="(day, dayIndex) in getVisibleWeekdays(group, week)"
-              :key="`${week}-${day.value}-${slot}`"
-              class="course-cell"
-              :class="{
-                today: isToday(week, day.value),
-                'last-column': dayIndex === getVisibleWeekdays(group, week).length - 1,
-                'last-row': slot === 6,
-              }"
-            >
-              <template
-                v-for="(event, eventIndex) in eventsAt(getEvents(group, week), day.value, slot)"
-                :key="`${event.date}-${event.slot}-${event.title}-${eventIndex}`"
-              >
-                <div
-                  class="course-tile"
-                  :class="{ 'single-element': !event.teacher && !event.room }"
-                >
-                  <strong class="course-title">{{ event.title }}</strong>
-                  <span v-if="event.teacher" class="course-teacher">{{ event.teacher }}</span>
-                  <span v-if="event.room" class="course-room">{{ event.room }}</span>
-                </div>
-              </template>
-            </div>
-          </template>
-          <template v-for="(day, dayIndex) in getVisibleWeekdays(group, week)" :key="`holiday-${week}-${day.value}`">
-            <div
-              v-if="isHolidayDay(week, day.value)"
-              class="holiday-overlay"
-              :style="{ '--holiday-index': dayIndex }"
-              aria-label="假期"
-            >
-              <span>假</span>
-              <span>期</span>
-            </div>
-          </template>
-          </div>
-        </template>
-      </article>
-    </section>
-
-    <div v-if="isBeforeSemester && ready" class="status-note">当前还未进入本学期，已显示第 1 周</div>
-    <button class="settings-button" type="button" @click="openSettings">设置</button>
-
-    <SetupDialog
-      v-model:open="setupOpen"
-      :selection="selection"
-      :required="!hasValidSelection()"
-      :theme="themePreference"
-      :debug="props.debug"
-      @update:theme="setTheme"
-      @save="saveSelection"
-      @reset="resetDebugData"
-    />
-  </main>
+  <Dialog v-model:open="settingsOpen" title="设置" :closable="hasValidSelection()">
+    <Settings :open="settingsOpen" :selection="selection" :theme="themePreference" :debug="props.debug" :layers="layers" @save="saveSelection" @cancel="activeDialog = null" @reset="resetDebugData" @update:theme="setTheme" @update:layers="layers = $event" />
+  </Dialog>
+  <Dialog v-model:open="aboutOpen" title="科比在线课程表"><About /></Dialog>
+  <div class="toast" :class="{ show: toastMessage }" role="status" aria-live="polite">{{ toastMessage }}</div>
 </template>

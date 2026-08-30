@@ -1,4 +1,4 @@
-import type { ScheduleEvent, ScheduleGroup, ScheduleData } from './types'
+import type { ScheduleEvent, ScheduleGroup, ScheduleData } from './Types'
 
 interface CalendarEvent {
   start: string

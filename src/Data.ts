@@ -1,5 +1,5 @@
-import { coordinateFile, dataContract, getGrade } from './contract'
-import type { LanguageClass, ScheduleData, SelectedLanguageClasses, Selection } from './types'
+import { coordinateFile, dataContract, getGrade } from './Contract'
+import type { LanguageClass, ScheduleData, SelectedLanguageClasses, Selection } from './Types'
 
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/${dataContract.term}/`
 

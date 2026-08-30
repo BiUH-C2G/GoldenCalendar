@@ -5,7 +5,7 @@ import type {
   GermanContractSection,
   GradeContract,
   MajorContract,
-} from './types'
+} from './Types'
 
 export const dataContract = rawContract as DataContract
 
