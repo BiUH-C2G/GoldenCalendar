@@ -8,6 +8,8 @@ interface CalendarEvent {
   room: string | null
 }
 
+const CALENDAR_TIMEZONE = 'Asia/Shanghai'
+
 function escapeIcsText(value: string) {
   return value
     .replace(/\\/g, '\\\\')
@@ -20,6 +22,10 @@ function formatIcsDate(date: string, time: string) {
   const [year, month, day] = date.split('-')
   const [hours, minutes] = time.split(':')
   return `${year}${month}${day}T${hours.padStart(2, '0')}${minutes.padStart(2, '0')}00`
+}
+
+function formatIcsUtcDate(date: Date) {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
 }
 
 function sessionTimeRange(value: string) {
@@ -78,9 +84,7 @@ function foldIcsLine(line: string) {
 }
 
 export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
-  const now = new Date()
-  const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  const stamp = formatIcsDate(localDate, now.toTimeString().slice(0, 5))
+  const stamp = formatIcsUtcDate(new Date())
   const events = mergeEvents(data, group)
   const lines = [
     'BEGIN:VCALENDAR',
@@ -88,7 +92,18 @@ export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
     'PRODID:-//Campus Timetable//Calendar Import//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
+    `X-WR-TIMEZONE:${CALENDAR_TIMEZONE}`,
     `X-WR-CALNAME:${escapeIcsText(`${data.source.grade}级 ${data.source.major} ${group.groupId}班课表`)}`,
+    'BEGIN:VTIMEZONE',
+    `TZID:${CALENDAR_TIMEZONE}`,
+    `X-LIC-LOCATION:${CALENDAR_TIMEZONE}`,
+    'BEGIN:STANDARD',
+    'TZOFFSETFROM:+0800',
+    'TZOFFSETTO:+0800',
+    'TZNAME:CST',
+    'DTSTART:19700101T000000',
+    'END:STANDARD',
+    'END:VTIMEZONE',
   ]
 
   events.forEach((event, index) => {
@@ -96,8 +111,8 @@ export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
       'BEGIN:VEVENT',
       `UID:${data.source.term}-${data.source.grade}-${data.source.majorCode}-${group.groupId}-${event.start}-${index}@campus-timetable`,
       `DTSTAMP:${stamp}`,
-      `DTSTART:${event.start}`,
-      `DTEND:${event.end}`,
+      `DTSTART;TZID=${CALENDAR_TIMEZONE}:${event.start}`,
+      `DTEND;TZID=${CALENDAR_TIMEZONE}:${event.end}`,
       `SUMMARY:${escapeIcsText(event.title)}`,
       ...(event.room ? [`LOCATION:${escapeIcsText(event.room)}`] : []),
       ...(event.teacher ? [`DESCRIPTION:${escapeIcsText(`教师：${event.teacher}`)}`] : []),

@@ -19,7 +19,7 @@
 
        // 亦不得：（直接在等号后面折行）
        let mamba =
-       kobe.mambaOutCanSay("WHAT_OUT_MAN", 8, 24, Spirit.MAMBA)
+           kobe.mambaOutCanSay("WHAT_OUT_MAN", 8, 24, Spirit.MAMBA)
         ```
     3. 能**不要大括号包裹**就别包裹（如单语句的if/else/for等）：
         - ```js

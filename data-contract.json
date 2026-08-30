@@ -14,7 +14,7 @@
       "majors": [
         { "code": "BA", "name": "工商管理", "groups": ["1", "2", "3"] },
         { "code": "CS", "name": "计算机科学与技术", "groups": ["1", "2", "3"] },
-        { "code": "DT", "name": "数字技术", "groups": ["1", "2"] },
+        { "code": "DT", "name": "电子信息与技术", "groups": ["1", "2"] },
         { "code": "EE", "name": "电气工程", "groups": ["1", "2", "3"] },
         { "code": "IE", "name": "经济工程", "groups": ["1", "2"] },
         { "code": "LE", "name": "物流工程", "groups": ["1"] },
@@ -27,7 +27,7 @@
       "germanSection": "III",
       "majors": [
         { "code": "CS", "name": "计算机科学与技术", "groups": ["1", "2", "3"] },
-        { "code": "DT", "name": "数字技术", "groups": ["1", "2", "3"] },
+        { "code": "DT", "name": "电子信息与技术", "groups": ["1", "2", "3"] },
         { "code": "IE", "name": "经济工程", "groups": ["1", "2"] },
         { "code": "LE", "name": "物流工程", "groups": ["1", "2"] }
       ]
@@ -38,7 +38,7 @@
       "germanSection": "V",
       "majors": [
         { "code": "CS", "name": "计算机科学与技术", "groups": ["1", "2", "3"] },
-        { "code": "DT", "name": "数字技术", "groups": ["1", "2", "3"] }
+        { "code": "DT", "name": "电子信息与技术", "groups": ["1", "2", "3"] }
       ]
     }
   ],
