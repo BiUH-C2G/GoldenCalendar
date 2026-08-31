@@ -7,10 +7,11 @@ import {TextMarquee} from '@/TextMarquee'
 import type {ScheduleData, ScheduleEvent, ScheduleGroup} from '@/Types'
 
 type WeekdayGlowEdge = 'soft' | 'hard'
+type RenderedScheduleEvent = { event: ScheduleEvent, visual: ReturnType<typeof getCourseVisual> }
 
 const props = withDefaults(defineProps<{
-  schedule: ScheduleData, group: ScheduleGroup, week: number, todayDate: string, active: boolean, glowWeekday?: number, glowEdge?: WeekdayGlowEdge
-}>(), {glowWeekday: undefined, glowEdge: 'soft'})
+  schedule: ScheduleData, group: ScheduleGroup, week: number, todayDate: string, active: boolean, animateEntry?: boolean, glowWeekday?: number, glowEdge?: WeekdayGlowEdge
+}>(), {animateEntry: true, glowWeekday: undefined, glowEdge: 'soft'})
 
 const emit = defineEmits<{ 'select-course': [event: ScheduleEvent] }>()
 
@@ -21,12 +22,12 @@ const visibleDays = computed(() => getVisibleWeekdays(props.group, props.week))
 const weekEvents = computed(() => getEvents(props.group, props.week))
 const weekDates = computed(() => getWeekDates(props.schedule, props.week))
 const eventsByCell = computed(() => {
-  const cells = new Map<string, ScheduleEvent[]>()
+  const cells = new Map<string, RenderedScheduleEvent[]>()
 
   for (const event of weekEvents.value) {
     const key = `${event.weekday}-${event.slot}`
     const events = cells.get(key) ?? []
-    events.push(event)
+    events.push({event, visual: getCourseVisual(event.title)})
     cells.set(key, events)
   }
 
@@ -40,6 +41,7 @@ const notices = computed(() => getNoticeForWeek(props.group, props.week).filter(
 const sessionCount = computed(() => Math.max(6, props.schedule.calendar.sessions.length))
 const glowWeekday = computed(() => props.glowWeekday ?? getIsoWeekday(props.todayDate))
 const glowColumnIndex = computed(() => visibleDays.value.findIndex((day) => day.value === glowWeekday.value))
+const animateEntry = props.animateEntry
 let marquee: TextMarquee | null = null
 let backgroundResizeObserver: ResizeObserver | null = null
 
@@ -58,13 +60,11 @@ onBeforeUnmount(() => {
   backgroundResizeObserver?.disconnect()
 })
 
-watch(() => [props.week, props.group, props.active, props.todayDate, props.glowWeekday, props.glowEdge], async () => {
+watch(() => [props.week, props.group, props.todayDate, props.glowWeekday, props.glowEdge], async () => {
   await nextTick()
-
-  syncMarquee()
-
   refreshScheduleBackground()
 })
+watch(() => props.active, syncMarquee)
 
 function syncMarquee() {
   if (!props.active) {
@@ -77,20 +77,27 @@ function syncMarquee() {
   else marquee?.scheduleRefresh()
 }
 
-// 星期辉光先统一计算硬边界，再按需向外生成柔和过渡带
+// 星期辉光
 function refreshScheduleBackground() {
   const card = scheduleCard.value
   const glowHead = root.value?.querySelector<HTMLElement>('[data-glow-column]')
 
+  // 如果不满足则不发光喵
   if (!card || !glowHead || glowColumnIndex.value < 0) {
     scheduleBackground.value = 'var(--schedule-surface-rest)'
     return
   }
 
-  const cardRect = card.getBoundingClientRect()
-  const glowRect = glowHead.getBoundingClientRect()
-  const measuredStart = Math.max(0, glowRect.left - cardRect.left)
-  const measuredEnd = Math.min(cardRect.width, glowRect.right - cardRect.left)
+  const measuredStart = getLayoutLeft(glowHead, card)
+
+  if (measuredStart === null) {
+    scheduleBackground.value = 'var(--schedule-surface-rest)'
+    return
+  }
+
+  // 顶真元素始末
+  const cardWidth = card.clientWidth
+  const measuredEnd = Math.min(cardWidth, measuredStart + glowHead.offsetWidth)
   const dayWidth = Math.max(0, measuredEnd - measuredStart)
 
   if (!dayWidth) {
@@ -98,30 +105,48 @@ function refreshScheduleBackground() {
     return
   }
 
+  // 第一天/最后一天的带派处理
   const start = glowColumnIndex.value === 0 ? 0 : measuredStart
-  const end = glowColumnIndex.value === visibleDays.value.length - 1 ? cardRect.width : measuredEnd
-  const rest = 'var(--schedule-surface-rest)'
-  const soft = 'var(--schedule-surface-soft)'
-  const near = 'var(--schedule-surface-near)'
-  const today = 'var(--schedule-surface-today)'
-  const hardStops = [`${rest} 0`, `${rest} ${start}px`, `${today} ${start}px`, `${today} ${end}px`, `${rest} ${end}px`, `${rest} 100%`]
+  const end = glowColumnIndex.value === visibleDays.value.length - 1 ? cardWidth : measuredEnd
 
-  if (props.glowEdge === 'hard') {
-    scheduleBackground.value = `linear-gradient(90deg, ${hardStops.join(', ')})`
-    return
+  const rest = 'var(--schedule-surface-rest)'
+  const today = 'var(--schedule-surface-today)'
+
+  // 如果是硬就直接套弄
+  if (props.glowEdge === 'hard') scheduleBackground.value = `linear-gradient(90deg, ${rest} 0, ${rest} ${start}px, ${today} ${start}px, ${today} ${end}px, ${rest} ${end}px, ${rest} 100%)`
+  else {
+    // 进一步处理后辉光
+
+    const soft = 'var(--schedule-surface-soft)'
+    const near = 'var(--schedule-surface-near)'
+
+    // 最大72，否则42%列宽
+    const feather = Math.min(72, dayWidth * .42)
+    const stops: string[] = []
+
+    // 左侧辉光
+    if (start > 0) stops.push(`${rest} 0`, `${rest} ${Math.max(0, start - feather)}px`, `${soft} ${Math.max(0, start - feather * .58)}px`, `${near} ${Math.max(0, start - feather * .22)}px`, `${today} ${start}px`)
+    else stops.push(`${today} 0`)
+
+    stops.push(`${today} ${end}px`)
+
+    // 右侧辉光
+    if (end < cardWidth) stops.push(`${near} ${Math.min(cardWidth, end + feather * .22)}px`, `${soft} ${Math.min(cardWidth, end + feather * .58)}px`, `${rest} ${Math.min(cardWidth, end + feather)}px`, `${rest} 100%`)
+
+    scheduleBackground.value = `linear-gradient(90deg, ${stops.join(', ')})`
+  }
+}
+
+function getLayoutLeft(element: HTMLElement, ancestor: HTMLElement) {
+  let left = 0
+  let node: HTMLElement | null = element
+
+  while (node && node !== ancestor) {
+    left += node.offsetLeft
+    node = node.offsetParent as HTMLElement | null
   }
 
-  const feather = Math.min(72, dayWidth * .42)
-  const stops: string[] = []
-
-  if (start > 0) stops.push(`${rest} 0`, `${rest} ${Math.max(0, start - feather)}px`, `${soft} ${Math.max(0, start - feather * .58)}px`, `${near} ${Math.max(0, start - feather * .22)}px`, `${today} ${start}px`)
-  else stops.push(`${today} 0`)
-
-  stops.push(`${today} ${end}px`)
-
-  if (end < cardRect.width) stops.push(`${near} ${Math.min(cardRect.width, end + feather * .22)}px`, `${soft} ${Math.min(cardRect.width, end + feather * .58)}px`, `${rest} ${Math.min(cardRect.width, end + feather)}px`, `${rest} 100%`)
-
-  scheduleBackground.value = `linear-gradient(90deg, ${stops.join(', ')})`
+  return node === ancestor ? left : null
 }
 
 function eventsAt(weekday: number, slot: number) {
@@ -149,7 +174,7 @@ function eventLabel(event: ScheduleEvent) {
 <template>
   <section ref="root" class="timetable" aria-label="课程表">
     <div v-if="notices.length" class="notice-strip"><span v-for="notice in notices" :key="`${notice.label}-${notice.startDate}`">{{ notice.label }}</span></div>
-    <div ref="scheduleCard" class="schedule-card" :style="{ background: scheduleBackground }" @animationend="refreshScheduleBackground">
+    <div ref="scheduleCard" class="schedule-card" :class="{ 'schedule-card-entering': animateEntry }" :style="{ background: scheduleBackground }">
       <div v-if="isExamWeek(group, week)" class="exam-week-state"><span>考试周</span><strong>！</strong></div>
       <div v-else class="schedule-grid" :style="{ '--day-count': visibleDays.length, '--session-count': sessionCount }">
         <div class="corner"/>
@@ -157,11 +182,11 @@ function eventLabel(event: ScheduleEvent) {
         <template v-for="slot in sessionCount" :key="slot">
           <div class="time-cell" :style="{ gridColumn: 1, gridRow: slot + 1 }" :aria-label="schedule.calendar.sessions[slot - 1] ?? sessionLabel(slot)">{{ sessionLabel(slot) }}</div>
           <div v-for="(day, dayIndex) in visibleDays" :key="`${week}-${day.value}-${slot}`" class="course-cell" :style="{ gridColumn: dayIndex + 2, gridRow: slot + 1 }">
-            <article v-for="(event, index) in eventsAt(day.value, slot)" :key="`${event.date}-${event.slot}-${event.title}-${index}`" class="course-tile" :style="getCourseVisual(event.title).style" :data-washoku="getCourseVisual(event.title).color.name" :data-pattern="getCourseVisual(event.title).pattern.id" :data-pattern-name="getCourseVisual(event.title).pattern.name" :aria-label="eventLabel(event)" role="button" tabindex="0" @click="emit('select-course', event)" @keydown.enter.prevent="emit('select-course', event)" @keydown.space.prevent="emit('select-course', event)">
+            <article v-for="(entry, index) in eventsAt(day.value, slot)" :key="`${entry.event.date}-${entry.event.slot}-${entry.event.title}-${index}`" class="course-tile" :style="entry.visual.style" :data-washoku="entry.visual.color.name" :data-pattern="entry.visual.pattern.id" :data-pattern-name="entry.visual.pattern.name" :aria-label="eventLabel(entry.event)" role="button" tabindex="0" @click="emit('select-course', entry.event)" @keydown.enter.prevent="emit('select-course', entry.event)" @keydown.space.prevent="emit('select-course', entry.event)">
               <div class="course-content">
-                <div class="course-field-scroll" data-marquee data-max-lines="3" data-field-label="课名"><strong class="course-title course-field-track">{{ event.title }}</strong></div>
-                <div v-if="event.teacher" class="course-field-scroll course-teacher-scroll" data-marquee data-max-lines="2" data-field-label="教师名"><span class="course-teacher course-field-track">{{ event.teacher }}</span></div>
-                <span v-if="event.room" class="course-room">{{ event.room }}</span>
+                <div class="course-field-scroll" data-marquee data-max-lines="3" data-field-label="课名"><strong class="course-title course-field-track">{{ entry.event.title }}</strong></div>
+                <div v-if="entry.event.teacher" class="course-field-scroll course-teacher-scroll" data-marquee data-max-lines="2" data-field-label="教师名"><span class="course-teacher course-field-track">{{ entry.event.teacher }}</span></div>
+                <span v-if="entry.event.room" class="course-room">{{ entry.event.room }}</span>
               </div>
             </article>
           </div>
@@ -199,6 +224,7 @@ function eventLabel(event: ScheduleEvent) {
 }
 
 .schedule-card {
+  position: relative;
   min-height: 0;
   flex: 1 0 auto;
   display: flex;
@@ -206,9 +232,10 @@ function eventLabel(event: ScheduleEvent) {
   overflow: hidden;
   background: var(--schedule-surface-rest);
   box-shadow: var(--shadow-2);
+}
+
+.schedule-card-entering {
   animation: schedule-card-enter 300ms var(--ease-standard) both;
-  backdrop-filter: blur(18px) saturate(1.02);
-  -webkit-backdrop-filter: blur(18px) saturate(1.02);
 }
 
 @keyframes schedule-card-enter {

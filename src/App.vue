@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
+import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {importCalendar, importCourseCalendar} from '@/Calendar'
 import {getMajor} from '@/Contract'
 import {loadAdministrativeSchedule, loadSelectedLanguages} from '@/Data'
@@ -41,19 +41,22 @@ const debugGlowWeekday = ref(getIsoWeekday(todayDate.value))
 const debugGlowEdge = ref<'soft' | 'hard'>('soft')
 const toastMessage = ref('')
 const weekStage = ref<HTMLElement | null>(null)
-const pagerDragOffset = ref(0)
 const pagerAnimating = ref(false)
 const pagerDragging = ref(false)
 const pagerTargetWeek = ref<number | null>(null)
 let themeMediaQuery: MediaQueryList | null = null
 let toastTimer = 0
 let todayTimer = 0
-let pagerAnimationTimer = 0
 let pagerAnimationFrame = 0
+let pagerResizeObserver: ResizeObserver | null = null
+let pagerStageWidth = 1
+let pagerProgress = 0
+let pagerPendingOffset: number | null = null
+let pagerDirection: -1 | 0 | 1 = 0
 let pagerCommitWeek: number | null = null
 let pagerSuppressCourseUntil = 0
 let loadAbortController: AbortController | null = null
-let pagerPointer: { id: number, startX: number, startY: number, lastX: number, lastTime: number, velocityX: number, axis: 'pending' | 'horizontal' | 'vertical' } | null = null
+let pagerPointer: { id: number, startX: number, startY: number, lastX: number, lastTime: number, velocityX: number, distanceX: number, axis: 'pending' | 'horizontal' | 'vertical' } | null = null
 
 const source = computed(() => selection.value ? getMajor(selection.value.grade, selection.value.majorCode) ?? null : null)
 const group = computed(() => schedule.value && languages.value ? composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value) : null)
@@ -93,9 +96,9 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   themeMediaQuery?.removeEventListener('change', handleSystemThemeChange)
   loadAbortController?.abort()
+  pagerResizeObserver?.disconnect()
   window.clearInterval(todayTimer)
   window.clearTimeout(toastTimer)
-  window.clearTimeout(pagerAnimationTimer)
   cancelAnimationFrame(pagerAnimationFrame)
 })
 
@@ -109,6 +112,7 @@ watch(selection, async (value) => {
 })
 watch([themePreference, systemPrefersDark], applyTheme)
 watch(ready, resetPagerState)
+watch(weekStage, syncPagerStageObserver, {flush: 'post'})
 watch(debugGlowDays, (days) => {
   if (days.length && !days.some((day) => day.value === debugGlowWeekday.value)) debugGlowWeekday.value = days[0].value
 })
@@ -207,22 +211,24 @@ function returnToCurrentWeek() {
 function slideWeek(offset: number) {
   const targetWeek = currentWeek.value + offset
   if (targetWeek < 1 || targetWeek > weekCount.value || pagerAnimating.value || pagerDragging.value) return
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (prefersReducedMotion()) {
     currentWeek.value = targetWeek
     return
   }
+
+  cachePagerStageWidth()
   pagerTargetWeek.value = targetWeek
+  pagerDirection = offset < 0 ? -1 : 1
   pagerCommitWeek = targetWeek
   pagerAnimating.value = true
-  pagerDragOffset.value = 0
-  cancelAnimationFrame(pagerAnimationFrame)
-  pagerAnimationFrame = requestAnimationFrame(() => pagerDragOffset.value = -offset * pagerTravelDistance() * 1.08)
-  startPagerFallbackTimer()
+  applyPagerProgress(0)
+  pagerAnimationFrame = requestAnimationFrame(() => animatePagerProgress(1))
 }
 
 function handlePagerPointerDown(event: PointerEvent) {
   if (!event.isPrimary || event.button !== 0 || pagerAnimating.value) return
-  pagerPointer = {id: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastTime: performance.now(), velocityX: 0, axis: 'pending'}
+  cachePagerStageWidth()
+  pagerPointer = {id: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastTime: performance.now(), velocityX: 0, distanceX: 0, axis: 'pending'}
 }
 
 function handlePagerPointerMove(event: PointerEvent) {
@@ -249,11 +255,12 @@ function handlePagerPointerMove(event: PointerEvent) {
   const now = performance.now()
   const elapsed = Math.max(1, now - pointer.lastTime)
   pointer.velocityX = pointer.velocityX * .35 + (event.clientX - pointer.lastX) / elapsed * .65
+  pointer.distanceX = distanceX
   pointer.lastX = event.clientX
   pointer.lastTime = now
   preparePagerTarget(distanceX)
-  const atBoundary = distanceX > 0 && currentWeek.value <= 1 || distanceX < 0 && currentWeek.value >= weekCount.value
-  pagerDragOffset.value = atBoundary ? distanceX * .18 : distanceX
+  pagerPendingOffset = distanceX
+  schedulePagerPointerFrame()
 }
 
 function handlePagerPointerEnd(event: PointerEvent) {
@@ -261,22 +268,23 @@ function handlePagerPointerEnd(event: PointerEvent) {
   if (!pointer || pointer.id !== event.pointerId) return
   const horizontal = pointer.axis === 'horizontal'
   const velocityX = pointer.velocityX
+  const distance = pointer.distanceX
+  flushPagerPointerFrame()
   releasePagerPointer(event)
   if (!horizontal) return
   pagerSuppressCourseUntil = performance.now() + 320
-  const distance = pagerDragOffset.value
-  const threshold = (weekStage.value?.clientWidth ?? 0) * .22
-  let offset = Math.abs(distance) >= threshold ? distance > 0 ? -1 : 1 : 0
-  if (!offset && Math.abs(distance) > 8 && Math.abs(velocityX) >= .45) offset = velocityX > 0 ? -1 : 1
-  const targetWeek = currentWeek.value + offset
-  if (!offset || targetWeek < 1 || targetWeek > weekCount.value) animatePagerReturn()
-  else animatePagerCommit(targetWeek, offset)
+  const threshold = pagerStageWidth * .22
+  const targetWeek = pagerTargetWeek.value
+  const velocityCommits = pagerDirection !== 0 && Math.abs(distance) > 8 && velocityX * -pagerDirection >= .45
+  if (!targetWeek || Math.abs(distance) < threshold && !velocityCommits) animatePagerReturn()
+  else animatePagerCommit(targetWeek)
 }
 
 function handlePagerPointerCancel(event: PointerEvent) {
   const pointer = pagerPointer
   if (!pointer || pointer.id !== event.pointerId) return
   const horizontal = pointer.axis === 'horizontal'
+  flushPagerPointerFrame()
   releasePagerPointer(event)
   if (horizontal) pagerSuppressCourseUntil = performance.now() + 320
   if (horizontal) animatePagerReturn()
@@ -291,79 +299,166 @@ function releasePagerPointer(event: PointerEvent) {
 
 function preparePagerTarget(distance: number) {
   if (!distance) return
-  const targetWeek = currentWeek.value + (distance > 0 ? -1 : 1)
+  const requestedDirection = distance > 0 ? -1 : 1
+  if (!pagerDirection || requestedDirection !== pagerDirection && Math.abs(distance) >= 20) pagerDirection = requestedDirection
+  const targetWeek = currentWeek.value + pagerDirection
   pagerTargetWeek.value = targetWeek >= 1 && targetWeek <= weekCount.value ? targetWeek : null
 }
 
-function animatePagerCommit(targetWeek: number, offset: number) {
+function schedulePagerPointerFrame() {
+  if (pagerAnimationFrame) return
+  pagerAnimationFrame = requestAnimationFrame(() => {
+    pagerAnimationFrame = 0
+    renderPendingPagerOffset()
+  })
+}
+
+function flushPagerPointerFrame() {
+  if (pagerAnimationFrame) cancelAnimationFrame(pagerAnimationFrame)
+  pagerAnimationFrame = 0
+  renderPendingPagerOffset()
+}
+
+function renderPendingPagerOffset() {
+  const distance = pagerPendingOffset
+  pagerPendingOffset = null
+  if (distance === null || !pagerDirection) return
+  const requestedDirection = distance > 0 ? -1 : 1
+  const followsDirection = requestedDirection === pagerDirection
+  const visualDistance = followsDirection ? pagerTargetWeek.value ? distance : distance * .18 : 0
+  applyPagerProgress(Math.min(1, Math.abs(visualDistance) / pagerStageWidth))
+}
+
+function animatePagerCommit(targetWeek: number) {
+  if (prefersReducedMotion()) {
+    currentWeek.value = targetWeek
+    pagerTargetWeek.value = null
+    nextTick(resetPagerVisual)
+    return
+  }
+
   pagerTargetWeek.value = targetWeek
   pagerCommitWeek = targetWeek
   pagerAnimating.value = true
-  cancelAnimationFrame(pagerAnimationFrame)
-  pagerAnimationFrame = requestAnimationFrame(() => pagerDragOffset.value = -offset * pagerTravelDistance() * 1.08)
-  startPagerFallbackTimer()
+  animatePagerProgress(1)
 }
 
 function animatePagerReturn() {
-  if (!pagerDragOffset.value) {
+  if (!pagerProgress) {
     pagerTargetWeek.value = null
+    pagerDirection = 0
     return
   }
+
+  if (prefersReducedMotion()) {
+    pagerTargetWeek.value = null
+    resetPagerVisual()
+    return
+  }
+
   pagerCommitWeek = null
   pagerAnimating.value = true
-  cancelAnimationFrame(pagerAnimationFrame)
-  pagerAnimationFrame = requestAnimationFrame(() => pagerDragOffset.value = 0)
-  startPagerFallbackTimer()
+  animatePagerProgress(0)
 }
 
-function handlePagerTransitionEnd(event: TransitionEvent) {
-  const target = event.target as HTMLElement
-  if (event.propertyName === 'transform' && target.classList.contains('week-card-current')) finishPagerAnimation()
+function animatePagerProgress(targetProgress: number) {
+  cancelAnimationFrame(pagerAnimationFrame)
+  pagerAnimationFrame = 0
+  const startProgress = pagerProgress
+  const distance = Math.abs(targetProgress - startProgress)
+  const duration = 170 + distance * 130
+  const startTime = performance.now()
+
+  const step = (now: number) => {
+    const timeProgress = Math.min(1, (now - startTime) / duration)
+    const easedTime = smoothProgress(timeProgress)
+    applyPagerProgress(startProgress + (targetProgress - startProgress) * easedTime)
+
+    if (timeProgress < 1) pagerAnimationFrame = requestAnimationFrame(step)
+    else {
+      pagerAnimationFrame = 0
+      finishPagerAnimation()
+    }
+  }
+
+  pagerAnimationFrame = requestAnimationFrame(step)
 }
 
 function finishPagerAnimation() {
   if (!pagerAnimating.value) return
   const targetWeek = pagerCommitWeek
-  window.clearTimeout(pagerAnimationTimer)
   pagerAnimating.value = false
   pagerCommitWeek = null
-  pagerDragOffset.value = 0
-  if (targetWeek) currentWeek.value = targetWeek
-  pagerTargetWeek.value = null
-}
 
-function startPagerFallbackTimer() {
-  window.clearTimeout(pagerAnimationTimer)
-  pagerAnimationTimer = window.setTimeout(finishPagerAnimation, 360)
-}
-
-function pagerTravelDistance() {
-  return weekStage.value?.clientWidth ?? 0
+  if (targetWeek) {
+    currentWeek.value = targetWeek
+    pagerTargetWeek.value = null
+    nextTick(resetPagerVisual)
+  } else {
+    pagerTargetWeek.value = null
+    resetPagerVisual()
+  }
 }
 
 function resetPagerState() {
-  window.clearTimeout(pagerAnimationTimer)
   cancelAnimationFrame(pagerAnimationFrame)
+  pagerAnimationFrame = 0
   pagerPointer = null
   pagerCommitWeek = null
-  pagerDragOffset.value = 0
+  pagerPendingOffset = null
   pagerAnimating.value = false
   pagerDragging.value = false
   pagerTargetWeek.value = null
+  resetPagerVisual()
 }
 
 function pagerCardClass(week: number) {
   return week === currentWeek.value ? 'week-card-current' : 'week-card-target'
 }
 
-function pagerCardStyle(week: number) {
-  const width = Math.max(1, weekStage.value?.clientWidth ?? 1)
-  const progress = Math.min(1, Math.abs(pagerDragOffset.value) / width)
-  if (week === currentWeek.value) {
-    const rotation = Math.max(-2.2, Math.min(2.2, pagerDragOffset.value / width * 2.2))
-    return {opacity: 1 - progress * .12, transform: `translate3d(${pagerDragOffset.value}px, 0, 0) rotate(${rotation}deg)`}
-  }
-  return {opacity: .48 + progress * .52, transform: `scale(${.955 + progress * .045})`}
+function smoothProgress(progress: number) {
+  return progress * progress * (3 - 2 * progress)
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function applyPagerProgress(progress: number) {
+  const stage = weekStage.value
+  const normalized = Math.max(0, Math.min(1, progress))
+  const eased = smoothProgress(normalized)
+  const offset = pagerDirection ? -pagerDirection * pagerStageWidth * normalized : 0
+  const rotation = Math.max(-2.2, Math.min(2.2, offset / pagerStageWidth * 2.2))
+  pagerProgress = normalized
+  if (!stage) return
+  stage.style.setProperty('--pager-x', `${offset}px`)
+  stage.style.setProperty('--pager-rotation', `${rotation}deg`)
+  stage.style.setProperty('--pager-outgoing-opacity', `${1 - eased * .2}`)
+  stage.style.setProperty('--pager-incoming-opacity', `${pagerTargetWeek.value ? eased : 0}`)
+  stage.style.setProperty('--pager-target-scale', `${.955 + eased * .045}`)
+}
+
+function resetPagerVisual() {
+  pagerProgress = 0
+  pagerDirection = 0
+  applyPagerProgress(0)
+}
+
+function cachePagerStageWidth() {
+  if (weekStage.value) pagerStageWidth = Math.max(1, weekStage.value.clientWidth)
+}
+
+function syncPagerStageObserver(element: HTMLElement | null) {
+  pagerResizeObserver?.disconnect()
+  pagerResizeObserver = null
+  if (!element) return
+  cachePagerStageWidth()
+  pagerResizeObserver = new ResizeObserver(([entry]) => {
+    pagerStageWidth = Math.max(1, entry.contentRect.width)
+    if (pagerProgress) applyPagerProgress(pagerProgress)
+  })
+  pagerResizeObserver.observe(element)
 }
 
 function handleBottomAction(id: string) {
@@ -466,9 +561,9 @@ function showToast(message: string) {
 
           <div v-if="error" class="state-card error-state"><strong>课程表加载失败</strong><span>{{ error }}</span></div>
           <div v-else-if="!ready" class="state-card"><span>{{ loading ? '正在整理课程表' : '请先完成课程表设置' }}</span></div>
-          <div v-else-if="schedule && group" ref="weekStage" class="week-stage" :class="{ 'is-animating': pagerAnimating, 'is-dragging': pagerDragging }" aria-label="左右拖动切换周次" @pointerdown="handlePagerPointerDown" @pointermove="handlePagerPointerMove" @pointerup="handlePagerPointerEnd" @pointercancel="handlePagerPointerCancel" @transitionend="handlePagerTransitionEnd" @dragstart.prevent>
-            <div v-for="week in pagerCards" :key="week" class="week-card" :class="pagerCardClass(week)" :style="pagerCardStyle(week)" :aria-hidden="week !== currentWeek">
-              <TimeTable :schedule="schedule" :group="group" :week="week" :today-date="todayDate" :active="week === currentWeek" :glow-weekday="props.debug ? debugGlowWeekday : undefined" :glow-edge="props.debug ? debugGlowEdge : 'soft'" @select-course="openCourse"/>
+          <div v-else-if="schedule && group" ref="weekStage" class="week-stage" :class="{ 'is-animating': pagerAnimating, 'is-dragging': pagerDragging }" aria-label="左右拖动切换周次" @pointerdown="handlePagerPointerDown" @pointermove="handlePagerPointerMove" @pointerup="handlePagerPointerEnd" @pointercancel="handlePagerPointerCancel" @dragstart.prevent>
+            <div v-for="week in pagerCards" :key="week" class="week-card" :class="pagerCardClass(week)" :aria-hidden="week !== currentWeek">
+              <TimeTable :schedule="schedule" :group="group" :week="week" :today-date="todayDate" :active="week === currentWeek && !pagerDragging && !pagerAnimating" :animate-entry="week === currentWeek && pagerTargetWeek === null" :glow-weekday="props.debug ? debugGlowWeekday : undefined" :glow-edge="props.debug ? debugGlowEdge : 'soft'" @select-course="openCourse"/>
             </div>
           </div>
 
@@ -629,6 +724,11 @@ function showToast(message: string) {
 }
 
 .week-stage {
+  --pager-x: 0px;
+  --pager-rotation: 0deg;
+  --pager-outgoing-opacity: 1;
+  --pager-incoming-opacity: 0;
+  --pager-target-scale: .955;
   position: relative;
   width: 100%;
   min-width: 0;
@@ -636,8 +736,18 @@ function showToast(message: string) {
   display: flex;
   align-items: stretch;
   overflow: visible;
+  isolation: isolate;
   touch-action: pan-y pinch-zoom;
-  perspective: 1200px;
+}
+
+.week-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  backdrop-filter: blur(18px) saturate(1.02);
+  -webkit-backdrop-filter: blur(18px) saturate(1.02);
 }
 
 .week-card {
@@ -645,24 +755,27 @@ function showToast(message: string) {
   min-width: 0;
   min-height: 100%;
   transform-origin: center 72%;
-  will-change: transform;
 }
 
 .week-card-current {
   position: relative;
   flex: 1 0 auto;
   z-index: 2;
+  opacity: var(--pager-outgoing-opacity);
+  transform: translate3d(var(--pager-x), 0, 0) rotate(var(--pager-rotation));
 }
 
 .week-card-target {
   position: absolute;
   inset: 0;
   z-index: 1;
+  opacity: var(--pager-incoming-opacity);
   pointer-events: none;
+  transform: scale(var(--pager-target-scale));
 }
 
-.week-stage.is-animating .week-card {
-  transition: transform var(--duration-base) var(--ease-standard), opacity var(--duration-base) var(--ease-standard);
+.week-stage.is-animating .week-card, .week-stage.is-dragging .week-card {
+  will-change: transform, opacity;
 }
 
 .week-stage.is-dragging {
@@ -727,6 +840,10 @@ function showToast(message: string) {
   .debug-hud {
     margin-right: 0;
     margin-left: 0;
+  }
+
+  .week-stage::before {
+    border-radius: 24px;
   }
 }
 

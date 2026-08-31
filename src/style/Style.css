@@ -10,8 +10,8 @@
   --surface-subtle: #f1ebe4;
   --schedule-surface-rest: rgba(255, 255, 252, .18);
   --schedule-surface-soft: rgba(255, 255, 252, .32);
-  --schedule-surface-near: rgba(255, 255, 252, .60);
-  --schedule-surface-today: rgba(255, 255, 252, .96);
+  --schedule-surface-near: rgba(255, 255, 252, .52);
+  --schedule-surface-today: rgba(255, 255, 252, .60);
   --block-warm: #f1dddc;
   --block-green: #e5ead8;
   --block-blue: #dfe7ef;
@@ -58,8 +58,8 @@
   --surface-subtle: #292a27;
   --schedule-surface-rest: rgba(4, 4, 4, .18);
   --schedule-surface-soft: rgba(4, 4, 4, .34);
-  --schedule-surface-near: rgba(4, 4, 4, .64);
-  --schedule-surface-today: rgba(4, 4, 4, .96);
+  --schedule-surface-near: rgba(4, 4, 4, .52);
+  --schedule-surface-today: rgba(4, 4, 4, .60);
   --block-warm: #3d3031;
   --block-green: #30372c;
   --block-blue: #2c343c;
