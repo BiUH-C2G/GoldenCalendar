@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { getCourseVisual } from '@/CourseVisual'
 import type { ScheduleEvent } from '@/Types'
 
 const props = defineProps<{ event: ScheduleEvent, time: string }>()
 const emit = defineEmits<{ calendar: [], close: [], copy: [label: string, value: string] }>()
+const visual = computed(() => getCourseVisual(props.event.title))
 const rows = computed(() => [
   { label: '课程', value: props.event.title },
   { label: '教师', value: props.event.teacher ?? '未注明' },
   { label: '上课地点', value: props.event.room ?? '未注明' },
   { label: '时间', value: props.time },
-  { label: '本课程来自', copyLabel: '课表来源', value: props.event.source === 'language' ? '语言班课表' : '行政班课表' }
+  { label: '本课程来自', copyLabel: '课表来源', value: props.event.source === 'language' ? '语言班课表' : '行政班课表' },
+  { label: '颜色', value: visual.value.color.name },
+  { label: '纹理', value: visual.value.pattern.name }
 ])
 </script>
 
@@ -25,3 +29,58 @@ const rows = computed(() => [
     </div>
   </div>
 </template>
+
+<style scoped>
+.course-detail-list {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 0;
+}
+
+.course-detail-list > div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 14px;
+  padding: 13px 14px;
+  border-radius: 16px;
+  cursor: copy;
+  transition: filter var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+}
+
+.course-detail-row:nth-child(odd) {
+  background: var(--block-warm);
+}
+
+.course-detail-row:nth-child(even) {
+  background: var(--block-blue);
+}
+
+.course-detail-row:hover {
+  filter: brightness(1.025);
+}
+
+.course-detail-row:active {
+  transform: scale(.992);
+}
+
+.course-detail-list dt {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.course-detail-list dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.course-detail-actions {
+  margin-top: 18px;
+}
+</style>

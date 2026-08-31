@@ -65,3 +65,83 @@ function focusableElements() {
     </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  background: var(--scrim);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dialog-sheet {
+  width: min(calc(100% - 32px), 620px);
+  max-height: calc(100vh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: auto;
+  padding: 18px;
+  border-radius: 26px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface-solid) 97%, transparent);
+  box-shadow: var(--shadow-3);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.dialog-head h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dialog-close {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--block-warm);
+  cursor: pointer;
+}
+
+.dialog-enter-active, .dialog-leave-active {
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.dialog-enter-active .dialog-sheet, .dialog-leave-active .dialog-sheet {
+  transition: transform var(--duration-base) var(--ease-standard), opacity var(--duration-base) var(--ease-standard);
+}
+
+.dialog-enter-from, .dialog-leave-to {
+  opacity: 0;
+}
+
+.dialog-enter-from .dialog-sheet, .dialog-leave-to .dialog-sheet {
+  opacity: 0;
+  transform: scale(.975);
+}
+
+@media (max-width: 560px) {
+  .dialog-sheet {
+    width: min(calc(100% - 16px), 620px);
+    padding: 16px;
+    border-radius: 22px;
+  }
+}
+</style>

@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { importCalendar, importCourseCalendar } from '@/Calendar'
-import { getMajor } from '@/Contract'
-import { loadAdministrativeSchedule, loadSelectedLanguages } from '@/Data'
-import { formatChineseDateRange, getShanghaiToday } from '@/DateTime'
-import { DEFAULT_SCHEDULE_LAYERS, composeScheduleLayers, getCurrentWeek, getVisibleWeekdays, getWeekDates } from '@/Schedule'
-import type { ScheduleLayers } from '@/Schedule'
-import { draftFromSelection, readSelectionDraft, selectionFromDraft } from '@/SelectionState'
-import type { SelectionDraft } from '@/SelectionState'
-import { THEME_STORAGE_KEY, applyThemePreference, readThemePreference } from '@/Theme'
-import type { ScheduleData, ScheduleEvent, SelectedLanguageClasses, Selection, ThemePreference } from '@/Types'
+import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
+import {importCalendar, importCourseCalendar} from '@/Calendar'
+import {getMajor} from '@/Contract'
+import {loadAdministrativeSchedule, loadSelectedLanguages} from '@/Data'
+import {formatChineseDateRange, getIsoWeekday, getShanghaiToday} from '@/DateTime'
+import {DEFAULT_SCHEDULE_LAYERS, composeScheduleLayers, getCurrentWeek, getVisibleWeekdays, getWeekDates} from '@/Schedule'
+import type {ScheduleLayers} from '@/Schedule'
+import {draftFromSelection, readSelectionDraft, selectionFromDraft} from '@/SelectionState'
+import type {SelectionDraft} from '@/SelectionState'
+import {THEME_STORAGE_KEY, applyThemePreference, readThemePreference} from '@/Theme'
+import type {ScheduleData, ScheduleEvent, SelectedLanguageClasses, Selection, ThemePreference} from '@/Types'
 import BottomBar from '@/view/BottomBar.vue'
-import type { BottomBarItem } from '@/view/BottomBar.vue'
+import type {BottomBarItem} from '@/view/BottomBar.vue'
+import ClassSummary from '@/view/ClassSummary.vue'
 import Dialog from '@/view/Dialog.vue'
 import TimeTable from '@/view/TimeTable.vue'
 import WeekFiddler from '@/view/WeekFiddler.vue'
@@ -19,7 +20,7 @@ import About from '@/view/dialog-content/About.vue'
 import CourseDetail from '@/view/dialog-content/CourseDetail.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
 
-const props = withDefaults(defineProps<{ debug?: boolean }>(), { debug: false })
+const props = withDefaults(defineProps<{ debug?: boolean }>(), {debug: false})
 const STORAGE_KEY = 'campus-timetable-selection'
 const initialDraft = readStoredSelectionDraft()
 const initialSelection = initialDraft ? selectionFromDraft(initialDraft) : null
@@ -35,7 +36,9 @@ const activeDialog = ref<'settings' | 'about' | 'course' | null>(null)
 const selectedCourse = ref<ScheduleEvent | null>(null)
 const themePreference = ref<ThemePreference>(readThemePreference())
 const systemPrefersDark = ref(false)
-const layers = ref<ScheduleLayers>({ ...DEFAULT_SCHEDULE_LAYERS })
+const layers = ref<ScheduleLayers>({...DEFAULT_SCHEDULE_LAYERS})
+const debugGlowWeekday = ref(getIsoWeekday(todayDate.value))
+const debugGlowEdge = ref<'soft' | 'hard'>('soft')
 const toastMessage = ref('')
 const weekStage = ref<HTMLElement | null>(null)
 const pagerDragOffset = ref(0)
@@ -57,11 +60,12 @@ const group = computed(() => schedule.value && languages.value ? composeSchedule
 const ready = computed(() => Boolean(!loading.value && schedule.value && group.value && selection.value))
 const weekCount = computed(() => schedule.value?.calendar.weekCount ?? 1)
 const summary = computed(() => selection.value ? `${selection.value.grade}级 · ${source.value?.name ?? selection.value.majorCode} · ${selection.value.groupId}班` : '尚未设置课程表')
-const settingsOpen = computed({ get: () => activeDialog.value === 'settings', set: (open) => activeDialog.value = open ? 'settings' : null })
-const aboutOpen = computed({ get: () => activeDialog.value === 'about', set: (open) => activeDialog.value = open ? 'about' : null })
-const courseOpen = computed({ get: () => activeDialog.value === 'course', set: (open) => activeDialog.value = open ? 'course' : null })
-const bottomItems = computed<BottomBarItem[]>(() => [{ id: 'settings', label: '设置', icon: 'settings', tone: 'warm' }, { id: 'export', label: '导出到手机', icon: 'export', tone: 'green', disabled: !ready.value }, { id: 'about', label: '关于', icon: 'about', tone: 'blue' }])
+const settingsOpen = computed({get: () => activeDialog.value === 'settings', set: (open) => activeDialog.value = open ? 'settings' : null})
+const aboutOpen = computed({get: () => activeDialog.value === 'about', set: (open) => activeDialog.value = open ? 'about' : null})
+const courseOpen = computed({get: () => activeDialog.value === 'course', set: (open) => activeDialog.value = open ? 'course' : null})
+const bottomItems = computed<BottomBarItem[]>(() => [{id: 'settings', label: '设置', icon: 'settings', tone: 'warm'}, {id: 'export', label: '导出到手机', icon: 'export', tone: 'green', disabled: !ready.value}, {id: 'about', label: '关于', icon: 'about', tone: 'blue'}])
 const pagerCards = computed(() => pagerTargetWeek.value && pagerTargetWeek.value !== currentWeek.value ? [pagerTargetWeek.value, currentWeek.value] : [currentWeek.value])
+const debugGlowDays = computed(() => group.value ? getVisibleWeekdays(group.value, currentWeek.value) : [])
 const dateRange = computed(() => {
   if (!schedule.value || !group.value) return '等待课程数据'
   const dates = getWeekDates(schedule.value, currentWeek.value)
@@ -105,6 +109,9 @@ watch(selection, async (value) => {
 })
 watch([themePreference, systemPrefersDark], applyTheme)
 watch(ready, resetPagerState)
+watch(debugGlowDays, (days) => {
+  if (days.length && !days.some((day) => day.value === debugGlowWeekday.value)) debugGlowWeekday.value = days[0].value
+})
 
 async function loadSelectedSchedule() {
   const value = selection.value
@@ -146,7 +153,7 @@ function readStoredSelectionDraft(): SelectionDraft | null {
 }
 
 function writeStoredSelection(value: Selection) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, selection: value }))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({version: 1, selection: value}))
 }
 
 function applyTheme() {
@@ -176,6 +183,10 @@ function resetDebugData() {
   localStorage.removeItem(STORAGE_KEY)
   localStorage.removeItem(THEME_STORAGE_KEY)
   window.location.reload()
+}
+
+function setDebugLayer(key: keyof ScheduleLayers, value: boolean) {
+  layers.value = {...layers.value, [key]: value}
 }
 
 function refreshToday() {
@@ -211,7 +222,7 @@ function slideWeek(offset: number) {
 
 function handlePagerPointerDown(event: PointerEvent) {
   if (!event.isPrimary || event.button !== 0 || pagerAnimating.value) return
-  pagerPointer = { id: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastTime: performance.now(), velocityX: 0, axis: 'pending' }
+  pagerPointer = {id: event.pointerId, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastTime: performance.now(), velocityX: 0, axis: 'pending'}
 }
 
 function handlePagerPointerMove(event: PointerEvent) {
@@ -350,9 +361,9 @@ function pagerCardStyle(week: number) {
   const progress = Math.min(1, Math.abs(pagerDragOffset.value) / width)
   if (week === currentWeek.value) {
     const rotation = Math.max(-2.2, Math.min(2.2, pagerDragOffset.value / width * 2.2))
-    return { opacity: 1 - progress * .12, transform: `translate3d(${pagerDragOffset.value}px, 0, 0) rotate(${rotation}deg)` }
+    return {opacity: 1 - progress * .12, transform: `translate3d(${pagerDragOffset.value}px, 0, 0) rotate(${rotation}deg)`}
   }
-  return { opacity: .48 + progress * .52, transform: `scale(${.955 + progress * .045})` }
+  return {opacity: .48 + progress * .52, transform: `scale(${.955 + progress * .045})`}
 }
 
 function handleBottomAction(id: string) {
@@ -412,22 +423,316 @@ function showToast(message: string) {
     <div class="app">
       <main class="page">
         <div class="shell">
-          <WeekFiddler :summary="summary" :current-week="currentWeek" :week-count="weekCount" :date-range="dateRange" @previous="slideWeek(-1)" @next="slideWeek(1)" @current="returnToCurrentWeek" />
+          <section v-if="props.debug" class="debug-hud" aria-label="调试控制">
+            <article class="debug-hud-card" aria-label="星期辉光调试">
+              <strong class="debug-hud-title">星期辉光调试</strong>
+              <div class="debug-hud-row">
+                <span class="debug-hud-label">星期</span>
+
+                <div class="debug-hud-choice" role="group" aria-label="辉光星期">
+                  <button v-for="day in debugGlowDays" :key="day.value" type="button" :aria-pressed="debugGlowWeekday === day.value" @click="debugGlowWeekday = day.value">{{ day.label }}</button>
+                </div>
+              </div>
+
+              <div class="debug-hud-row">
+                <span class="debug-hud-label">边缘</span>
+                <div class="debug-hud-choice" role="group" aria-label="辉光边缘">
+                  <button type="button" :aria-pressed="debugGlowEdge === 'soft'" @click="debugGlowEdge = 'soft'">柔和边缘</button>
+                  <button type="button" :aria-pressed="debugGlowEdge === 'hard'" @click="debugGlowEdge = 'hard'">硬边缘</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="debug-hud-card" aria-label="调试图层">
+              <strong class="debug-hud-title">调试图层</strong>
+              <div class="layer-choice">
+                <label><input type="checkbox" :checked="layers.administrative" @change="setDebugLayer('administrative', ($event.target as HTMLInputElement).checked)">行政班</label>
+                <label><input type="checkbox" :checked="layers.english" @change="setDebugLayer('english', ($event.target as HTMLInputElement).checked)">英语</label>
+                <label><input type="checkbox" :checked="layers.englishCatchup" @change="setDebugLayer('englishCatchup', ($event.target as HTMLInputElement).checked)">英语补课</label>
+                <label><input type="checkbox" :checked="layers.german" @change="setDebugLayer('german', ($event.target as HTMLInputElement).checked)">德语</label>
+              </div>
+            </article>
+
+            <article class="debug-hud-card" aria-label="信息清理">
+              <strong class="debug-hud-title">信息清理</strong>
+              <p class="debug-hud-description">清除本机保存的课程表选择与外观设置</p>
+              <button class="danger-button" type="button" @click="resetDebugData">清空数据并刷新</button>
+            </article>
+          </section>
+
+          <ClassSummary class="class-summary-top" :summary="summary"/>
+
+          <WeekFiddler :current-week="currentWeek" :week-count="weekCount" :date-range="dateRange" @previous="slideWeek(-1)" @next="slideWeek(1)" @current="returnToCurrentWeek"/>
+
           <div v-if="error" class="state-card error-state"><strong>课程表加载失败</strong><span>{{ error }}</span></div>
           <div v-else-if="!ready" class="state-card"><span>{{ loading ? '正在整理课程表' : '请先完成课程表设置' }}</span></div>
           <div v-else-if="schedule && group" ref="weekStage" class="week-stage" :class="{ 'is-animating': pagerAnimating, 'is-dragging': pagerDragging }" aria-label="左右拖动切换周次" @pointerdown="handlePagerPointerDown" @pointermove="handlePagerPointerMove" @pointerup="handlePagerPointerEnd" @pointercancel="handlePagerPointerCancel" @transitionend="handlePagerTransitionEnd" @dragstart.prevent>
-            <div v-for="week in pagerCards" :key="week" class="week-card" :class="pagerCardClass(week)" :style="pagerCardStyle(week)" :aria-hidden="week !== currentWeek"><TimeTable :schedule="schedule" :group="group" :week="week" :today-date="todayDate" :active="week === currentWeek" @select-course="openCourse" /></div>
+            <div v-for="week in pagerCards" :key="week" class="week-card" :class="pagerCardClass(week)" :style="pagerCardStyle(week)" :aria-hidden="week !== currentWeek">
+              <TimeTable :schedule="schedule" :group="group" :week="week" :today-date="todayDate" :active="week === currentWeek" :glow-weekday="props.debug ? debugGlowWeekday : undefined" :glow-edge="props.debug ? debugGlowEdge : 'soft'" @select-course="openCourse"/>
+            </div>
           </div>
+
+          <ClassSummary class="class-summary-bottom" :summary="summary"/>
         </div>
       </main>
     </div>
-    <BottomBar :items="bottomItems" @select="handleBottomAction" />
+    <BottomBar :items="bottomItems" @select="handleBottomAction"/>
   </div>
 
   <Dialog v-model:open="settingsOpen" title="设置" :closable="Boolean(selection)">
-    <Settings :open="settingsOpen" :initial-draft="selectionDraft" :selection="selection" :theme="themePreference" :debug="props.debug" :layers="layers" @save="saveSelection" @cancel="activeDialog = null" @reset="resetDebugData" @update:theme="setTheme" @update:layers="layers = $event" />
+    <Settings :open="settingsOpen" :initial-draft="selectionDraft" :selection="selection" :theme="themePreference" @save="saveSelection" @cancel="activeDialog = null" @update:theme="setTheme"/>
   </Dialog>
-  <Dialog v-model:open="aboutOpen" title="科比在线课程表"><About /></Dialog>
-  <Dialog v-model:open="courseOpen" title="课程详情"><CourseDetail v-if="selectedCourse && schedule" :event="selectedCourse" :time="schedule.calendar.sessions[selectedCourse.slot - 1] ?? '时间未注明'" @calendar="exportSelectedCourse" @close="activeDialog = null" @copy="copyCourseDetail" /></Dialog>
+
+  <Dialog v-model:open="aboutOpen" title="科比在线课程表">
+    <About/>
+  </Dialog>
+
+  <Dialog v-model:open="courseOpen" title="课程详情">
+    <CourseDetail v-if="selectedCourse && schedule" :event="selectedCourse" :time="schedule.calendar.sessions[selectedCourse.slot - 1] ?? '时间未注明'" @calendar="exportSelectedCourse" @close="activeDialog = null" @copy="copyCourseDetail"/>
+  </Dialog>
+
   <div class="toast" :class="{ show: toastMessage }" role="status" aria-live="polite">{{ toastMessage }}</div>
 </template>
+
+<style scoped>
+.application-layer, .app {
+  width: 100vw;
+  max-width: 100vw;
+  min-width: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.page {
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: 14px 0 calc(32px + var(--bottom-bar-h) + env(safe-area-inset-bottom));
+}
+
+.shell {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 auto;
+}
+
+.debug-hud {
+  display: grid;
+  gap: 12px;
+  margin: 0 12px 12px;
+}
+
+.debug-hud-card {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
+.debug-hud-title {
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 15px;
+}
+
+.debug-hud-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.debug-hud-label {
+  width: 34px;
+  flex: 0 0 34px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.debug-hud-choice {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.debug-hud-choice button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--surface-subtle);
+  cursor: pointer;
+}
+
+.debug-hud-choice button[aria-pressed="true"] {
+  color: var(--fiddler-fg);
+  background: var(--fiddler-bg);
+  box-shadow: var(--shadow-1);
+}
+
+.debug-hud-description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.layer-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layer-choice label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface-subtle);
+  font-size: 12px;
+}
+
+.layer-choice input {
+  accent-color: var(--accent);
+}
+
+.danger-button {
+  justify-self: start;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 13px;
+  color: var(--danger);
+  background: var(--block-warm);
+  cursor: pointer;
+}
+
+.week-stage {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  flex: 1 0 auto;
+  display: flex;
+  align-items: stretch;
+  overflow: visible;
+  touch-action: pan-y pinch-zoom;
+  perspective: 1200px;
+}
+
+.week-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  transform-origin: center 72%;
+  will-change: transform;
+}
+
+.week-card-current {
+  position: relative;
+  flex: 1 0 auto;
+  z-index: 2;
+}
+
+.week-card-target {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.week-stage.is-animating .week-card {
+  transition: transform var(--duration-base) var(--ease-standard), opacity var(--duration-base) var(--ease-standard);
+}
+
+.week-stage.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.state-card {
+  min-height: 360px;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 12px;
+  border-radius: 22px;
+  color: var(--text-muted);
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+}
+
+.state-card strong {
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.error-state span {
+  color: var(--danger);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom) + 16px);
+  z-index: 100;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: var(--toast-text);
+  background: var(--toast-bg);
+  box-shadow: var(--shadow-2);
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(8px);
+  transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (min-width: 700px) {
+  .page {
+    padding: 22px 22px calc(32px + var(--bottom-bar-h) + env(safe-area-inset-bottom));
+    scrollbar-gutter: stable;
+  }
+
+  .debug-hud {
+    margin-right: 0;
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .debug-hud {
+    grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr) minmax(220px, 1fr);
+  }
+}
+</style>

@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { getCourseVisual } from '@/CourseVisual'
-import { getIsoWeekday } from '@/DateTime'
-import { formatDate, getEvents, getNoticeForWeek, getVisibleWeekdays, getWeekDates, isExamWeek, isHolidayDate, isHolidayNotice } from '@/Schedule'
-import { TextMarquee } from '@/TextMarquee'
-import type { ScheduleData, ScheduleEvent, ScheduleGroup } from '@/Types'
+import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
+import {getCourseVisual} from '@/CourseVisual'
+import {getIsoWeekday} from '@/DateTime'
+import {formatDate, getEvents, getNoticeForWeek, getVisibleWeekdays, getWeekDates, isExamWeek, isHolidayDate, isHolidayNotice} from '@/Schedule'
+import {TextMarquee} from '@/TextMarquee'
+import type {ScheduleData, ScheduleEvent, ScheduleGroup} from '@/Types'
 
-const props = defineProps<{ schedule: ScheduleData, group: ScheduleGroup, week: number, todayDate: string, active: boolean }>()
+type WeekdayGlowEdge = 'soft' | 'hard'
+
+const props = withDefaults(defineProps<{
+  schedule: ScheduleData, group: ScheduleGroup, week: number, todayDate: string, active: boolean, glowWeekday?: number, glowEdge?: WeekdayGlowEdge
+}>(), {glowWeekday: undefined, glowEdge: 'soft'})
+
 const emit = defineEmits<{ 'select-course': [event: ScheduleEvent] }>()
+
 const root = ref<HTMLElement | null>(null)
 const scheduleCard = ref<HTMLElement | null>(null)
 const scheduleBackground = ref('var(--schedule-surface-rest)')
@@ -32,7 +38,8 @@ const holidayWeekdays = computed(() => new Set<number>(visibleDays.value.filter(
 }).map((day) => day.value)))
 const notices = computed(() => getNoticeForWeek(props.group, props.week).filter((notice) => !isHolidayNotice(notice) && notice.label !== '考试周'))
 const sessionCount = computed(() => Math.max(6, props.schedule.calendar.sessions.length))
-const todayColumnIndex = computed(() => visibleDays.value.findIndex((day) => day.value === getIsoWeekday(props.todayDate)))
+const glowWeekday = computed(() => props.glowWeekday ?? getIsoWeekday(props.todayDate))
+const glowColumnIndex = computed(() => visibleDays.value.findIndex((day) => day.value === glowWeekday.value))
 let marquee: TextMarquee | null = null
 let backgroundResizeObserver: ResizeObserver | null = null
 
@@ -51,7 +58,7 @@ onBeforeUnmount(() => {
   backgroundResizeObserver?.disconnect()
 })
 
-watch(() => [props.week, props.group, props.active, props.todayDate], async () => {
+watch(() => [props.week, props.group, props.active, props.todayDate, props.glowWeekday, props.glowEdge], async () => {
   await nextTick()
 
   syncMarquee()
@@ -70,45 +77,49 @@ function syncMarquee() {
   else marquee?.scheduleRefresh()
 }
 
+// 星期辉光先统一计算硬边界，再按需向外生成柔和过渡带
 function refreshScheduleBackground() {
   const card = scheduleCard.value
-  const todayHead = root.value?.querySelector<HTMLElement>('[data-today-column]')
+  const glowHead = root.value?.querySelector<HTMLElement>('[data-glow-column]')
 
-  if (!card || !todayHead || todayColumnIndex.value < 0) {
+  if (!card || !glowHead || glowColumnIndex.value < 0) {
     scheduleBackground.value = 'var(--schedule-surface-rest)'
     return
   }
 
   const cardRect = card.getBoundingClientRect()
-  const todayRect = todayHead.getBoundingClientRect()
-  const start = Math.max(0, todayRect.left - cardRect.left)
-  const end = Math.min(cardRect.width, todayRect.right - cardRect.left)
-  const dayWidth = Math.max(0, end - start)
+  const glowRect = glowHead.getBoundingClientRect()
+  const measuredStart = Math.max(0, glowRect.left - cardRect.left)
+  const measuredEnd = Math.min(cardRect.width, glowRect.right - cardRect.left)
+  const dayWidth = Math.max(0, measuredEnd - measuredStart)
 
   if (!dayWidth) {
     scheduleBackground.value = 'var(--schedule-surface-rest)'
     return
   }
 
-  const feather = Math.min(72, dayWidth * .42)
-  const inner = Math.min(18, dayWidth * .08)
-  const leftOuter = Math.max(0, start - feather)
-  const leftSoft = Math.max(0, start - feather * .58)
-  const leftNear = Math.max(0, start - feather * .22)
-  const leftSolid = Math.min(end, start + inner)
-  const rightSolid = Math.max(start, end - inner)
-  const rightNear = Math.min(cardRect.width, end + feather * .22)
-  const rightSoft = Math.min(cardRect.width, end + feather * .58)
-  const rightOuter = Math.min(cardRect.width, end + feather)
+  const start = glowColumnIndex.value === 0 ? 0 : measuredStart
+  const end = glowColumnIndex.value === visibleDays.value.length - 1 ? cardRect.width : measuredEnd
   const rest = 'var(--schedule-surface-rest)'
   const soft = 'var(--schedule-surface-soft)'
   const near = 'var(--schedule-surface-near)'
   const today = 'var(--schedule-surface-today)'
-  let stops: string[]
+  const hardStops = [`${rest} 0`, `${rest} ${start}px`, `${today} ${start}px`, `${today} ${end}px`, `${rest} ${end}px`, `${rest} 100%`]
 
-  if (todayColumnIndex.value === 0) stops = [`${today} 0`, `${today} ${rightSolid}px`, `${near} ${rightNear}px`, `${soft} ${rightSoft}px`, `${rest} ${rightOuter}px`, `${rest} 100%`]
-  else if (todayColumnIndex.value === visibleDays.value.length - 1) stops = [`${rest} 0`, `${rest} ${leftOuter}px`, `${soft} ${leftSoft}px`, `${near} ${leftNear}px`, `${today} ${leftSolid}px`, `${today} 100%`]
-  else stops = [`${rest} 0`, `${rest} ${leftOuter}px`, `${soft} ${leftSoft}px`, `${near} ${leftNear}px`, `${today} ${leftSolid}px`, `${today} ${rightSolid}px`, `${near} ${rightNear}px`, `${soft} ${rightSoft}px`, `${rest} ${rightOuter}px`, `${rest} 100%`]
+  if (props.glowEdge === 'hard') {
+    scheduleBackground.value = `linear-gradient(90deg, ${hardStops.join(', ')})`
+    return
+  }
+
+  const feather = Math.min(72, dayWidth * .42)
+  const stops: string[] = []
+
+  if (start > 0) stops.push(`${rest} 0`, `${rest} ${Math.max(0, start - feather)}px`, `${soft} ${Math.max(0, start - feather * .58)}px`, `${near} ${Math.max(0, start - feather * .22)}px`, `${today} ${start}px`)
+  else stops.push(`${today} 0`)
+
+  stops.push(`${today} ${end}px`)
+
+  if (end < cardRect.width) stops.push(`${near} ${Math.min(cardRect.width, end + feather * .22)}px`, `${soft} ${Math.min(cardRect.width, end + feather * .58)}px`, `${rest} ${Math.min(cardRect.width, end + feather)}px`, `${rest} 100%`)
 
   scheduleBackground.value = `linear-gradient(90deg, ${stops.join(', ')})`
 }
@@ -141,12 +152,12 @@ function eventLabel(event: ScheduleEvent) {
     <div ref="scheduleCard" class="schedule-card" :style="{ background: scheduleBackground }" @animationend="refreshScheduleBackground">
       <div v-if="isExamWeek(group, week)" class="exam-week-state"><span>考试周</span><strong>！</strong></div>
       <div v-else class="schedule-grid" :style="{ '--day-count': visibleDays.length, '--session-count': sessionCount }">
-        <div class="corner" />
-        <div v-for="(day, dayIndex) in visibleDays" :key="day.value" class="day-head" :style="{ gridColumn: dayIndex + 2, gridRow: 1 }" :data-today-column="dayIndex === todayColumnIndex ? '' : undefined"><span>{{ visibleDays.length > 5 ? day.short : day.label }}</span><small>{{ dateLabel(day.value) }}</small></div>
+        <div class="corner"/>
+        <div v-for="(day, dayIndex) in visibleDays" :key="day.value" class="day-head" :style="{ gridColumn: dayIndex + 2, gridRow: 1 }" :data-glow-column="dayIndex === glowColumnIndex ? '' : undefined"><span>{{ visibleDays.length > 5 ? day.short : day.label }}</span><small>{{ dateLabel(day.value) }}</small></div>
         <template v-for="slot in sessionCount" :key="slot">
           <div class="time-cell" :style="{ gridColumn: 1, gridRow: slot + 1 }" :aria-label="schedule.calendar.sessions[slot - 1] ?? sessionLabel(slot)">{{ sessionLabel(slot) }}</div>
           <div v-for="(day, dayIndex) in visibleDays" :key="`${week}-${day.value}-${slot}`" class="course-cell" :style="{ gridColumn: dayIndex + 2, gridRow: slot + 1 }">
-            <article v-for="(event, index) in eventsAt(day.value, slot)" :key="`${event.date}-${event.slot}-${event.title}-${index}`" class="course-tile" :style="getCourseVisual(event.title)" :aria-label="eventLabel(event)" role="button" tabindex="0" @click="emit('select-course', event)" @keydown.enter.prevent="emit('select-course', event)" @keydown.space.prevent="emit('select-course', event)">
+            <article v-for="(event, index) in eventsAt(day.value, slot)" :key="`${event.date}-${event.slot}-${event.title}-${index}`" class="course-tile" :style="getCourseVisual(event.title).style" :data-washoku="getCourseVisual(event.title).color.name" :data-pattern="getCourseVisual(event.title).pattern.id" :data-pattern-name="getCourseVisual(event.title).pattern.name" :aria-label="eventLabel(event)" role="button" tabindex="0" @click="emit('select-course', event)" @keydown.enter.prevent="emit('select-course', event)" @keydown.space.prevent="emit('select-course', event)">
               <div class="course-content">
                 <div class="course-field-scroll" data-marquee data-max-lines="3" data-field-label="课名"><strong class="course-title course-field-track">{{ event.title }}</strong></div>
                 <div v-if="event.teacher" class="course-field-scroll course-teacher-scroll" data-marquee data-max-lines="2" data-field-label="教师名"><span class="course-teacher course-field-track">{{ event.teacher }}</span></div>
@@ -160,3 +171,343 @@ function eventLabel(event: ScheduleEvent) {
     </div>
   </section>
 </template>
+
+<style scoped>
+.timetable {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.notice-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 12px 10px;
+}
+
+.notice-strip span {
+  padding: 6px 11px;
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--block-warm);
+  box-shadow: var(--shadow-1);
+  font-size: 12px;
+}
+
+.schedule-card {
+  min-height: 0;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--schedule-surface-rest);
+  box-shadow: var(--shadow-2);
+  animation: schedule-card-enter 300ms var(--ease-standard) both;
+  backdrop-filter: blur(18px) saturate(1.02);
+  -webkit-backdrop-filter: blur(18px) saturate(1.02);
+}
+
+@keyframes schedule-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.schedule-grid {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: var(--time-w) repeat(var(--day-count), minmax(0, 1fr));
+  grid-template-rows: 42px repeat(var(--session-count), var(--course-row-h));
+  gap: var(--grid-gap);
+  padding: 6px 0;
+}
+
+.corner {
+  grid-column: 1;
+  grid-row: 1;
+  background: transparent;
+}
+
+.day-head, .time-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.day-head {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  flex-direction: column;
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+
+.day-head small {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.time-cell {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 560;
+  line-height: 1;
+  letter-spacing: .055em;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  white-space: nowrap;
+}
+
+.course-cell {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 3px;
+}
+
+.course-tile {
+  --course-bg-1: #eadfda;
+  --course-bg-2: #e2d4ce;
+  --course-ink: #211f1c;
+  --course-meta: #45413b;
+  --course-pattern: #625b53;
+  --course-bg-1: color-mix(in oklab, var(--course-base) 25%, #fffdf8);
+  --course-bg-2: color-mix(in oklab, var(--course-base) 34%, #fff8f1);
+  --course-ink: color-mix(in oklab, var(--course-base) 14%, #171714);
+  --course-meta: color-mix(in oklab, var(--course-base) 20%, #34322e);
+  --course-pattern: color-mix(in oklab, var(--course-base) 42%, #3f3b36);
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 8px 6px 7px;
+  border: 0;
+  border-radius: 11px;
+  color: var(--course-ink);
+  background: linear-gradient(145deg, var(--course-bg-1), var(--course-bg-2));
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-standard), background var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
+}
+
+.course-tile:focus-visible {
+  outline: 0;
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--course-ink) 24%, transparent);
+}
+
+.course-tile:active {
+  transform: scale(.985);
+}
+
+.course-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--course-pattern);
+  opacity: .115;
+  -webkit-mask-image: var(--pattern-mask);
+  mask-image: var(--pattern-mask);
+  -webkit-mask-size: var(--pattern-size);
+  mask-size: var(--pattern-size);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+:global(:root[data-theme="dark"] .course-tile) {
+  --course-bg-1: #30312d;
+  --course-bg-2: #252622;
+  --course-ink: #f5f0e8;
+  --course-meta: #ddd7ce;
+  --course-pattern: #c7c0b7;
+  --course-bg-1: color-mix(in oklab, var(--course-base) 24%, #252622);
+  --course-bg-2: color-mix(in oklab, var(--course-base) 32%, #1c1d1a);
+  --course-ink: color-mix(in oklab, var(--course-base) 10%, #f8f4ed);
+  --course-meta: color-mix(in oklab, var(--course-base) 16%, #e1dbd2);
+  --course-pattern: color-mix(in oklab, var(--course-base) 42%, #f3ede5);
+}
+
+.course-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.course-field-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  contain: paint;
+}
+
+.course-field-track {
+  width: 100%;
+  min-width: 100%;
+  transform: translate3d(0, 0, 0);
+  transform-origin: left top;
+}
+
+.course-field-scroll.is-marquee .course-field-track {
+  will-change: transform;
+}
+
+.course-field-scroll.has-hidden-left {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 100%);
+}
+
+.course-field-scroll.has-hidden-right {
+  -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 10px), transparent 100%);
+  mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 10px), transparent 100%);
+}
+
+.course-field-scroll.has-hidden-left.has-hidden-right {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+}
+
+.course-field-scroll.is-manual-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  touch-action: pan-x;
+}
+
+.course-field-scroll.is-manual-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.course-teacher-scroll {
+  margin-top: 6px;
+}
+
+.course-title, .course-teacher, .course-room {
+  display: block;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+}
+
+.course-title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--course-ink);
+  font-size: 16px;
+  font-weight: 720;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.course-teacher, .course-room {
+  color: var(--course-meta);
+  font-size: 14px;
+  font-weight: 540;
+  line-height: 1.32;
+}
+
+.course-teacher {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.course-room {
+  margin-top: 5px;
+  overflow: hidden;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.holiday-column {
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 650;
+  pointer-events: none;
+}
+
+.exam-week-state {
+  min-height: 360px;
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 64px;
+}
+
+.exam-week-state strong {
+  color: var(--accent);
+}
+
+@media (min-width: 700px) {
+  .schedule-card {
+    border-radius: 24px;
+  }
+
+  .schedule-grid {
+    grid-template-rows: 54px repeat(var(--session-count), var(--course-row-h));
+    padding: 12px;
+  }
+
+  .course-tile {
+    padding: 14px 12px 12px;
+    border-radius: 16px;
+  }
+
+  .course-teacher-scroll {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 379px) {
+  .course-tile {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+</style>

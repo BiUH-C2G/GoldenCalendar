@@ -2,11 +2,10 @@
 import { computed, ref, watch } from 'vue'
 import { draftFromSelection, getSelectionBlocker, getSelectionOptions, resolveSelectionDraft, selectionFromDraft, updateSelectionDraft } from '@/SelectionState'
 import type { SelectionDraft, SelectionField } from '@/SelectionState'
-import type { ScheduleLayers } from '@/Schedule'
 import type { Selection, ThemePreference } from '@/Types'
 
-const props = defineProps<{ open: boolean, initialDraft: SelectionDraft | null, selection: Selection | null, theme: ThemePreference, debug: boolean, layers: ScheduleLayers }>()
-const emit = defineEmits<{ save: [selection: Selection], cancel: [], reset: [], 'update:theme': [value: ThemePreference], 'update:layers': [value: ScheduleLayers] }>()
+const props = defineProps<{ open: boolean, initialDraft: SelectionDraft | null, selection: Selection | null, theme: ThemePreference }>()
+const emit = defineEmits<{ save: [selection: Selection], cancel: [], 'update:theme': [value: ThemePreference] }>()
 const draft = ref(draftFromSelection(props.selection))
 const options = computed(() => getSelectionOptions(draft.value))
 const blocker = computed(() => getSelectionBlocker(draft.value))
@@ -32,9 +31,6 @@ function setTheme(value: ThemePreference) {
   emit('update:theme', value)
 }
 
-function setLayer(key: keyof ScheduleLayers, value: boolean) {
-  emit('update:layers', { ...props.layers, [key]: value })
-}
 </script>
 
 <template>
@@ -68,20 +64,9 @@ function setLayer(key: keyof ScheduleLayers, value: boolean) {
 
     <fieldset class="settings-group">
       <legend>外观</legend>
-      <div class="theme-choice" role="group" aria-label="外观模式">
+      <div class="theme-choice" :data-active="theme" role="group" aria-label="外观模式">
         <button v-for="item in [{ value: 'system', label: '跟随系统' }, { value: 'light', label: '浅色' }, { value: 'dark', label: '深色' }] as const" :key="item.value" class="theme-option" type="button" :aria-pressed="theme === item.value" @click="setTheme(item.value)">{{ item.label }}</button>
       </div>
-    </fieldset>
-
-    <fieldset v-if="debug" class="settings-group">
-      <legend>调试图层</legend>
-      <div class="layer-choice">
-        <label><input type="checkbox" :checked="layers.administrative" @change="setLayer('administrative', ($event.target as HTMLInputElement).checked)">行政班</label>
-        <label><input type="checkbox" :checked="layers.english" @change="setLayer('english', ($event.target as HTMLInputElement).checked)">英语</label>
-        <label><input type="checkbox" :checked="layers.englishCatchup" @change="setLayer('englishCatchup', ($event.target as HTMLInputElement).checked)">英语补课</label>
-        <label><input type="checkbox" :checked="layers.german" @change="setLayer('german', ($event.target as HTMLInputElement).checked)">德语</label>
-      </div>
-      <button class="danger-button" type="button" @click="emit('reset')">清空数据并刷新</button>
     </fieldset>
 
     <div class="dialog-actions">
@@ -90,3 +75,154 @@ function setLayer(key: keyof ScheduleLayers, value: boolean) {
     </div>
   </form>
 </template>
+
+<style scoped>
+.settings-form {
+  display: grid;
+  gap: 24px;
+  margin-top: 18px;
+}
+
+.settings-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.settings-group legend {
+  margin-bottom: 13px;
+  padding: 0 2px;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: .035em;
+}
+
+.settings-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.settings-hint {
+  margin: 0;
+  padding: 12px 13px;
+  border-radius: 15px;
+  color: var(--text-muted);
+  background: var(--surface-subtle);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 560;
+  letter-spacing: .025em;
+}
+
+.field select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 0;
+  border-radius: 15px;
+  outline: 0;
+  color: var(--text-strong);
+  background: var(--block-blue);
+}
+
+.field.tone-green select, .field.tone-green.checkbox-field {
+  background: var(--block-green);
+}
+
+.field.tone-blue select, .field.tone-blue.checkbox-field {
+  background: var(--block-blue);
+}
+
+.field.tone-violet select, .field.tone-violet.checkbox-field {
+  background: var(--block-violet);
+}
+
+.field.tone-warm select, .field.tone-warm.checkbox-field {
+  background: var(--block-warm);
+}
+
+.checkbox-field {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: auto;
+  padding: 0 13px;
+  border-radius: 15px;
+  color: var(--text-strong);
+}
+
+.checkbox-field input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.theme-choice {
+  --theme-choice-index: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--surface-subtle);
+}
+
+.theme-choice[data-active="light"] {
+  --theme-choice-index: 1;
+}
+
+.theme-choice[data-active="dark"] {
+  --theme-choice-index: 2;
+}
+
+.theme-choice::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  z-index: 0;
+  width: calc((100% - 16px) / 3);
+  border-radius: 12px;
+  background: var(--fiddler-bg);
+  box-shadow: var(--shadow-1);
+  transform: translateX(calc(var(--theme-choice-index) * (100% + 4px)));
+  transition: transform 430ms cubic-bezier(.22, 1.55, .36, 1), background-color .3s ease, box-shadow .3s ease;
+}
+
+.theme-option {
+  position: relative;
+  z-index: 1;
+  min-height: 39px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color .3s ease, transform var(--duration-fast) var(--ease-standard);
+}
+
+.theme-option[aria-pressed="true"] {
+  color: var(--fiddler-fg);
+}
+
+.theme-option:active {
+  transform: scale(.97);
+}
+</style>
