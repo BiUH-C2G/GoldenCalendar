@@ -23,7 +23,7 @@ import AllCourses from '@/view/dialog-content/AllCourses.vue'
 import CourseOccurrences from '@/view/dialog-content/CourseOccurrences.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
 import AnnouncementQueue from '@/view/AnnouncementQueue.vue'
-import { CONFLICT_CACHE_KEY, rememberConfirmedConflict } from '@/ConflictCache'
+import { rememberConfirmedConflict } from '@/ConflictCache'
 import type { ConflictConfirmation } from '@/ConflictCache'
 import type { LoadedSchedule } from '@/Data'
 
@@ -222,9 +222,7 @@ function saveSelection(value: Selection, loaded: LoadedSchedule, confirmation: C
 }
 
 function resetDebugData() {
-  localStorage.removeItem(CONFLICT_CACHE_KEY)
-  localStorage.removeItem(STORAGE_KEY)
-  localStorage.removeItem(THEME_STORAGE_KEY)
+  localStorage.clear()
   window.location.reload()
 }
 
@@ -630,7 +628,7 @@ function showToast(message: string) {
 
             <article class="debug-hud-card" aria-label="信息清理">
               <strong class="debug-hud-title">信息清理</strong>
-              <p class="debug-hud-description">清除本机保存的课程表选择与外观设置</p>
+              <p class="debug-hud-description">清除：课程表、外观、公告已读等情况</p>
               <button class="danger-button" type="button" @click="resetDebugData">清空数据并刷新</button>
             </article>
           </section>
@@ -676,7 +674,7 @@ function showToast(message: string) {
     <p class="lookup-confirm">您是否要看目前课表下所有的「{{ pendingLookupTitle }}」？</p>
     <template #actions><button class="secondary-button" type="button" data-dialog-autofocus @click="pendingLookupTitle = null">不</button><button class="primary-button" type="button" @click="pendingLookupTitle !== null && findAllCourse(pendingLookupTitle)">是的</button></template>
   </Dialog>
-  <Dialog :open="activeDialog === 'occurrences'" title="该课所有" @update:open="activeDialog = null">
+  <Dialog :open="activeDialog === 'occurrences'" :title="lookupTitle" @update:open="activeDialog = null">
     <CourseOccurrences v-if="activeDialog === 'occurrences' && schedule" :title="lookupTitle" :events="allCourseEvents" :sessions="schedule.calendar.sessions" :current-week="currentWeek" @select="jumpToCourse"/>
     <template #actions><button class="primary-button" type="button" :disabled="!allCourseEvents.some((event) => event.title === lookupTitle)" @click="exportCalendar({ kind: 'course', title: lookupTitle })">所有本课导到日历</button></template>
   </Dialog>

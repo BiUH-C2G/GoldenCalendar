@@ -20,7 +20,7 @@ export async function loadAnnouncements(signal: AbortSignal): Promise<Announceme
 
     ids.add(id)
     return { id, title, content }
-  })
+  }).reverse()
 }
 
 export function readDismissedAnnouncements(): Set<string> {

@@ -8,6 +8,7 @@ import Dialog from '@/view/Dialog.vue'
 import Announcement from './Announcement.vue'
 
 const metadataText = ref('课表元数据加载中')
+const donationQrUrl = `${import.meta.env.BASE_URL}images/wechat-donation-qr.png`
 const controller = new AbortController()
 const announcements = ref<AnnouncementData[]>([])
 const announcementsLoading = ref(true)
@@ -36,17 +37,20 @@ onBeforeUnmount(() => controller.abort())
 <template>
   <div class="about-area">
     <section class="announcement-history">
-      <h3>关于本网站</h3>
+      <h3 class="dialog-group-title">关于本网站</h3>
       <div class="about-copy">
-        <p>作者：25CS 陈俊豪</p>
-        <p>如数据展示情况有误或亟待更新，请联系微信 EARZUC</p>
-        <p>数据来源于科比，作者不为课表数据源的错误或不详尽负责</p>
+        <p>作者：社长；微信：EARZUC</p>
+        <p>如数据展示情况有误或亟待更新，请微信联系我</p>
+        <p>数据来源于校方，我不为课表数据源的错误或不详尽负责</p>
+        <p>本站系学生团队自我研发、维护和运营，与校IT、教务等无关系</p>
         <p aria-live="polite">{{ metadataText }}</p>
+        <p>如果我的网站对您有帮助，欢迎微信打赏我</p>
+        <img class="donation-qr" :src="donationQrUrl" alt="微信打赏二维码" width="509" height="509" loading="lazy">
       </div>
     </section>
 
     <section class="announcement-history">
-      <h3>历史公告</h3>
+      <h3 class="dialog-group-title">历史公告</h3>
       <p v-if="announcementsLoading" role="status">正在加载公告</p>
       <p v-else-if="announcementsError" role="status">{{ announcementsError }}</p>
       <p v-else-if="!announcements.length">暂无公告</p>
@@ -58,11 +62,12 @@ onBeforeUnmount(() => controller.abort())
     </section>
   </div>
   <Dialog :open="selectedAnnouncement !== null" :title="selectedAnnouncement?.title ?? '公告'" @update:open="selectedAnnouncement = null">
-    <Announcement v-if="selectedAnnouncement" :date="selectedAnnouncement.id" :content="selectedAnnouncement.content"/>
+    <Announcement v-if="selectedAnnouncement" :date="selectedAnnouncement!.id" :content="selectedAnnouncement!.content"/>
   </Dialog>
 </template>
 
 <style scoped>
+.donation-qr { display: block; width: min(220px, 100%); height: auto; aspect-ratio: 1; margin: 12px auto 0; border-radius: 8px; background: #fff }
 .about-area{
   gap: 18px;
   display: flex;
@@ -72,12 +77,6 @@ onBeforeUnmount(() => controller.abort())
 .announcement-history {
   color: var(--text-muted);
   font-size: 14px
-}
-
-.announcement-history h3 {
-  margin: 0 0 10px;
-  color: var(--text-strong);
-  font-size: 16px
 }
 
 .announcement-history ul {
@@ -119,7 +118,7 @@ onBeforeUnmount(() => controller.abort())
 }
 
 .about-copy {
-  margin: 18px 2px 4px;
+  margin: 0 2px 4px;
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.8;

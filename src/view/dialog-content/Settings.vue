@@ -100,7 +100,7 @@ function setTheme(value: ThemePreference) {
   <Dialog :open="open" title="设置" :closable="Boolean(selection)" @update:open="emit('cancel')">
     <form :id="formId" class="settings-form" @submit.prevent="save">
       <fieldset class="settings-group">
-        <legend>行政班</legend>
+        <legend class="dialog-group-title">行政班</legend>
         <div class="settings-fields">
           <label v-if="options.grades.length > 1" class="field tone-green">年级<select :value="draft.grade" data-dialog-autofocus @change="updateString('grade', $event)">
             <option value="" disabled>请选择年级</option>
@@ -118,15 +118,17 @@ function setTheme(value: ThemePreference) {
       </fieldset>
 
       <fieldset v-if="options.physicalEducationGroups.length" class="settings-group">
-        <legend>体育</legend>
-        <div class="settings-fields"><label class="field tone-green">分组<select :value="draft.physicalEducationGroupId" @change="updateString('physicalEducationGroupId', $event)">
-          <option value="" disabled>请选择体育分组</option>
-          <option v-for="item in options.physicalEducationGroups" :key="item" :value="item">第 {{ item }} 组</option>
-        </select></label></div>
+        <legend class="dialog-group-title">体育</legend>
+        <div class="settings-fields">
+          <label class="field tone-green">分组<select :value="draft.physicalEducationGroupId" @change="updateString('physicalEducationGroupId', $event)">
+            <option value="" disabled>请选择体育分组</option>
+            <option v-for="item in options.physicalEducationGroups" :key="item" :value="item">第 {{ item }} 组</option>
+          </select></label>
+        </div>
       </fieldset>
 
       <fieldset v-if="options.hasEnglish" class="settings-group">
-        <legend>英语</legend>
+        <legend class="dialog-group-title">英语</legend>
         <p v-if="!draft.majorCode" class="settings-hint">请先选择专业，再选择英语班级</p>
         <div v-else class="settings-fields">
           <label v-if="options.englishClasses.length > 1" class="field tone-blue">班级<select :value="draft.englishClassNumber" @change="updateString('englishClassNumber', $event)">
@@ -142,7 +144,7 @@ function setTheme(value: ThemePreference) {
       </fieldset>
 
       <fieldset v-if="options.hasGerman" class="settings-group">
-        <legend>德语</legend>
+        <legend class="dialog-group-title">德语</legend>
         <div class="settings-fields">
           <label v-if="options.germanLevels.length > 1" class="field tone-violet">等级<select :value="draft.germanLevel" @change="updateString('germanLevel', $event)">
             <option value="" disabled>请选择德语等级</option>
@@ -156,7 +158,7 @@ function setTheme(value: ThemePreference) {
       </fieldset>
 
       <fieldset class="settings-group">
-        <legend>外观</legend>
+        <legend class="dialog-group-title">外观</legend>
         <div class="theme-choice" :data-active="theme" role="group" aria-label="外观模式">
           <button v-for="item in [{ value: 'system', label: '跟随系统' }, { value: 'light', label: '浅色' }, { value: 'dark', label: '深色' }] as const" :key="item.value" class="theme-option" type="button" :aria-pressed="theme === item.value" @click="setTheme(item.value)">{{ item.label }}</button>
         </div>
@@ -180,7 +182,6 @@ function setTheme(value: ThemePreference) {
 .settings-form {
   display: grid;
   gap: 24px;
-  margin-top: 18px;
 }
 
 .settings-group {
@@ -188,16 +189,6 @@ function setTheme(value: ThemePreference) {
   margin: 0;
   padding: 0;
   border: 0;
-}
-
-.settings-group legend {
-  margin-bottom: 13px;
-  padding: 0 2px;
-  color: var(--text-strong);
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: .035em;
 }
 
 .settings-fields {

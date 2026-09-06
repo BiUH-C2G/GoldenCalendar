@@ -62,7 +62,7 @@ onBeforeUnmount(() => controller.abort())
   <Dialog :open="open" :title="current?.title ?? '公告'" @update:open="close(false)" @closed="afterClose">
     <Announcement v-if="current" :date="current.id" :content="current.content"/>
     <p v-if="error" role="alert" class="announcement-error">{{ error }}</p>
-    <template #actions><button class="primary-button" type="button" @click="close(true)">不再显示</button></template>
+    <template #actions><button class="secondary-button" type="button" @click="close(true)">不再显示</button><button class="primary-button" type="button" data-dialog-autofocus @click="close(false)">确定</button></template>
   </Dialog>
 </template>
 

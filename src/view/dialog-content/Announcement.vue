@@ -3,7 +3,8 @@ defineProps<{ date: string, content: string }>()
 </script>
 
 <template>
-  <div><p class="announcement-date">公告日期：{{ date }}</p>
+  <div>
+    <p class="announcement-date">公告日期：{{ date }}</p>
     <div class="announcement-content">{{ content }}</div>
   </div>
 </template>

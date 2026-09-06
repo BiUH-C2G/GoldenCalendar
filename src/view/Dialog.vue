@@ -6,6 +6,7 @@ const dialogStack = shallowReactive<DialogEntry[]>([])
 </script>
 
 <script setup lang="ts">
+import { X } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{ open: boolean, title: string, closable?: boolean }>(), { closable: true })
@@ -98,7 +99,7 @@ function focusableElements() {
         <section ref="panel" class="dialog-sheet" role="dialog" :aria-modal="isTopmost ? true : undefined" :aria-label="title" tabindex="-1">
           <header class="dialog-head">
             <h2>{{ title }}</h2>
-            <button v-if="closable" class="dialog-close" type="button" aria-label="关闭" @click="close">×</button>
+            <button v-if="closable" class="dialog-close" type="button" aria-label="关闭" title="关闭" @click="close"><X :size="18" :stroke-width="1.8" aria-hidden="true"/></button>
           </header>
           <div class="dialog-content"><slot /></div>
           <footer v-if="$slots.actions" class="dialog-actions dialog-footer"><slot name="actions" /></footer>
@@ -162,6 +163,8 @@ function focusableElements() {
 }
 
 .dialog-close {
+  display: grid;
+  place-items: center;
   width: 38px;
   height: 38px;
   flex: 0 0 38px;

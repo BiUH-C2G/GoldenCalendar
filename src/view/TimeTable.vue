@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {getCourseVisual} from '@/CourseVisual'
+import { CircleAlert } from 'lucide-vue-next'
 import '@/style/CourseTile.css'
 import {getIsoWeekday} from '@/DateTime'
 import {formatDate, getEvents, getNoticeForWeek, getVisibleWeekdays, getWeekDates, isExamWeek, isHolidayDate, isHolidayNotice} from '@/Schedule'
@@ -181,7 +182,7 @@ function eventLabel(event: ScheduleEvent) {
   <section ref="root" class="timetable" aria-label="课程表">
     <div v-if="notices.length" class="notice-strip"><span v-for="notice in notices" :key="`${notice.label}-${notice.startDate}`">{{ notice.label }}</span></div>
     <div ref="scheduleCard" class="schedule-card" :class="{ 'schedule-card-entering': animateEntry }" :style="{ background: scheduleBackground }">
-      <div v-if="isExamWeek(group, week) && !highlightedInWeek" class="exam-week-state"><span>考试周</span><strong>！</strong></div>
+      <div v-if="isExamWeek(group, week) && !highlightedInWeek" class="exam-week-state"><span>考试周</span><CircleAlert class="exam-week-icon" :size="48" :stroke-width="1.8" aria-hidden="true"/></div>
       <div v-else class="schedule-grid" :style="{ '--day-count': visibleDays.length, '--session-count': sessionCount }">
         <div class="corner"/>
         <div v-for="(day, dayIndex) in visibleDays" :key="day.value" class="day-head" :style="{ gridColumn: dayIndex + 2, gridRow: 1 }" :data-glow-column="dayIndex === glowColumnIndex ? '' : undefined"><span>{{ visibleDays.length > 5 ? day.short : day.label }}</span><small>{{ dateLabel(day.value) }}</small></div>
@@ -460,7 +461,8 @@ function eventLabel(event: ScheduleEvent) {
   font-size: 64px;
 }
 
-.exam-week-state strong {
+.exam-week-icon {
+  flex-shrink: 0;
   color: var(--accent);
 }
 

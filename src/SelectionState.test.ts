@@ -2,11 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { createEmptySelectionDraft, getSelectionBlocker, getSelectionOptions, readSelectionDraft, selectionFromDraft, updateSelectionDraft } from './SelectionState'
 
 describe('选择状态', () => {
-  it('自动修复二六级缺失的德语等级', () => {
+  it('修复二六级旧配置的德语等级，补选体育后允许保存', () => {
     const draft = readSelectionDraft({ term: '2026Autumn', grade: '2026', majorCode: 'SE', groupId: '1', englishClassNumber: '5', englishCatchupEnabled: false, englishCatchupClassNumber: null, germanClassNumber: '9' })
     expect(draft?.germanLevel).toBe('A1')
     expect(draft?.germanClassNumber).toBe('9')
-    expect(selectionFromDraft(draft!)).not.toBeNull()
+    expect(getSelectionBlocker(draft!)).toBe('请选择体育分组')
+    expect(selectionFromDraft(draft!)).toBeNull()
+
+    const completed = updateSelectionDraft(draft!, 'physicalEducationGroupId', '1')
+    expect(selectionFromDraft(completed)).toMatchObject({ germanLevel: 'A1', germanClassNumber: '9', physicalEducationGroupId: '1' })
   })
 
   it('非法旧等级不会把班级误映射到新等级', () => {
