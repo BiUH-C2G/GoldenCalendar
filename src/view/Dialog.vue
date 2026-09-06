@@ -9,7 +9,7 @@ const dialogStack = shallowReactive<DialogEntry[]>([])
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{ open: boolean, title: string, closable?: boolean }>(), { closable: true })
-const emit = defineEmits<{ 'update:open': [value: boolean] }>()
+const emit = defineEmits<{ 'update:open': [value: boolean], closed: [] }>()
 const panel = ref<HTMLElement | null>(null)
 const entry: DialogEntry = { id: Symbol(), panel: () => panel.value, previousFocus: null }
 const stackIndex = computed(() => dialogStack.findIndex((item) => item.id === entry.id))
@@ -93,7 +93,7 @@ function focusableElements() {
 
 <template>
   <Teleport to="body">
-    <Transition name="dialog">
+    <Transition name="dialog" @after-leave="emit('closed')">
       <div v-if="open" class="dialog-backdrop" :style="{ zIndex: 60 + Math.max(0, stackIndex) }" :inert="!isTopmost" :aria-hidden="!isTopmost ? true : undefined" @click.self="close">
         <section ref="panel" class="dialog-sheet" role="dialog" :aria-modal="isTopmost ? true : undefined" :aria-label="title" tabindex="-1">
           <header class="dialog-head">

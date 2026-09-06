@@ -22,6 +22,7 @@ import CourseDetail from '@/view/dialog-content/CourseDetail.vue'
 import AllCourses from '@/view/dialog-content/AllCourses.vue'
 import CourseOccurrences from '@/view/dialog-content/CourseOccurrences.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
+import AnnouncementQueue from '@/view/AnnouncementQueue.vue'
 import { CONFLICT_CACHE_KEY, rememberConfirmedConflict } from '@/ConflictCache'
 import type { ConflictConfirmation } from '@/ConflictCache'
 import type { LoadedSchedule } from '@/Data'
@@ -37,6 +38,7 @@ const selectionDraft = ref<SelectionDraft | null>(initialDraft)
 const selection = ref<Selection | null>(initialSelection)
 const loading = ref(true)
 const error = ref('')
+const announcementActive = ref(false)
 const currentWeek = ref(1)
 const todayDate = ref(getShanghaiToday())
 const activeDialog = ref<'settings' | 'about' | 'course' | 'allCourses' | 'occurrences' | null>(null)
@@ -592,7 +594,7 @@ function showToast(message: string) {
 </script>
 
 <template>
-  <div class="application-layer" :inert="activeDialog !== null" :aria-hidden="activeDialog !== null">
+  <div class="application-layer" :inert="activeDialog !== null || announcementActive" :aria-hidden="activeDialog !== null || announcementActive">
     <div class="app">
       <main class="page">
         <div class="shell">
@@ -653,24 +655,22 @@ function showToast(message: string) {
   </div>
 
   <Settings :open="settingsOpen" :initial-draft="selectionDraft" :selection="selection" :theme="themePreference" @save="saveSelection" @cancel="activeDialog = null" @update:theme="setTheme"/>
+  <AnnouncementQueue :enabled="!loading && activeDialog === null" @active="announcementActive = $event"/>
 
   <Dialog v-model:open="aboutOpen" title="科比在线课程表">
     <About/>
-    <template #actions><button class="secondary-button" type="button" @click="activeDialog = null">关闭</button></template>
   </Dialog>
 
   <Dialog v-model:open="courseOpen" title="课程详情">
     <CourseDetail v-if="selectedCourse && schedule" :event="selectedCourse" :time="schedule.calendar.sessions[selectedCourse.slot - 1] ?? '时间未注明'" @copy="copyCourseDetail"/>
     <template #actions>
-      <button class="secondary-button" type="button" :disabled="!selectedCourse" @click="selectedCourse && findAllCourse(selectedCourse.title)">查看全部本课</button>
+      <button class="secondary-button" type="button" :disabled="!selectedCourse" @click="selectedCourse && findAllCourse(selectedCourse.title)">查看本课更多节次</button>
       <button class="primary-button" type="button" :disabled="!selectedCourse" @click="selectedCourse && exportCalendar({ kind: 'event', event: selectedCourse })">本节课导到日历</button>
-      <button class="secondary-button" type="button" @click="activeDialog = null">好的</button>
     </template>
   </Dialog>
 
   <Dialog :open="activeDialog === 'allCourses'" title="所有课" @update:open="activeDialog = null">
     <AllCourses v-if="activeDialog === 'allCourses'" :events="allCourseEvents" @select="pendingLookupTitle = $event"/>
-    <template #actions><button class="secondary-button" type="button" @click="activeDialog = null">关闭</button></template>
   </Dialog>
   <Dialog :open="activeDialog === 'allCourses' && pendingLookupTitle !== null" title="看所有本课" @update:open="pendingLookupTitle = null">
     <p class="lookup-confirm">您是否要看目前课表下所有的「{{ pendingLookupTitle }}」？</p>

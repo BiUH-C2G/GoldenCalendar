@@ -164,9 +164,8 @@ function setTheme(value: ThemePreference) {
 
       <p v-if="saveError" role="alert">{{ saveError }}</p>
     </form>
-    <template #actions>
-      <button v-if="selection" class="secondary-button" type="button" @click="emit('cancel')">关闭</button>
-      <button v-if="courseSettingsChanged" class="primary-button" type="submit" :form="formId" :disabled="checking || Boolean(blocker)">{{ checking ? '正在检查课程冲突' : blocker ?? '保存' }}</button>
+    <template v-if="courseSettingsChanged" #actions>
+      <button class="primary-button" type="submit" :form="formId" :disabled="checking || Boolean(blocker)">{{ checking ? '正在检查课程冲突' : blocker ?? '保存' }}</button>
     </template>
   </Dialog>
   <Dialog :open="open && Boolean(conflicts.length)" title="存在课程冲突！" @update:open="invalidateCheck">
