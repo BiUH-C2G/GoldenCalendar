@@ -5,6 +5,17 @@ import type { LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, Select
 
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/${dataContract.term}/`
 
+export function loadDataMetadata(signal?: AbortSignal) {
+  return loadCoordinate('meta.json', '课表元数据', (value) => {
+    const root = expectRecord(value, '课表元数据')
+    const term = expectString(root.term, '课表元数据.term')
+    if (term !== dataContract.term) throw new Error('课表元数据的学期不一致')
+    const generatedAt = expectString(root.generatedAt, '课表元数据.generatedAt')
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(generatedAt) || !Number.isFinite(Date.parse(generatedAt))) throw new Error('课表元数据的生成时间无效')
+    return { term, schemaVersion: expectIntegerRange(root.schemaVersion, '课表元数据.schemaVersion', 1, Number.MAX_SAFE_INTEGER), generatedAt }
+  }, signal)
+}
+
 interface AdministrativePayload {
   calendar: ScheduleData['calendar']
   events: ScheduleEvent[]

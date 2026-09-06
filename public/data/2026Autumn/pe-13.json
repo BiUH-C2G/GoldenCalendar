@@ -1,1 +1,1 @@
-{"schemaVersion": 1, "groupId": "13", "meetings": [{"startWeek": 1, "endWeek": 60, "weekday": 1, "slot": 3, "teachers": ["Ren Liujin"], "room": "Basketball Area"}]}
+{"groupId": "13", "meetings": [{"startWeek": 1, "endWeek": 60, "weekday": 1, "slot": 3, "teachers": ["Ren Liujin"], "room": "Basketball Area"}]}

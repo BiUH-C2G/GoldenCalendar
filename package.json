@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "data:build": "python tools/parse_timetables.py --input raw --output public/data --clean && python tools/parse_language_timetables.py --input \"raw/Timetable_2026Autumn_ English and German.xlsx\" --output public/data && python tools/parse_physical_education.py --input raw/Timetable_2026Autumn_PE.xlsx --output public/data",
+    "data:build": "python tools/parse_timetables.py --input raw --output public/data --clean && python tools/parse_language_timetables.py --input \"raw/Timetable_2026Autumn_ English and German.xlsx\" --output public/data && python tools/parse_physical_education.py --input raw/Timetable_2026Autumn_PE.xlsx --output public/data && python tools/write_metadata.py --output public/data",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "lint": "eslint src vite.config.ts",

@@ -1,1 +1,1 @@
-{"schemaVersion": 1, "groupId": "6", "meetings": [{"startWeek": 1, "endWeek": 60, "weekday": 4, "slot": 3, "teachers": ["Nikola Vranic"], "room": "Basketball Area"}]}
+{"groupId": "6", "meetings": [{"startWeek": 1, "endWeek": 60, "weekday": 4, "slot": 3, "teachers": ["Nikola Vranic"], "room": "Basketball Area"}]}

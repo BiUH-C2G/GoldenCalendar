@@ -22,5 +22,5 @@ def main():
                 group, teacher, room = match.groups()
                 groups.setdefault(group, []).append({'startWeek': 1, 'endWeek': 60, 'weekday': weekday, 'slot': slot, 'teachers': [teacher], 'room': room})
     root = args.output / '2026Autumn'; root.mkdir(parents=True, exist_ok=True)
-    for group, meetings in groups.items(): (root / f'pe-{group}.json').write_text(json.dumps({'schemaVersion': 1, 'groupId': group, 'meetings': meetings}, ensure_ascii=False) + '\n', encoding='utf-8')
+    for group, meetings in groups.items(): (root / f'pe-{group}.json').write_text(json.dumps({'groupId': group, 'meetings': meetings}, ensure_ascii=False) + '\n', encoding='utf-8')
 if __name__ == '__main__': main()
