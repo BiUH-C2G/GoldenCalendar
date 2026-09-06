@@ -1,0 +1,62 @@
+.course-tile {
+  --course-bg-1: #eadfda;
+  --course-bg-2: #e2d4ce;
+  --course-ink: #211f1c;
+  --course-meta: #45413b;
+  --course-pattern: #625b53;
+  --course-bg-1: color-mix(in oklab, var(--course-base) 25%, #fffdf8);
+  --course-bg-2: color-mix(in oklab, var(--course-base) 34%, #fff8f1);
+  --course-ink: color-mix(in oklab, var(--course-base) 14%, #171714);
+  --course-meta: color-mix(in oklab, var(--course-base) 20%, #34322e);
+  --course-pattern: color-mix(in oklab, var(--course-base) 42%, #3f3b36);
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 8px 6px 7px;
+  border: 0;
+  border-radius: 11px;
+  color: var(--course-ink);
+  background: linear-gradient(145deg, var(--course-bg-1), var(--course-bg-2));
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-standard), background var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
+}
+
+.course-tile:focus-visible {
+  outline: 0;
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--course-ink) 24%, transparent);
+}
+
+.course-tile:active {
+  transform: scale(.985);
+}
+
+.course-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--course-pattern);
+  opacity: .115;
+  -webkit-mask-image: var(--pattern-mask);
+  mask-image: var(--pattern-mask);
+  -webkit-mask-size: var(--pattern-size);
+  mask-size: var(--pattern-size);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+:root[data-theme="dark"] .course-tile {
+  --course-bg-1: #30312d;
+  --course-bg-2: #252622;
+  --course-ink: #f5f0e8;
+  --course-meta: #ddd7ce;
+  --course-pattern: #c7c0b7;
+  --course-bg-1: color-mix(in oklab, var(--course-base) 24%, #252622);
+  --course-bg-2: color-mix(in oklab, var(--course-base) 32%, #1c1d1a);
+  --course-ink: color-mix(in oklab, var(--course-base) 10%, #f8f4ed);
+  --course-meta: color-mix(in oklab, var(--course-base) 16%, #e1dbd2);
+  --course-pattern: color-mix(in oklab, var(--course-base) 42%, #f3ede5);
+}
+

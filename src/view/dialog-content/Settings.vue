@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onBeforeUnmount, ref, watch} from 'vue'
+import {computed, onBeforeUnmount, ref, useId, watch} from 'vue'
 import {loadSelection} from '@/Data'
 import type {LoadedSchedule} from '@/Data'
 import {composeScheduleLayers} from '@/Schedule'
@@ -16,6 +16,7 @@ import type {Selection, ThemePreference} from '@/Types'
 const props = defineProps<{ open: boolean, initialDraft: SelectionDraft | null, selection: Selection | null, theme: ThemePreference }>()
 const emit = defineEmits<{ save: [selection: Selection, loaded: LoadedSchedule, confirmation: ConflictConfirmation], cancel: [], 'update:theme': [value: ThemePreference] }>()
 const draft = ref(draftFromSelection(props.selection))
+const formId = useId()
 const options = computed(() => getSelectionOptions(draft.value))
 const blocker = computed(() => getSelectionBlocker(draft.value))
 const courseSettingsChanged = computed(() => !props.selection || JSON.stringify(selectionFromDraft(draft.value)) !== JSON.stringify(selectionFromDraft(draftFromSelection(props.selection))))
@@ -97,7 +98,7 @@ function setTheme(value: ThemePreference) {
 
 <template>
   <Dialog :open="open" title="设置" :closable="Boolean(selection)" @update:open="emit('cancel')">
-    <form class="settings-form" @submit.prevent="save">
+    <form :id="formId" class="settings-form" @submit.prevent="save">
       <fieldset class="settings-group">
         <legend>行政班</legend>
         <div class="settings-fields">
@@ -162,18 +163,21 @@ function setTheme(value: ThemePreference) {
       </fieldset>
 
       <p v-if="saveError" role="alert">{{ saveError }}</p>
-      <div class="dialog-actions">
-        <button v-if="selection" class="secondary-button" type="button" @click="emit('cancel')">关闭</button>
-        <button v-if="courseSettingsChanged" class="primary-button" type="submit" :disabled="checking || Boolean(blocker)">{{ checking ? '正在检查课程冲突' : blocker ?? '保存' }}</button>
-      </div>
     </form>
+    <template #actions>
+      <button v-if="selection" class="secondary-button" type="button" @click="emit('cancel')">关闭</button>
+      <button v-if="courseSettingsChanged" class="primary-button" type="submit" :form="formId" :disabled="checking || Boolean(blocker)">{{ checking ? '正在检查课程冲突' : blocker ?? '保存' }}</button>
+    </template>
   </Dialog>
   <Dialog :open="open && Boolean(conflicts.length)" title="存在课程冲突！" @update:open="invalidateCheck">
-    <CourseConflicts :conflicts="conflicts" :sessions="pending?.loaded.schedule.calendar.sessions ?? []" @back="invalidateCheck" @confirm="confirmSave"/>
+    <CourseConflicts :conflicts="conflicts" :sessions="pending?.loaded.schedule.calendar.sessions ?? []"/>
+    <template #actions><button class="primary-button" type="button" data-dialog-autofocus @click="invalidateCheck">返回修改</button><button class="secondary-button conflict-confirm" type="button" @click="confirmSave">坚持保存</button></template>
   </Dialog>
 </template>
 
 <style scoped>
+.conflict-confirm { color: var(--danger) }
+.conflict-confirm:hover { background: color-mix(in srgb, var(--danger) 12%, var(--surface-solid)) }
 .settings-form {
   display: grid;
   gap: 24px;

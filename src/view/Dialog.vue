@@ -100,7 +100,8 @@ function focusableElements() {
             <h2>{{ title }}</h2>
             <button v-if="closable" class="dialog-close" type="button" aria-label="关闭" @click="close">×</button>
           </header>
-          <slot />
+          <div class="dialog-content"><slot /></div>
+          <footer v-if="$slots.actions" class="dialog-actions dialog-footer"><slot name="actions" /></footer>
         </section>
       </div>
     </Transition>
@@ -125,8 +126,11 @@ function focusableElements() {
   width: min(calc(100% - 32px), 620px);
   max-height: calc(100vh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  overflow: auto;
-  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  --dialog-padding: 18px;
   border-radius: 26px;
   color: var(--text);
   background: color-mix(in srgb, var(--surface-solid) 97%, transparent);
@@ -134,14 +138,21 @@ function focusableElements() {
 }
 
 .dialog-head {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 18px;
+  padding: var(--dialog-padding);
 }
 
+.dialog-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding: 3px var(--dialog-padding) var(--dialog-padding); scrollbar-gutter: stable }
+.dialog-footer { flex: 0 0 auto; flex-wrap: wrap; padding: 14px var(--dialog-padding) var(--dialog-padding); border-top: 1px solid var(--border-soft); background: var(--surface-solid) }
+.dialog-footer :deep(button) { max-width: 100%; white-space: normal; overflow-wrap: anywhere }
+
 .dialog-head h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
   margin: 0;
   color: var(--text-strong);
   font-family: var(--font-display);
@@ -181,7 +192,7 @@ function focusableElements() {
 @media (max-width: 560px) {
   .dialog-sheet {
     width: min(calc(100% - 16px), 620px);
-    padding: 16px;
+    --dialog-padding: 16px;
     border-radius: 22px;
   }
 }

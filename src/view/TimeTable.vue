@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {getCourseVisual} from '@/CourseVisual'
+import '@/style/CourseTile.css'
 import {getIsoWeekday} from '@/DateTime'
 import {formatDate, getEvents, getNoticeForWeek, getVisibleWeekdays, getWeekDates, isExamWeek, isHolidayDate, isHolidayNotice} from '@/Schedule'
 import {TextMarquee} from '@/TextMarquee'
@@ -10,8 +11,8 @@ type WeekdayGlowEdge = 'soft' | 'hard'
 type RenderedScheduleEvent = { event: ScheduleEvent, visual: ReturnType<typeof getCourseVisual> }
 
 const props = withDefaults(defineProps<{
-  schedule: ScheduleData, group: ScheduleGroup, week: number, todayDate: string, active: boolean, animateEntry?: boolean, glowWeekday?: number, glowEdge?: WeekdayGlowEdge
-}>(), {animateEntry: true, glowWeekday: undefined, glowEdge: 'soft'})
+  schedule: ScheduleData, group: ScheduleGroup, week: number, todayDate: string, active: boolean, animateEntry?: boolean, glowWeekday?: number, glowEdge?: WeekdayGlowEdge, highlightedCourse?: ScheduleEvent | null
+}>(), {animateEntry: true, glowWeekday: undefined, glowEdge: 'soft', highlightedCourse: null})
 
 const emit = defineEmits<{ 'select-course': [event: ScheduleEvent] }>()
 
@@ -33,6 +34,11 @@ const eventsByCell = computed(() => {
 
   return cells
 })
+const highlightedInWeek = computed(() => props.highlightedCourse?.week === props.week)
+function isHighlighted(event: ScheduleEvent) {
+  const target = props.highlightedCourse
+  return Boolean(target && event.date === target.date && event.slot === target.slot && event.title === target.title && event.teacher === target.teacher && event.room === target.room)
+}
 const holidayWeekdays = computed(() => new Set<number>(visibleDays.value.filter((day) => {
   const date = weekDates.value[day.value - 1]
   return Boolean(date && isHolidayDate(props.group, date))
@@ -175,14 +181,14 @@ function eventLabel(event: ScheduleEvent) {
   <section ref="root" class="timetable" aria-label="课程表">
     <div v-if="notices.length" class="notice-strip"><span v-for="notice in notices" :key="`${notice.label}-${notice.startDate}`">{{ notice.label }}</span></div>
     <div ref="scheduleCard" class="schedule-card" :class="{ 'schedule-card-entering': animateEntry }" :style="{ background: scheduleBackground }">
-      <div v-if="isExamWeek(group, week)" class="exam-week-state"><span>考试周</span><strong>！</strong></div>
+      <div v-if="isExamWeek(group, week) && !highlightedInWeek" class="exam-week-state"><span>考试周</span><strong>！</strong></div>
       <div v-else class="schedule-grid" :style="{ '--day-count': visibleDays.length, '--session-count': sessionCount }">
         <div class="corner"/>
         <div v-for="(day, dayIndex) in visibleDays" :key="day.value" class="day-head" :style="{ gridColumn: dayIndex + 2, gridRow: 1 }" :data-glow-column="dayIndex === glowColumnIndex ? '' : undefined"><span>{{ visibleDays.length > 5 ? day.short : day.label }}</span><small>{{ dateLabel(day.value) }}</small></div>
         <template v-for="slot in sessionCount" :key="slot">
           <div class="time-cell" :style="{ gridColumn: 1, gridRow: slot + 1 }" :aria-label="schedule.calendar.sessions[slot - 1] ?? sessionLabel(slot)">{{ sessionLabel(slot) }}</div>
           <div v-for="(day, dayIndex) in visibleDays" :key="`${week}-${day.value}-${slot}`" class="course-cell" :style="{ gridColumn: dayIndex + 2, gridRow: slot + 1 }">
-            <article v-for="(entry, index) in eventsAt(day.value, slot)" :key="`${entry.event.date}-${entry.event.slot}-${entry.event.title}-${index}`" class="course-tile" :style="entry.visual.style" :data-washoku="entry.visual.color.name" :data-pattern="entry.visual.pattern.id" :data-pattern-name="entry.visual.pattern.name" :aria-label="eventLabel(entry.event)" role="button" tabindex="0" @click="emit('select-course', entry.event)" @keydown.enter.prevent="emit('select-course', entry.event)" @keydown.space.prevent="emit('select-course', entry.event)">
+            <article v-for="(entry, index) in eventsAt(day.value, slot)" :key="`${entry.event.date}-${entry.event.slot}-${entry.event.title}-${index}`" class="course-tile" :style="entry.visual.style" :data-course-highlight="isHighlighted(entry.event) ? '' : undefined" :data-washoku="entry.visual.color.name" :data-pattern="entry.visual.pattern.id" :data-pattern-name="entry.visual.pattern.name" :aria-label="eventLabel(entry.event)" role="button" tabindex="0" @click="emit('select-course', entry.event)" @keydown.enter.prevent="emit('select-course', entry.event)" @keydown.space.prevent="emit('select-course', entry.event)">
               <div class="course-content">
                 <div class="course-field-scroll" data-marquee data-max-lines="3" data-field-label="课名"><strong class="course-title course-field-track">{{ entry.event.title }}</strong></div>
                 <div v-if="entry.event.teacher" class="course-field-scroll course-teacher-scroll" data-marquee data-max-lines="2" data-field-label="教师名"><span class="course-teacher course-field-track">{{ entry.event.teacher }}</span></div>
@@ -191,13 +197,22 @@ function eventLabel(event: ScheduleEvent) {
             </article>
           </div>
         </template>
-        <div v-for="(day, index) in visibleDays" v-show="holidayAt(day.value)" :key="`holiday-${day.value}`" class="holiday-column" :style="{ gridColumn: index + 2, gridRow: `2 / ${sessionCount + 2}` }" aria-label="假期"><span>假</span><span>期</span></div>
+        <div v-for="(day, index) in visibleDays" v-show="holidayAt(day.value) && !(highlightedInWeek && highlightedCourse?.weekday === day.value)" :key="`holiday-${day.value}`" class="holiday-column" :style="{ gridColumn: index + 2, gridRow: `2 / ${sessionCount + 2}` }" aria-label="假期"><span>假</span><span>期</span></div>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+.course-tile[data-course-highlight]::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 3px var(--course-ink); pointer-events: none }
+.highlight-exiting .course-tile[data-course-highlight]::after { animation: course-highlight-out 600ms ease-out forwards }
+@keyframes course-highlight-out {
+  from { opacity: 1; filter: blur(0) }
+  to { opacity: 0; filter: blur(5px) }
+}
+@media (prefers-reduced-motion: reduce) {
+  .highlight-exiting .course-tile[data-course-highlight]::after { animation: none; opacity: 0 }
+}
 .timetable {
   width: 100%;
   min-width: 0;
@@ -317,68 +332,6 @@ function eventLabel(event: ScheduleEvent) {
   display: grid;
   grid-auto-rows: minmax(0, 1fr);
   gap: 3px;
-}
-
-.course-tile {
-  --course-bg-1: #eadfda;
-  --course-bg-2: #e2d4ce;
-  --course-ink: #211f1c;
-  --course-meta: #45413b;
-  --course-pattern: #625b53;
-  --course-bg-1: color-mix(in oklab, var(--course-base) 25%, #fffdf8);
-  --course-bg-2: color-mix(in oklab, var(--course-base) 34%, #fff8f1);
-  --course-ink: color-mix(in oklab, var(--course-base) 14%, #171714);
-  --course-meta: color-mix(in oklab, var(--course-base) 20%, #34322e);
-  --course-pattern: color-mix(in oklab, var(--course-base) 42%, #3f3b36);
-  position: relative;
-  min-width: 0;
-  overflow: hidden;
-  isolation: isolate;
-  padding: 8px 6px 7px;
-  border: 0;
-  border-radius: 11px;
-  color: var(--course-ink);
-  background: linear-gradient(145deg, var(--course-bg-1), var(--course-bg-2));
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-standard), background var(--duration-base) var(--ease-standard), color var(--duration-base) var(--ease-standard);
-}
-
-.course-tile:focus-visible {
-  outline: 0;
-  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--course-ink) 24%, transparent);
-}
-
-.course-tile:active {
-  transform: scale(.985);
-}
-
-.course-tile::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--course-pattern);
-  opacity: .115;
-  -webkit-mask-image: var(--pattern-mask);
-  mask-image: var(--pattern-mask);
-  -webkit-mask-size: var(--pattern-size);
-  mask-size: var(--pattern-size);
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-}
-
-:global(:root[data-theme="dark"] .course-tile) {
-  --course-bg-1: #30312d;
-  --course-bg-2: #252622;
-  --course-ink: #f5f0e8;
-  --course-meta: #ddd7ce;
-  --course-pattern: #c7c0b7;
-  --course-bg-1: color-mix(in oklab, var(--course-base) 24%, #252622);
-  --course-bg-2: color-mix(in oklab, var(--course-base) 32%, #1c1d1a);
-  --course-ink: color-mix(in oklab, var(--course-base) 10%, #f8f4ed);
-  --course-meta: color-mix(in oklab, var(--course-base) 16%, #e1dbd2);
-  --course-pattern: color-mix(in oklab, var(--course-base) 42%, #f3ede5);
 }
 
 .course-content {

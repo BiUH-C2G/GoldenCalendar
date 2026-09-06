@@ -10,6 +10,20 @@ interface CalendarEvent {
 
 const CALENDAR_TIMEZONE = 'Asia/Shanghai'
 
+export type CalendarScope = { kind: 'all' } | { kind: 'course', title: string } | { kind: 'event', event: ScheduleEvent }
+
+function selectCalendarEvents(group: ScheduleGroup, scope: CalendarScope): ScheduleEvent[] {
+  if (scope.kind === 'course') return group.events.filter((event) => event.title === scope.title)
+  if (scope.kind === 'event') return [scope.event]
+  return group.events
+}
+
+function calendarName(data: ScheduleData, group: ScheduleGroup, scope: CalendarScope): string {
+  if (scope.kind === 'course') return `${scope.title}全部课程`
+  if (scope.kind === 'event') return `${scope.event.title}-${scope.event.date}-第${scope.event.slot}节`
+  return `${data.source.grade}级 ${data.source.major} ${group.groupId}班课表`
+}
+
 function escapeIcsText(value: string) {
   return value
     .replace(/\\/g, '\\\\')
@@ -47,7 +61,7 @@ function mergeEvents(data: ScheduleData, group: ScheduleGroup): CalendarEvent[] 
 
   for (const event of events) {
     const range = sessions[event.slot - 1]
-    if (!range) continue
+    if (!range) throw new Error(`无法导出「${event.title}」：第${event.slot}节的时间无效`)
     const last = merged.at(-1)
     const sameCourse = last
       && last.end === formatIcsDate(event.date, sessions[event.slot - 2]?.end ?? range.start)
@@ -104,15 +118,13 @@ function hashText(value: string, seed: number) {
   return hash.toString(16).padStart(8, '0')
 }
 
-export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup) {
-  return buildCalendarContent(data, group, mergeEvents(data, group))
+export function buildCalendarFile(data: ScheduleData, group: ScheduleGroup, scope: CalendarScope = { kind: 'all' }) {
+  const events = selectCalendarEvents(group, scope)
+  if (!events.length) throw new Error('没有可导出的课程安排')
+  return buildCalendarContent(data, group, mergeEvents(data, { ...group, events }), calendarName(data, group, scope))
 }
 
-export function buildCourseCalendarFile(data: ScheduleData, group: ScheduleGroup, event: ScheduleEvent) {
-  return buildCalendarContent(data, group, mergeEvents(data, { ...group, events: [event] }))
-}
-
-function buildCalendarContent(data: ScheduleData, group: ScheduleGroup, events: CalendarEvent[]) {
+function buildCalendarContent(data: ScheduleData, group: ScheduleGroup, events: CalendarEvent[], name: string) {
   const stamp = formatIcsUtcDate(new Date())
   const lines = [
     'BEGIN:VCALENDAR',
@@ -121,7 +133,7 @@ function buildCalendarContent(data: ScheduleData, group: ScheduleGroup, events: 
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-TIMEZONE:${CALENDAR_TIMEZONE}`,
-    `X-WR-CALNAME:${escapeIcsText(`${data.source.grade}级 ${data.source.major} ${group.groupId}班课表`)}`,
+    `X-WR-CALNAME:${escapeIcsText(name)}`,
     'BEGIN:VTIMEZONE',
     `TZID:${CALENDAR_TIMEZONE}`,
     `X-LIC-LOCATION:${CALENDAR_TIMEZONE}`,
@@ -153,14 +165,9 @@ function buildCalendarContent(data: ScheduleData, group: ScheduleGroup, events: 
   return `${lines.map(foldIcsLine).join('\r\n')}\r\n`
 }
 
-export function importCalendar(data: ScheduleData, group: ScheduleGroup) {
-  const fileName = `${data.source.grade}${data.source.majorCode}-${group.groupId}.ics`
-  openCalendarFile(fileName, buildCalendarFile(data, group))
-}
-
-export function importCourseCalendar(data: ScheduleData, group: ScheduleGroup, event: ScheduleEvent) {
-  const title = event.title.replace(/[\\/:*?"<>|]/g, '-').slice(0, 40) || '课程'
-  openCalendarFile(`${title}-${event.date}.ics`, buildCourseCalendarFile(data, group, event))
+export function importCalendar(data: ScheduleData, group: ScheduleGroup, scope: CalendarScope = { kind: 'all' }) {
+  const name = Array.from(calendarName(data, group, scope)).filter((character) => character.charCodeAt(0) >= 32).join('').replace(/[\\/:*?"<>|]/g, '-').slice(0, 100) || '课程'
+  openCalendarFile(`${name}.ics`, buildCalendarFile(data, group, scope))
 }
 
 function openCalendarFile(fileName: string, content: string) {

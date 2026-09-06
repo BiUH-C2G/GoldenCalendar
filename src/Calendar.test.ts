@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildCalendarFile, buildCourseCalendarFile } from './Calendar'
+import { buildCalendarFile } from './Calendar'
 import type { ScheduleData, ScheduleGroup } from './Types'
 
 const group: ScheduleGroup = { groupId: '1', events: [{ date: '2026-08-31', week: 1, weekday: 1, slot: 1, title: '很长的中文课程名称用于验证日历文件折行不会破坏任何中文字符很长的中文课程名称用于验证日历文件折行不会破坏任何中文字符', teacher: '测试教师', room: 'A101', source: 'administrative' }], notices: [] }
@@ -25,7 +25,7 @@ describe('日历导出', () => {
   })
 
   it('能够为单次课程生成独立日历文件', () => {
-    const calendar = buildCourseCalendarFile(data, group, group.events[0])
+    const calendar = buildCalendarFile(data, group, { kind: 'event', event: group.events[0] })
     expect(calendar.match(/BEGIN:VEVENT/g)).toHaveLength(1)
     expect(calendar).toContain('DTEND;TZID=Asia/Shanghai:20260831T100000')
     expect(calendar).toContain('LOCATION:A101')

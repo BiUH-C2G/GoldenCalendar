@@ -5,7 +5,6 @@ import type { CourseConflict } from '@/Conflicts'
 import { WEEKDAYS } from '@/Schedule'
 
 const props = defineProps<{ conflicts: CourseConflict[], sessions: string[] }>()
-const emit = defineEmits<{ back: [], confirm: [] }>()
 const occurrenceCount = computed(() => props.conflicts.reduce((count, conflict) => count + conflict.dates.length, 0))
 const includesPhysicalEducation = computed(() => props.conflicts.some((conflict) => conflict.courses.some((course) => course.source === 'physicalEducation')))
 </script>
@@ -22,7 +21,6 @@ const includesPhysicalEducation = computed(() => props.conflicts.some((conflict)
         <details class="conflict-dates"><summary>具体日期</summary><p>{{ conflict.dates.join('、') }}</p></details>
       </li>
     </ol>
-    <div class="dialog-actions conflict-actions"><button class="primary-button" type="button" data-dialog-autofocus @click="emit('back')">返回修改</button><button class="secondary-button conflict-confirm" type="button" @click="emit('confirm')">坚持保存</button></div>
   </div>
 </template>
 
@@ -43,8 +41,4 @@ const includesPhysicalEducation = computed(() => props.conflicts.some((conflict)
 .conflict-dates { margin-top: 12px; color: var(--text-muted); font-size: 12px }
 .conflict-dates summary { width: fit-content; cursor: pointer }
 .conflict-dates p { margin: 8px 0 0 }
-.conflict-actions { position: sticky; bottom: -1px; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; padding: 14px 0 2px; background: var(--surface-solid) }
-.conflict-actions button { flex: 1 1 120px; min-width: 0; white-space: normal }
-.conflict-confirm { color: var(--danger) }
-.conflict-confirm:hover { background: color-mix(in srgb, var(--danger) 12%, var(--surface-solid)) }
 </style>

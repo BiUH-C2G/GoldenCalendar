@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
-import {importCalendar, importCourseCalendar} from '@/Calendar'
+import {importCalendar} from '@/Calendar'
+import type {CalendarScope} from '@/Calendar'
 import {getMajor} from '@/Contract'
 import {loadAdministrativeSchedule, loadSelectedLanguages, loadPhysicalEducation} from '@/Data'
 import {formatChineseDateRange, getIsoWeekday, getShanghaiToday} from '@/DateTime'
@@ -18,6 +19,8 @@ import TimeTable from '@/view/TimeTable.vue'
 import WeekFiddler from '@/view/WeekFiddler.vue'
 import About from '@/view/dialog-content/About.vue'
 import CourseDetail from '@/view/dialog-content/CourseDetail.vue'
+import AllCourses from '@/view/dialog-content/AllCourses.vue'
+import CourseOccurrences from '@/view/dialog-content/CourseOccurrences.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
 import { CONFLICT_CACHE_KEY, rememberConfirmedConflict } from '@/ConflictCache'
 import type { ConflictConfirmation } from '@/ConflictCache'
@@ -36,7 +39,14 @@ const loading = ref(true)
 const error = ref('')
 const currentWeek = ref(1)
 const todayDate = ref(getShanghaiToday())
-const activeDialog = ref<'settings' | 'about' | 'course' | null>(null)
+const activeDialog = ref<'settings' | 'about' | 'course' | 'allCourses' | 'occurrences' | null>(null)
+const lookupTitle = ref('')
+const pendingLookupTitle = ref<string | null>(null)
+const highlightedCourse = ref<ScheduleEvent | null>(null)
+const highlightExiting = ref(false)
+let highlightExpired = false
+let highlightTimer = 0
+let highlightOutroTimer = 0
 const selectedCourse = ref<ScheduleEvent | null>(null)
 const themePreference = ref<ThemePreference>(readThemePreference())
 const systemPrefersDark = ref(false)
@@ -64,13 +74,14 @@ let pagerPointer: { id: number, startX: number, startY: number, lastX: number, l
 
 const source = computed(() => selection.value ? getMajor(selection.value.grade, selection.value.majorCode) ?? null : null)
 const group = computed(() => schedule.value && languages.value ? composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value, physicalEducation.value ?? undefined) : null)
+const allCourseEvents = computed(() => schedule.value && languages.value ? composeScheduleLayers(schedule.value, schedule.value.group, languages.value, DEFAULT_SCHEDULE_LAYERS, physicalEducation.value ?? undefined).events : [])
 const ready = computed(() => Boolean(!loading.value && schedule.value && group.value && selection.value))
 const weekCount = computed(() => schedule.value?.calendar.weekCount ?? 1)
 const summary = computed(() => selection.value ? `${selection.value.grade}级 · ${source.value?.name ?? selection.value.majorCode} · ${selection.value.groupId}班` : '尚未设置课程表')
 const settingsOpen = computed({get: () => activeDialog.value === 'settings', set: (open) => activeDialog.value = open ? 'settings' : null})
 const aboutOpen = computed({get: () => activeDialog.value === 'about', set: (open) => activeDialog.value = open ? 'about' : null})
 const courseOpen = computed({get: () => activeDialog.value === 'course', set: (open) => activeDialog.value = open ? 'course' : null})
-const bottomItems = computed<BottomBarItem[]>(() => [{id: 'settings', label: '设置', icon: 'settings', tone: 'warm'}, {id: 'export', label: '导出到手机', icon: 'export', tone: 'green', disabled: !ready.value}, {id: 'about', label: '关于', icon: 'about', tone: 'blue'}])
+const bottomItems = computed<BottomBarItem[]>(() => [{id: 'settings', label: '设置', icon: 'settings', tone: 'warm'}, {id: 'allCourses', label: '所有课', icon: 'courses', tone: 'blue', disabled: !ready.value}, {id: 'export', label: '课表导到日历', icon: 'export', tone: 'green', disabled: !ready.value}, {id: 'about', label: '关于', icon: 'about', tone: 'blue'}])
 const pagerCards = computed(() => pagerTargetWeek.value && pagerTargetWeek.value !== currentWeek.value ? [pagerTargetWeek.value, currentWeek.value] : [currentWeek.value])
 const debugGlowDays = computed(() => group.value ? getVisibleWeekdays(group.value, currentWeek.value) : [])
 const dateRange = computed(() => {
@@ -98,6 +109,8 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  window.clearTimeout(highlightTimer)
+  window.clearTimeout(highlightOutroTimer)
   themeMediaQuery?.removeEventListener('change', handleSystemThemeChange)
   loadAbortController?.abort()
   pagerResizeObserver?.disconnect()
@@ -107,7 +120,19 @@ onBeforeUnmount(() => {
 })
 
 watch([themePreference, systemPrefersDark], applyTheme)
+watch(activeDialog, (value) => {
+  if (value !== 'allCourses') pendingLookupTitle.value = null
+})
 watch(ready, resetPagerState)
+watch(currentWeek, (week) => {
+  if (highlightedCourse.value && highlightedCourse.value.week !== week) clearCourseHighlight()
+}, { flush: 'sync' })
+watch([pagerAnimating, pagerDragging], ([animating, dragging]) => {
+  if (animating || dragging) {
+    window.clearTimeout(highlightOutroTimer)
+    highlightExiting.value = false
+  } else if (highlightExpired) finishCourseHighlight()
+})
 watch(weekStage, syncPagerStageObserver, {flush: 'post'})
 watch(debugGlowDays, (days) => {
   if (days.length && !days.some((day) => day.value === debugGlowWeekday.value)) debugGlowWeekday.value = days[0].value
@@ -474,15 +499,21 @@ function syncPagerStageObserver(element: HTMLElement | null) {
 }
 
 function handleBottomAction(id: string) {
+  if (id === 'allCourses' && ready.value) activeDialog.value = 'allCourses'
   if (id === 'settings') activeDialog.value = 'settings'
   else if (id === 'about') activeDialog.value = 'about'
   else if (id === 'export') exportCalendar()
 }
 
-function exportCalendar() {
+function exportCalendar(scope: CalendarScope = { kind: 'all' }) {
   if (!schedule.value || !group.value) return
-  importCalendar(schedule.value, group.value)
-  showToast('已生成日历文件')
+  try {
+    importCalendar(schedule.value, { ...group.value, events: allCourseEvents.value }, scope)
+    activeDialog.value = null
+    showToast('已生成日历文件')
+  } catch (cause) {
+    showToast(cause instanceof Error ? cause.message : '日历生成失败，请重试')
+  }
 }
 
 function openCourse(event: ScheduleEvent) {
@@ -491,11 +522,46 @@ function openCourse(event: ScheduleEvent) {
   activeDialog.value = 'course'
 }
 
-function exportSelectedCourse() {
-  if (!schedule.value || !group.value || !selectedCourse.value) return
-  importCourseCalendar(schedule.value, group.value, selectedCourse.value)
+function findAllCourse(title: string) {
+  lookupTitle.value = title
+  pendingLookupTitle.value = null
+  activeDialog.value = 'occurrences'
+}
+
+async function jumpToCourse(event: ScheduleEvent) {
+  clearCourseHighlight()
+  resetPagerState()
+  layers.value = { ...DEFAULT_SCHEDULE_LAYERS }
+  currentWeek.value = event.week
+  highlightedCourse.value = event
   activeDialog.value = null
-  showToast('已生成本课程的日历文件')
+  window.clearTimeout(highlightTimer)
+  await nextTick()
+  const target = weekStage.value?.querySelector<HTMLElement>('[data-course-highlight]')
+  target?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' })
+  target?.focus({ preventScroll: true })
+  highlightTimer = window.setTimeout(() => {
+    highlightExpired = true
+    finishCourseHighlight()
+  }, 4000)
+}
+
+function clearCourseHighlight() {
+  window.clearTimeout(highlightTimer)
+  window.clearTimeout(highlightOutroTimer)
+  highlightedCourse.value = null
+  highlightExiting.value = false
+  highlightExpired = false
+}
+
+function finishCourseHighlight() {
+  if (!highlightedCourse.value || pagerAnimating.value || pagerDragging.value) return
+  if (prefersReducedMotion()) {
+    clearCourseHighlight()
+    return
+  }
+  highlightExiting.value = true
+  highlightOutroTimer = window.setTimeout(clearCourseHighlight, 600)
 }
 
 async function copyCourseDetail(label: string, value: string) {
@@ -575,7 +641,7 @@ function showToast(message: string) {
           <div v-else-if="!ready" class="state-card"><span>{{ loading ? '正在整理课程表' : '请先完成课程表设置' }}</span></div>
           <div v-else-if="schedule && group" ref="weekStage" class="week-stage" :class="{ 'is-animating': pagerAnimating, 'is-dragging': pagerDragging }" aria-label="左右拖动切换周次" @pointerdown="handlePagerPointerDown" @pointermove="handlePagerPointerMove" @pointerup="handlePagerPointerEnd" @pointercancel="handlePagerPointerCancel" @dragstart.prevent>
             <div v-for="week in pagerCards" :key="week" class="week-card" :class="pagerCardClass(week)" :aria-hidden="week !== currentWeek">
-              <TimeTable :schedule="schedule" :group="group" :week="week" :today-date="todayDate" :active="week === currentWeek && !pagerDragging && !pagerAnimating" :animate-entry="week === currentWeek && pagerTargetWeek === null" :glow-weekday="props.debug ? debugGlowWeekday : undefined" :glow-edge="props.debug ? debugGlowEdge : 'soft'" @select-course="openCourse"/>
+              <TimeTable :class="{ 'highlight-exiting': highlightExiting }" :schedule="schedule" :group="group" :week="week" :today-date="todayDate" :active="week === currentWeek && !pagerDragging && !pagerAnimating" :animate-entry="week === currentWeek && pagerTargetWeek === null" :glow-weekday="props.debug ? debugGlowWeekday : undefined" :glow-edge="props.debug ? debugGlowEdge : 'soft'" :highlighted-course="highlightedCourse" @select-course="openCourse"/>
             </div>
           </div>
 
@@ -590,16 +656,36 @@ function showToast(message: string) {
 
   <Dialog v-model:open="aboutOpen" title="科比在线课程表">
     <About/>
+    <template #actions><button class="secondary-button" type="button" @click="activeDialog = null">关闭</button></template>
   </Dialog>
 
   <Dialog v-model:open="courseOpen" title="课程详情">
-    <CourseDetail v-if="selectedCourse && schedule" :event="selectedCourse" :time="schedule.calendar.sessions[selectedCourse.slot - 1] ?? '时间未注明'" @calendar="exportSelectedCourse" @close="activeDialog = null" @copy="copyCourseDetail"/>
+    <CourseDetail v-if="selectedCourse && schedule" :event="selectedCourse" :time="schedule.calendar.sessions[selectedCourse.slot - 1] ?? '时间未注明'" @copy="copyCourseDetail"/>
+    <template #actions>
+      <button class="secondary-button" type="button" :disabled="!selectedCourse" @click="selectedCourse && findAllCourse(selectedCourse.title)">查看全部本课</button>
+      <button class="primary-button" type="button" :disabled="!selectedCourse" @click="selectedCourse && exportCalendar({ kind: 'event', event: selectedCourse })">本节课导到日历</button>
+      <button class="secondary-button" type="button" @click="activeDialog = null">好的</button>
+    </template>
+  </Dialog>
+
+  <Dialog :open="activeDialog === 'allCourses'" title="所有课" @update:open="activeDialog = null">
+    <AllCourses v-if="activeDialog === 'allCourses'" :events="allCourseEvents" @select="pendingLookupTitle = $event"/>
+    <template #actions><button class="secondary-button" type="button" @click="activeDialog = null">关闭</button></template>
+  </Dialog>
+  <Dialog :open="activeDialog === 'allCourses' && pendingLookupTitle !== null" title="看所有本课" @update:open="pendingLookupTitle = null">
+    <p class="lookup-confirm">您是否要看目前课表下所有的「{{ pendingLookupTitle }}」？</p>
+    <template #actions><button class="secondary-button" type="button" data-dialog-autofocus @click="pendingLookupTitle = null">不</button><button class="primary-button" type="button" @click="pendingLookupTitle !== null && findAllCourse(pendingLookupTitle)">是的</button></template>
+  </Dialog>
+  <Dialog :open="activeDialog === 'occurrences'" title="该课所有" @update:open="activeDialog = null">
+    <CourseOccurrences v-if="activeDialog === 'occurrences' && schedule" :title="lookupTitle" :events="allCourseEvents" :sessions="schedule.calendar.sessions" :current-week="currentWeek" @select="jumpToCourse"/>
+    <template #actions><button class="primary-button" type="button" :disabled="!allCourseEvents.some((event) => event.title === lookupTitle)" @click="exportCalendar({ kind: 'course', title: lookupTitle })">所有本课导到日历</button></template>
   </Dialog>
 
   <div class="toast" :class="{ show: toastMessage }" role="status" aria-live="polite">{{ toastMessage }}</div>
 </template>
 
 <style scoped>
+.lookup-confirm { overflow-wrap: anywhere; line-height: 1.6 }
 .application-layer, .app {
   width: 100vw;
   max-width: 100vw;
