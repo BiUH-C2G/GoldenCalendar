@@ -2,14 +2,14 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {importCalendar, importCourseCalendar} from '@/Calendar'
 import {getMajor} from '@/Contract'
-import {loadAdministrativeSchedule, loadSelectedLanguages} from '@/Data'
+import {loadAdministrativeSchedule, loadSelectedLanguages, loadPhysicalEducation} from '@/Data'
 import {formatChineseDateRange, getIsoWeekday, getShanghaiToday} from '@/DateTime'
 import {DEFAULT_SCHEDULE_LAYERS, composeScheduleLayers, getCurrentWeek, getVisibleWeekdays, getWeekDates} from '@/Schedule'
 import type {ScheduleLayers} from '@/Schedule'
 import {draftFromSelection, readSelectionDraft, selectionFromDraft} from '@/SelectionState'
 import type {SelectionDraft} from '@/SelectionState'
 import {THEME_STORAGE_KEY, applyThemePreference, readThemePreference} from '@/Theme'
-import type {ScheduleData, ScheduleEvent, SelectedLanguageClasses, Selection, ThemePreference} from '@/Types'
+import type {ScheduleData, ScheduleEvent, SelectedLanguageClasses, Selection, ThemePreference, PhysicalEducationGroup} from '@/Types'
 import BottomBar from '@/view/BottomBar.vue'
 import type {BottomBarItem} from '@/view/BottomBar.vue'
 import ClassSummary from '@/view/ClassSummary.vue'
@@ -19,6 +19,7 @@ import WeekFiddler from '@/view/WeekFiddler.vue'
 import About from '@/view/dialog-content/About.vue'
 import CourseDetail from '@/view/dialog-content/CourseDetail.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
+import type { LoadedSchedule } from '@/Data'
 
 const props = withDefaults(defineProps<{ debug?: boolean }>(), {debug: false})
 const STORAGE_KEY = 'campus-timetable-selection'
@@ -26,6 +27,7 @@ const initialDraft = readStoredSelectionDraft()
 const initialSelection = initialDraft ? selectionFromDraft(initialDraft) : null
 const schedule = ref<ScheduleData | null>(null)
 const languages = ref<SelectedLanguageClasses | null>(null)
+const physicalEducation = ref<PhysicalEducationGroup | null>(null)
 const selectionDraft = ref<SelectionDraft | null>(initialDraft)
 const selection = ref<Selection | null>(initialSelection)
 const loading = ref(true)
@@ -59,7 +61,7 @@ let loadAbortController: AbortController | null = null
 let pagerPointer: { id: number, startX: number, startY: number, lastX: number, lastTime: number, velocityX: number, distanceX: number, axis: 'pending' | 'horizontal' | 'vertical' } | null = null
 
 const source = computed(() => selection.value ? getMajor(selection.value.grade, selection.value.majorCode) ?? null : null)
-const group = computed(() => schedule.value && languages.value ? composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value) : null)
+const group = computed(() => schedule.value && languages.value ? composeScheduleLayers(schedule.value, schedule.value.group, languages.value, layers.value, physicalEducation.value ?? undefined) : null)
 const ready = computed(() => Boolean(!loading.value && schedule.value && group.value && selection.value))
 const weekCount = computed(() => schedule.value?.calendar.weekCount ?? 1)
 const summary = computed(() => selection.value ? `${selection.value.grade}级 · ${source.value?.name ?? selection.value.majorCode} · ${selection.value.groupId}班` : '尚未设置课程表')
@@ -102,14 +104,6 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(pagerAnimationFrame)
 })
 
-watch(selection, async (value) => {
-  if (!value) {
-    loading.value = false
-    activeDialog.value = 'settings'
-    return
-  }
-  await loadSelectedSchedule()
-})
 watch([themePreference, systemPrefersDark], applyTheme)
 watch(ready, resetPagerState)
 watch(weekStage, syncPagerStageObserver, {flush: 'post'})
@@ -125,14 +119,16 @@ async function loadSelectedSchedule() {
   loadAbortController = controller
   loading.value = true
   schedule.value = null
-  languages.value = null
+    languages.value = null
+    physicalEducation.value = null
   error.value = ''
 
   try {
-    const [nextSchedule, nextLanguages] = await Promise.all([loadAdministrativeSchedule(value, controller.signal), loadSelectedLanguages(value, controller.signal)])
+    const [nextSchedule, nextLanguages, nextPhysicalEducation] = await Promise.all([loadAdministrativeSchedule(value, controller.signal), loadSelectedLanguages(value, controller.signal), loadPhysicalEducation(value, controller.signal)])
     if (controller.signal.aborted || loadAbortController !== controller) return
     schedule.value = nextSchedule
     languages.value = nextLanguages
+    physicalEducation.value = nextPhysicalEducation
     currentWeek.value = getCurrentWeek(nextSchedule, todayDate.value)
     resetPagerState()
   } catch (cause) {
@@ -173,14 +169,26 @@ function setTheme(value: ThemePreference) {
   localStorage.setItem(THEME_STORAGE_KEY, value)
 }
 
-function saveSelection(value: Selection) {
-  const unchanged = ready.value && selection.value && JSON.stringify(value) === JSON.stringify(selection.value)
+function saveSelection(value: Selection, loaded: LoadedSchedule) {
+  try {
+    writeStoredSelection(value)
+  } catch {
+    showToast('无法保存到本地储存，请检查浏览器储存权限后重试')
+    return
+  }
+  loadAbortController?.abort()
+  loadAbortController = null
   selectionDraft.value = draftFromSelection(value)
-  writeStoredSelection(value)
+  selection.value = value
+  schedule.value = loaded.schedule
+  languages.value = loaded.languages
+  physicalEducation.value = loaded.physicalEducation
+  loading.value = false
+  error.value = ''
+  currentWeek.value = getCurrentWeek(loaded.schedule, todayDate.value)
+  resetPagerState()
   activeDialog.value = null
   showToast('设置已保存')
-  if (unchanged) return
-  selection.value = value
 }
 
 function resetDebugData() {
@@ -574,9 +582,7 @@ function showToast(message: string) {
     <BottomBar :items="bottomItems" @select="handleBottomAction"/>
   </div>
 
-  <Dialog v-model:open="settingsOpen" title="设置" :closable="Boolean(selection)">
-    <Settings :open="settingsOpen" :initial-draft="selectionDraft" :selection="selection" :theme="themePreference" @save="saveSelection" @cancel="activeDialog = null" @update:theme="setTheme"/>
-  </Dialog>
+  <Settings :open="settingsOpen" :initial-draft="selectionDraft" :selection="selection" :theme="themePreference" @save="saveSelection" @cancel="activeDialog = null" @update:theme="setTheme"/>
 
   <Dialog v-model:open="aboutOpen" title="科比在线课程表">
     <About/>

@@ -184,6 +184,7 @@ function eventLabel(event: ScheduleEvent) {
           <div v-for="(day, dayIndex) in visibleDays" :key="`${week}-${day.value}-${slot}`" class="course-cell" :style="{ gridColumn: dayIndex + 2, gridRow: slot + 1 }">
             <article v-for="(entry, index) in eventsAt(day.value, slot)" :key="`${entry.event.date}-${entry.event.slot}-${entry.event.title}-${index}`" class="course-tile" :style="entry.visual.style" :data-washoku="entry.visual.color.name" :data-pattern="entry.visual.pattern.id" :data-pattern-name="entry.visual.pattern.name" :aria-label="eventLabel(entry.event)" role="button" tabindex="0" @click="emit('select-course', entry.event)" @keydown.enter.prevent="emit('select-course', entry.event)" @keydown.space.prevent="emit('select-course', entry.event)">
               <div class="course-content">
+                <span v-if="eventsAt(day.value, slot).length > 1" class="course-conflict" title="同一日期和节次存在多门课程">时间冲突</span>
                 <div class="course-field-scroll" data-marquee data-max-lines="3" data-field-label="课名"><strong class="course-title course-field-track">{{ entry.event.title }}</strong></div>
                 <div v-if="entry.event.teacher" class="course-field-scroll course-teacher-scroll" data-marquee data-max-lines="2" data-field-label="教师名"><span class="course-teacher course-field-track">{{ entry.event.teacher }}</span></div>
                 <span v-if="entry.event.room" class="course-room">{{ entry.event.room }}</span>
@@ -198,6 +199,7 @@ function eventLabel(event: ScheduleEvent) {
 </template>
 
 <style scoped>
+.course-conflict { font-size: 11px; font-weight: 650; overflow-wrap: anywhere }
 .timetable {
   width: 100%;
   min-width: 0;

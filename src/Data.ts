@@ -1,7 +1,7 @@
 import { coordinateFile, dataContract, getGrade } from './Contract'
 import { addIsoDateDays, isoDateToDayNumber, parseIsoDate } from './DateTime'
 import { expectArray, expectIntegerRange, expectNullableString, expectRecord, expectString, expectStringArray } from './Validation'
-import type { LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, SelectedLanguageClasses, Selection } from './Types'
+import type { LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, SelectedLanguageClasses, Selection, PhysicalEducationGroup } from './Types'
 
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/${dataContract.term}/`
 
@@ -37,6 +37,23 @@ export async function loadSelectedLanguages(selection: Selection, signal?: Abort
   const catchupPromise = selection.englishCatchupEnabled && selection.englishCatchupClassNumber ? loadCoordinate(coordinateFile('englishCatchup', { classNumber: selection.englishCatchupClassNumber }), '英语补课课程表', parseLanguageClass, signal) : Promise.resolve(null)
   const [english, englishCatchup, german] = await Promise.all([englishPromise, catchupPromise, germanPromise])
   return { english, englishCatchup, german }
+}
+export async function loadPhysicalEducation(selection: Selection, signal?: AbortSignal): Promise<PhysicalEducationGroup | null> {
+  if (!dataContract.physicalEducation.eligibleGrades.includes(selection.grade)) return null
+  return loadCoordinate(coordinateFile('physicalEducation', { groupId: selection.physicalEducationGroupId }), '体育课程表', parsePhysicalEducation, signal)
+}
+
+export interface LoadedSchedule { schedule: ScheduleData, languages: SelectedLanguageClasses, physicalEducation: PhysicalEducationGroup | null }
+
+export async function loadSelection(selection: Selection, signal?: AbortSignal): Promise<LoadedSchedule> {
+  const [schedule, languages, physicalEducation] = await Promise.all([loadAdministrativeSchedule(selection, signal), loadSelectedLanguages(selection, signal), loadPhysicalEducation(selection, signal)])
+  return { schedule, languages, physicalEducation }
+}
+
+function parsePhysicalEducation(value: unknown): PhysicalEducationGroup {
+  const root = expectRecord(value, '体育课程表')
+  const meetings = expectArray(root.meetings, '体育课程表.meetings').map((item, index) => { const meeting = expectRecord(item, `体育课程表.meetings[${index}]`); return { startWeek: expectIntegerRange(meeting.startWeek, '体育周次', 1, 60), endWeek: expectIntegerRange(meeting.endWeek, '体育周次', 1, 60), weekday: expectIntegerRange(meeting.weekday, '体育星期', 1, 7), slot: expectIntegerRange(meeting.slot, '体育节次', 1, 6), teachers: expectStringArray(meeting.teachers, '体育教师'), room: expectString(meeting.room, '体育场地') } })
+  return { groupId: expectString(root.groupId, '体育课程表.groupId'), meetings }
 }
 
 function parseAdministrativePayload(value: unknown): AdministrativePayload {

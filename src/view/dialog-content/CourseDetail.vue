@@ -11,7 +11,7 @@ const rows = computed(() => [
   { label: '教师', value: props.event.teacher ?? '未注明' },
   { label: '上课地点', value: props.event.room ?? '未注明' },
   { label: '时间', value: props.time },
-  { label: '本课程来自', copyLabel: '课表来源', value: props.event.source === 'language' ? '语言班课表' : '行政班课表' },
+  { label: '本课程来自', copyLabel: '课表来源', value: props.event.source === 'physicalEducation' ? '体育课表' : props.event.source === 'language' ? '语言班课表' : '行政班课表' },
   { label: '颜色', value: visual.value.color.name },
   { label: '纹理', value: visual.value.pattern.name }
 ])

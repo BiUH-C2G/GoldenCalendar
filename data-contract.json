@@ -4,7 +4,8 @@
     "administrative": "a-{grade}-{majorCode}-{groupId}.json",
     "english": "e-{classNumber}.json",
     "englishCatchup": "ec-{classNumber}.json",
-    "german": "g-{section}-{level}-{classNumber}.json"
+    "german": "g-{section}-{level}-{classNumber}.json",
+    "physicalEducation": "pe-{groupId}.json"
   },
   "grades": [
     {
@@ -42,6 +43,7 @@
       ]
     }
   ],
+  "physicalEducation": { "eligibleGrades": ["2026"], "groups": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"] },
   "languages": {
     "english": {
       "section": "I",

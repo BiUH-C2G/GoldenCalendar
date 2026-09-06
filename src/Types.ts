@@ -6,7 +6,7 @@ export interface ScheduleEvent {
   title: string
   teacher: string | null
   room: string | null
-  source: 'administrative' | 'language'
+  source: 'administrative' | 'language' | 'physicalEducation'
 }
 
 export interface ScheduleNotice {
@@ -57,6 +57,8 @@ export interface SelectedLanguageClasses {
   englishCatchup: LanguageClass | null
   german: LanguageClass
 }
+export interface PhysicalEducationMeeting { startWeek: number, endWeek: number, weekday: number, slot: number, teachers: string[], room: string }
+export interface PhysicalEducationGroup { groupId: string, meetings: PhysicalEducationMeeting[] }
 
 export interface Selection {
   term: string
@@ -68,11 +70,12 @@ export interface Selection {
   englishCatchupClassNumber: string | null
   germanLevel: string
   germanClassNumber: string
+  physicalEducationGroupId: string
 }
 
 export type ThemePreference = 'system' | 'light' | 'dark'
 
-export type ContractFileKind = 'administrative' | 'english' | 'englishCatchup' | 'german'
+export type ContractFileKind = 'administrative' | 'english' | 'englishCatchup' | 'german' | 'physicalEducation'
 
 export interface MajorContract {
   code: string
@@ -112,4 +115,5 @@ export interface DataContract {
     }
     german: GermanContractSection[]
   }
+  physicalEducation: { eligibleGrades: string[], groups: string[] }
 }

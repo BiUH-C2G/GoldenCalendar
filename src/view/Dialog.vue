@@ -1,38 +1,79 @@
+<script lang="ts">
+import { shallowReactive } from 'vue'
+
+interface DialogEntry { id: symbol, panel: () => HTMLElement | null, previousFocus: HTMLElement | null }
+const dialogStack = shallowReactive<DialogEntry[]>([])
+</script>
+
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{ open: boolean, title: string, closable?: boolean }>(), { closable: true })
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const panel = ref<HTMLElement | null>(null)
-let previousFocus: HTMLElement | null = null
+const entry: DialogEntry = { id: Symbol(), panel: () => panel.value, previousFocus: null }
+const stackIndex = computed(() => dialogStack.findIndex((item) => item.id === entry.id))
+const isTopmost = computed(() => props.open && dialogStack.at(-1)?.id === entry.id)
+
+function focusPanel() {
+  const autofocus = panel.value?.querySelector<HTMLElement>('[data-dialog-autofocus]')
+  const focusTarget = autofocus ?? focusableElements()[0] ?? panel.value
+  focusTarget?.focus({ preventScroll: true })
+}
+
+function deactivate() {
+  document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('focusin', handleFocusIn)
+  const index = stackIndex.value
+  if (index < 0) return
+  const wasTopmost = index === dialogStack.length - 1
+  const previousFocus = entry.previousFocus
+  const next = dialogStack[index + 1]
+  // 底层先关闭时，将焦点返回目标交给上层，避免恢复到已经移除的弹窗
+  if (next && panel.value?.contains(next.previousFocus)) next.previousFocus = previousFocus
+  dialogStack.splice(index, 1)
+  entry.previousFocus = null
+  if (!wasTopmost) return
+  void nextTick(() => {
+    const topPanel = dialogStack.at(-1)?.panel()
+    if (previousFocus?.isConnected && !previousFocus.closest('[inert]') && (!topPanel || topPanel.contains(previousFocus))) previousFocus.focus({ preventScroll: true })
+    else topPanel?.focus({ preventScroll: true })
+  })
+}
 
 watch(() => props.open, async (open) => {
   if (!open) {
-    document.removeEventListener('keydown', handleKeydown)
-    previousFocus?.focus()
-    previousFocus = null
+    deactivate()
     return
   }
-  previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  entry.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  dialogStack.push(entry)
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('focusin', handleFocusIn)
   await nextTick()
-  const autofocus = panel.value?.querySelector<HTMLElement>('[data-dialog-autofocus]')
-  const focusTarget = autofocus ?? focusableElements()[0] ?? panel.value
-  focusTarget?.focus()
-})
+  if (isTopmost.value) focusPanel()
+}, { immediate: true })
 
-onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown))
+onBeforeUnmount(deactivate)
 
 function close() {
-  if (props.closable) emit('update:open', false)
+  if (isTopmost.value && props.closable) emit('update:open', false)
+}
+
+function handleFocusIn(event: FocusEvent) {
+  if (isTopmost.value && event.target instanceof Node && !panel.value?.contains(event.target)) focusPanel()
 }
 
 function handleKeydown(event: KeyboardEvent) {
+  if (!isTopmost.value) return
   if (event.key === 'Escape') {
+    event.preventDefault()
+    event.stopImmediatePropagation()
     close()
     return
   }
   if (event.key !== 'Tab') return
+  event.stopImmediatePropagation()
   const elements = focusableElements()
   if (!elements.length) {
     event.preventDefault()
@@ -46,15 +87,15 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 function focusableElements() {
-  return [...panel.value?.querySelectorAll<HTMLElement>('button:not(:disabled), select:not(:disabled), input:not(:disabled), [href], [tabindex]:not([tabindex="-1"])') ?? []].filter((element) => element.getClientRects().length > 0)
+  return [...panel.value?.querySelectorAll<HTMLElement>('button:not(:disabled), select:not(:disabled), input:not(:disabled), textarea:not(:disabled), summary, [href], [tabindex]:not([tabindex="-1"])') ?? []].filter((element) => element.getClientRects().length > 0 && element.tabIndex >= 0 && !element.closest('[inert]'))
 }
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="dialog">
-      <div v-if="open" class="dialog-backdrop" @click.self="close">
-        <section ref="panel" class="dialog-sheet" role="dialog" aria-modal="true" :aria-label="title" tabindex="-1">
+      <div v-if="open" class="dialog-backdrop" :style="{ zIndex: 60 + Math.max(0, stackIndex) }" :inert="!isTopmost" :aria-hidden="!isTopmost ? true : undefined" @click.self="close">
+        <section ref="panel" class="dialog-sheet" role="dialog" :aria-modal="isTopmost ? true : undefined" :aria-label="title" tabindex="-1">
           <header class="dialog-head">
             <h2>{{ title }}</h2>
             <button v-if="closable" class="dialog-close" type="button" aria-label="关闭" @click="close">×</button>

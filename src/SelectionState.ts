@@ -11,9 +11,10 @@ export interface SelectionDraft {
   englishCatchupClassNumber: string
   germanLevel: string
   germanClassNumber: string
+  physicalEducationGroupId: string
 }
 
-export type SelectionField = 'grade' | 'majorCode' | 'groupId' | 'englishClassNumber' | 'englishCatchupEnabled' | 'englishCatchupClassNumber' | 'germanLevel' | 'germanClassNumber'
+export type SelectionField = 'grade' | 'majorCode' | 'groupId' | 'englishClassNumber' | 'englishCatchupEnabled' | 'englishCatchupClassNumber' | 'germanLevel' | 'germanClassNumber' | 'physicalEducationGroupId'
 
 export interface SelectionOptions {
   grades: string[]
@@ -25,6 +26,7 @@ export interface SelectionOptions {
   germanClasses: string[]
   hasEnglish: boolean
   hasGerman: boolean
+  physicalEducationGroups: string[]
 }
 
 const EMPTY_DRAFT: SelectionDraft = {
@@ -36,7 +38,7 @@ const EMPTY_DRAFT: SelectionDraft = {
   englishCatchupEnabled: false,
   englishCatchupClassNumber: '',
   germanLevel: '',
-  germanClassNumber: ''
+  germanClassNumber: '', physicalEducationGroupId: ''
 }
 
 export function createEmptySelectionDraft(): SelectionDraft {
@@ -57,6 +59,7 @@ export function readSelectionDraft(value: unknown): SelectionDraft | null {
     englishCatchupClassNumber: stringValue(value.englishCatchupClassNumber),
     germanLevel: stringValue(value.germanLevel),
     germanClassNumber: stringValue(value.germanClassNumber)
+    ,physicalEducationGroupId: stringValue(value.physicalEducationGroupId)
   })
 }
 
@@ -79,7 +82,7 @@ export function getSelectionOptions(draft: SelectionDraft): SelectionOptions {
     germanLevels: germanSection?.levels.map((item) => item.level) ?? [],
     germanClasses: germanLevel?.classes ?? [],
     hasEnglish: Boolean(grade?.english),
-    hasGerman: Boolean(germanSection)
+    hasGerman: Boolean(germanSection), physicalEducationGroups: dataContract.physicalEducation.eligibleGrades.includes(draft.grade) ? dataContract.physicalEducation.groups : []
   }
 }
 
@@ -119,6 +122,7 @@ export function resolveSelectionDraft(input: SelectionDraft): SelectionDraft {
   if (originalGermanLevel && originalGermanLevel !== draft.germanLevel) draft.germanClassNumber = ''
   const germanClasses = germanSection?.levels.find((item) => item.level === draft.germanLevel)?.classes ?? []
   draft.germanClassNumber = resolveValue(draft.germanClassNumber, germanClasses)
+  draft.physicalEducationGroupId = resolveValue(draft.physicalEducationGroupId, getSelectionOptions(draft).physicalEducationGroups)
   return draft
 }
 
@@ -158,6 +162,7 @@ export function getSelectionBlocker(input: SelectionDraft): string | null {
   if (draft.englishCatchupEnabled && !draft.englishCatchupClassNumber) return '请选择补课班级'
   if (options.hasGerman && !draft.germanLevel) return '请选择德语等级'
   if (options.hasGerman && !draft.germanClassNumber) return '请选择德语班级'
+  if (options.physicalEducationGroups.length && !draft.physicalEducationGroupId) return '请选择体育分组'
   return null
 }
 
@@ -176,7 +181,7 @@ export function selectionFromDraft(input: SelectionDraft): Selection | null {
     englishCatchupEnabled: grade.english && draft.englishCatchupEnabled,
     englishCatchupClassNumber: grade.english && draft.englishCatchupEnabled ? draft.englishCatchupClassNumber : null,
     germanLevel: draft.germanLevel,
-    germanClassNumber: draft.germanClassNumber
+    germanClassNumber: draft.germanClassNumber, physicalEducationGroupId: draft.physicalEducationGroupId
   }
 }
 
@@ -191,6 +196,7 @@ function clearAfterGrade(draft: SelectionDraft) {
   clearEnglish(draft)
   draft.germanLevel = ''
   draft.germanClassNumber = ''
+  draft.physicalEducationGroupId = ''
   return draft
 }
 

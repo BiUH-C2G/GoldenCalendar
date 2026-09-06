@@ -44,7 +44,7 @@ function parseDataContract(value: unknown): DataContract {
     administrative: expectString(filesValue.administrative, '数据约定.files.administrative'),
     english: expectString(filesValue.english, '数据约定.files.english'),
     englishCatchup: expectString(filesValue.englishCatchup, '数据约定.files.englishCatchup'),
-    german: expectString(filesValue.german, '数据约定.files.german')
+    german: expectString(filesValue.german, '数据约定.files.german'), physicalEducation: expectString(filesValue.physicalEducation, '数据约定.files.physicalEducation')
   }
 
   const grades = expectArray(root.grades, '数据约定.grades').map((item, gradeIndex) => {
@@ -76,5 +76,6 @@ function parseDataContract(value: unknown): DataContract {
     return { section: expectString(section.section, `数据约定.languages.german[${sectionIndex}].section`), levels }
   })
 
-  return { term: expectString(root.term, '数据约定.term'), files, grades, languages: { english, german } }
+  const physicalEducation = expectRecord(root.physicalEducation, '数据约定.physicalEducation')
+  return { term: expectString(root.term, '数据约定.term'), files, grades, languages: { english, german }, physicalEducation: { eligibleGrades: expectStringArray(physicalEducation.eligibleGrades, '数据约定.physicalEducation.eligibleGrades'), groups: expectStringArray(physicalEducation.groups, '数据约定.physicalEducation.groups') } }
 }

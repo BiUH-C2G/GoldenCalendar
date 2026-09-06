@@ -5,6 +5,7 @@ import type {
   ScheduleGroup,
   ScheduleNotice,
   SelectedLanguageClasses,
+  PhysicalEducationGroup,
 } from './Types'
 import { addIsoDateDays, formatMonthDay, getShanghaiToday, isoDateToDayNumber } from './DateTime'
 
@@ -76,6 +77,7 @@ export interface ScheduleLayers {
   english: boolean
   englishCatchup: boolean
   german: boolean
+  physicalEducation: boolean
 }
 
 export const DEFAULT_SCHEDULE_LAYERS: ScheduleLayers = {
@@ -83,6 +85,7 @@ export const DEFAULT_SCHEDULE_LAYERS: ScheduleLayers = {
   english: true,
   englishCatchup: true,
   german: true,
+  physicalEducation: true,
 }
 
 function activeDates(group: ScheduleGroup, title: string) {
@@ -120,6 +123,7 @@ export function composeScheduleLayers(
   group: ScheduleGroup,
   languages: SelectedLanguageClasses,
   layers: ScheduleLayers = DEFAULT_SCHEDULE_LAYERS,
+  physicalEducation?: PhysicalEducationGroup,
 ): ScheduleGroup {
   const englishDates = activeDates(group, 'English')
   const catchupDates = activeDates(group, 'English Catchup')
@@ -146,6 +150,7 @@ export function composeScheduleLayers(
     ...(layers.englishCatchup
       ? languageEvents(data, languages.englishCatchup ?? undefined, catchupDates)
       : []),
+    ...(layers.physicalEducation && physicalEducation ? languageEvents(data, { code: `体育第 ${physicalEducation.groupId} 组`, meetings: physicalEducation.meetings }, new Set(Array.from({ length: data.calendar.weekCount }, (_, index) => getWeekDates(data, index + 1)).flat())).map((event): ScheduleEvent => ({ ...event, source: 'physicalEducation' })) : []),
   ]
   const uniqueEvents = new Map<string, ScheduleEvent>()
   for (const event of patchedEvents) {
