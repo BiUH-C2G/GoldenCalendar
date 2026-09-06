@@ -19,6 +19,8 @@ import WeekFiddler from '@/view/WeekFiddler.vue'
 import About from '@/view/dialog-content/About.vue'
 import CourseDetail from '@/view/dialog-content/CourseDetail.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
+import { CONFLICT_CACHE_KEY, rememberConfirmedConflict } from '@/ConflictCache'
+import type { ConflictConfirmation } from '@/ConflictCache'
 import type { LoadedSchedule } from '@/Data'
 
 const props = withDefaults(defineProps<{ debug?: boolean }>(), {debug: false})
@@ -169,7 +171,7 @@ function setTheme(value: ThemePreference) {
   localStorage.setItem(THEME_STORAGE_KEY, value)
 }
 
-function saveSelection(value: Selection, loaded: LoadedSchedule) {
+function saveSelection(value: Selection, loaded: LoadedSchedule, confirmation: ConflictConfirmation) {
   try {
     writeStoredSelection(value)
   } catch {
@@ -188,10 +190,12 @@ function saveSelection(value: Selection, loaded: LoadedSchedule) {
   currentWeek.value = getCurrentWeek(loaded.schedule, todayDate.value)
   resetPagerState()
   activeDialog.value = null
-  showToast('设置已保存')
+  if (confirmation.hasConflicts) rememberConfirmedConflict(confirmation.hash)
+  showToast(confirmation.hasConflicts ? '已保存，含确认的冲突' : '设置已保存')
 }
 
 function resetDebugData() {
+  localStorage.removeItem(CONFLICT_CACHE_KEY)
   localStorage.removeItem(STORAGE_KEY)
   localStorage.removeItem(THEME_STORAGE_KEY)
   window.location.reload()
