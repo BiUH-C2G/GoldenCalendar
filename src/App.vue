@@ -23,11 +23,12 @@ import AllCourses from '@/view/dialog-content/AllCourses.vue'
 import CourseOccurrences from '@/view/dialog-content/CourseOccurrences.vue'
 import Settings from '@/view/dialog-content/Settings.vue'
 import AnnouncementQueue from '@/view/AnnouncementQueue.vue'
+import Attendance from '@/view/Attendance.vue'
 import { rememberConfirmedConflict } from '@/ConflictCache'
 import type { ConflictConfirmation } from '@/ConflictCache'
 import type { LoadedSchedule } from '@/Data'
 
-const props = withDefaults(defineProps<{ debug?: boolean }>(), {debug: false})
+const props = withDefaults(defineProps<{ debug?: boolean, attendance?: boolean }>(), {debug: false, attendance: false})
 const STORAGE_KEY = 'campus-timetable-selection'
 const initialDraft = readStoredSelectionDraft()
 const initialSelection = initialDraft ? selectionFromDraft(initialDraft) : null
@@ -83,7 +84,7 @@ const summary = computed(() => selection.value ? `${selection.value.grade}级 ·
 const settingsOpen = computed({get: () => activeDialog.value === 'settings', set: (open) => activeDialog.value = open ? 'settings' : null})
 const aboutOpen = computed({get: () => activeDialog.value === 'about', set: (open) => activeDialog.value = open ? 'about' : null})
 const courseOpen = computed({get: () => activeDialog.value === 'course', set: (open) => activeDialog.value = open ? 'course' : null})
-const bottomItems = computed<BottomBarItem[]>(() => [{id: 'settings', label: '设置', icon: 'settings', tone: 'warm'}, {id: 'allCourses', label: '所有课', icon: 'courses', tone: 'blue', disabled: !ready.value}, {id: 'export', label: '课表导到日历', icon: 'export', tone: 'green', disabled: !ready.value}, {id: 'about', label: '关于', icon: 'about', tone: 'blue'}])
+const bottomItems = computed<BottomBarItem[]>(() => [{id: 'settings', label: '设置', icon: 'settings', tone: 'warm'}, {id: 'allCourses', label: '所有课', icon: 'courses', tone: 'blue', disabled: !ready.value}, {id: 'export', label: '导到日历', icon: 'export', tone: 'green', disabled: !ready.value}, {id: 'about', label: '关于', icon: 'about', tone: 'blue'}])
 const pagerCards = computed(() => pagerTargetWeek.value && pagerTargetWeek.value !== currentWeek.value ? [pagerTargetWeek.value, currentWeek.value] : [currentWeek.value])
 const debugGlowDays = computed(() => group.value ? getVisibleWeekdays(group.value, currentWeek.value) : [])
 const dateRange = computed(() => {
@@ -222,7 +223,7 @@ function saveSelection(value: Selection, loaded: LoadedSchedule, confirmation: C
 }
 
 function resetDebugData() {
-  localStorage.clear()
+  for (const key of Object.keys(localStorage)) if (key.startsWith('campus-timetable-')) localStorage.removeItem(key)
   window.location.reload()
 }
 
@@ -594,8 +595,10 @@ function showToast(message: string) {
 <template>
   <div class="application-layer" :inert="activeDialog !== null || announcementActive" :aria-hidden="activeDialog !== null || announcementActive">
     <div class="app">
-      <main class="page">
-        <div class="shell">
+      <main class="page" :class="{ 'attendance-host': props.attendance }">
+        <Attendance v-if="props.attendance && ready && schedule && selection && group" :key="JSON.stringify(selection)" :group="{ ...group, events: allCourseEvents }" :selection="selection" :sessions="schedule.calendar.sessions" :summary="summary" @settings="activeDialog = 'settings'"/>
+        <div v-else-if="props.attendance" class="attendance-loading"><h1>出勤小助手</h1><p>{{ error || (loading ? '正在加载课程表' : '请先完成课程表设置') }}</p><button type="button" class="primary-button" @click="activeDialog = 'settings'">课程表设置</button></div>
+        <div v-else class="shell">
           <section v-if="props.debug" class="debug-hud" aria-label="调试控制">
             <article class="debug-hud-card" aria-label="星期辉光调试">
               <strong class="debug-hud-title">星期辉光调试</strong>
@@ -628,7 +631,7 @@ function showToast(message: string) {
 
             <article class="debug-hud-card" aria-label="信息清理">
               <strong class="debug-hud-title">信息清理</strong>
-              <p class="debug-hud-description">清除：课程表、外观、公告已读等情况</p>
+              <p class="debug-hud-description">清除课程表、外观和公告已读情况，保留出勤记录</p>
               <button class="danger-button" type="button" @click="resetDebugData">清空数据并刷新</button>
             </article>
           </section>
@@ -649,11 +652,11 @@ function showToast(message: string) {
         </div>
       </main>
     </div>
-    <BottomBar :items="bottomItems" @select="handleBottomAction"/>
+    <BottomBar v-if="!props.attendance" :items="bottomItems" @select="handleBottomAction"/>
   </div>
 
   <Settings :open="settingsOpen" :initial-draft="selectionDraft" :selection="selection" :theme="themePreference" @save="saveSelection" @cancel="activeDialog = null" @update:theme="setTheme"/>
-  <AnnouncementQueue :enabled="!loading && activeDialog === null" @active="announcementActive = $event"/>
+  <AnnouncementQueue :enabled="!props.attendance && !loading && activeDialog === null" @active="announcementActive = $event"/>
 
   <Dialog v-model:open="aboutOpen" title="科比在线课程表">
     <About/>
@@ -683,6 +686,9 @@ function showToast(message: string) {
 </template>
 
 <style scoped>
+.page.attendance-host { padding: 0 }
+.attendance-loading { display: grid; align-content: center; justify-items: center; gap: 16px; min-height: 100%; padding: 24px; text-align: center }
+.attendance-loading h1 { color: var(--text-strong); font-size: 25px }
 .lookup-confirm { overflow-wrap: anywhere; line-height: 1.6 }
 .application-layer, .app {
   width: 100vw;
