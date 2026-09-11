@@ -17,6 +17,7 @@ from typing import Any
 
 from openpyxl import load_workbook
 from data_contract import find_major, format_file, load_contract
+from overrides import apply_administrative_overrides, ensure_override_matches, load_override_rules
 
 
 PARSER_VERSION = "0.2.0"
@@ -385,7 +386,7 @@ def parse_group(
     return group, warnings, calendar_start
 
 
-def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+def parse_workbook(path: Path, contract: dict[str, Any], override_rules: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str], set[int]]:
     source = parse_source_name(path)
     if source["term"] != contract["term"]:
         raise ValueError(
@@ -460,7 +461,8 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
             for group in groups
         ],
     }
-    return result, warnings
+    matched_overrides = apply_administrative_overrides(result, override_rules)
+    return result, warnings, matched_overrides
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -489,10 +491,13 @@ def main() -> int:
     parser.add_argument("--input", type=Path, default=Path("raw"))
     parser.add_argument("--output", type=Path, default=Path("parsed"))
     parser.add_argument("--contract", type=Path, default=Path("data-contract.json"))
+    parser.add_argument("--overrides", type=Path)
     parser.add_argument("--clean", action="store_true")
     args = parser.parse_args()
 
     contract = load_contract(args.contract)
+    override_path = args.overrides or Path("overrides") / f"{contract['term']}.yml"
+    override_rules = load_override_rules(override_path)
     if args.clean:
         clean_generated_json(args.output, contract["term"])
 
@@ -506,12 +511,14 @@ def main() -> int:
         return 1
 
     total_warnings = 0
+    matched_overrides: set[int] = set()
     for path in files:
         try:
-            result, warnings = parse_workbook(path, contract)
+            result, warnings, workbook_matches = parse_workbook(path, contract, override_rules)
         except Exception as error:  # noqa: BLE001
             print(f"错误 {path.name}：{error}", file=sys.stderr)
             return 1
+        matched_overrides.update(workbook_matches)
         source = result["source"]
         declared_major = find_major(contract, source["grade"], source["majorCode"])
         parsed_group_ids = [group["groupId"] for group in result["groups"]]
@@ -548,6 +555,11 @@ def main() -> int:
         for warning in warnings:
             print(f"  警告：{warning}")
 
+    try:
+        ensure_override_matches(override_rules, matched_overrides, {"administrative"})
+    except ValueError as error:
+        print(f"错误：{error}", file=sys.stderr)
+        return 1
     print(f"已将坐标文件写入 {args.output / contract['term']}（警告={total_warnings}）")
     return 0
 

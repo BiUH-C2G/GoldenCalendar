@@ -1,18 +1,16 @@
 import { coordinateFile, dataContract, getGrade } from './Contract'
 import { addIsoDateDays, isoDateToDayNumber, parseIsoDate } from './DateTime'
 import { expectArray, expectIntegerRange, expectNullableString, expectRecord, expectString, expectStringArray } from './Validation'
-import type { LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, SelectedLanguageClasses, Selection, PhysicalEducationGroup } from './Types'
+import type { CourseOverride, CourseOverrideKind, LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, SelectedLanguageClasses, Selection, PhysicalEducationGroup } from './Types'
 
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/${dataContract.term}/`
 
 export function loadDataMetadata(signal?: AbortSignal) {
   return loadCoordinate('meta.json', '课表元数据', (value) => {
     const root = expectRecord(value, '课表元数据')
-    const term = expectString(root.term, '课表元数据.term')
-    if (term !== dataContract.term) throw new Error('课表元数据的学期不一致')
     const generatedAt = expectString(root.generatedAt, '课表元数据.generatedAt')
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(generatedAt) || !Number.isFinite(Date.parse(generatedAt))) throw new Error('课表元数据的生成时间无效')
-    return { term, schemaVersion: expectIntegerRange(root.schemaVersion, '课表元数据.schemaVersion', 1, Number.MAX_SAFE_INTEGER), generatedAt }
+    return { schemaVersion: expectIntegerRange(root.schemaVersion, '课表元数据.schemaVersion', 1, Number.MAX_SAFE_INTEGER), generatedAt, overrides: expectArray(root.overrides, '课表元数据.overrides').map(parseCourseOverride) }
   }, signal)
 }
 
@@ -105,6 +103,23 @@ function parseScheduleEvent(value: unknown, index: number): ScheduleEvent {
   parseIsoDate(date)
 
   return { date, week: expectIntegerRange(event.week, `行政班课程表.events[${index}].week`, 1, 60), weekday: expectIntegerRange(event.weekday, `行政班课程表.events[${index}].weekday`, 1, 7), slot: expectIntegerRange(event.slot, `行政班课程表.events[${index}].slot`, 1, 20), title: expectString(event.title, `行政班课程表.events[${index}].title`), teacher: expectNullableString(event.teacher, `行政班课程表.events[${index}].teacher`), room: expectNullableString(event.room, `行政班课程表.events[${index}].room`), source: 'administrative' }
+}
+
+function parseCourseOverride(value: unknown, index: number): CourseOverride {
+  const root = expectRecord(value, `课表覆写[${index}]`)
+  const matchValue = expectRecord(root.match, `课表覆写[${index}].match`)
+  const kind = expectString(matchValue.kind, `课表覆写[${index}].match.kind`) as CourseOverrideKind
+  if (!['administrative', 'english', 'englishCatchup', 'german', 'physicalEducation'].includes(kind)) throw new Error(`课表覆写[${index}].match.kind 无效`)
+  const match: CourseOverride['match'] = {kind}
+  for (const field of ['grade', 'majorCode', 'groupId', 'section', 'level', 'classNumber', 'title', 'teacher'] as const) if (field in matchValue) match[field] = expectString(matchValue[field], `课表覆写[${index}].match.${field}`)
+  if ('weeks' in matchValue) {
+    const weeks = expectRecord(matchValue.weeks, `课表覆写[${index}].match.weeks`)
+    match.weeks = {from: expectIntegerRange(weeks.from, `课表覆写[${index}].match.weeks.from`, 1, 60), to: expectIntegerRange(weeks.to, `课表覆写[${index}].match.weeks.to`, 1, 60)}
+  }
+  if ('weekday' in matchValue) match.weekday = expectIntegerRange(matchValue.weekday, `课表覆写[${index}].match.weekday`, 1, 7)
+  if ('slot' in matchValue) match.slot = expectIntegerRange(matchValue.slot, `课表覆写[${index}].match.slot`, 1, 20)
+  const set = expectRecord(root.set, `课表覆写[${index}].set`)
+  return {match, set: {room: expectString(set.room, `课表覆写[${index}].set.room`)}, proposedBy: expectString(root.proposedBy, `课表覆写[${index}].proposedBy`), proposedAt: expectString(root.proposedAt, `课表覆写[${index}].proposedAt`), reason: expectString(root.reason, `课表覆写[${index}].reason`)}
 }
 
 function parseScheduleNotice(value: unknown, index: number): ScheduleNotice {

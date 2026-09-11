@@ -38,6 +38,29 @@ export interface ScheduleData {
   group: ScheduleGroup
 }
 
+export type CourseOverrideKind = 'administrative' | 'english' | 'englishCatchup' | 'german' | 'physicalEducation'
+
+export interface CourseOverride {
+  match: {
+    kind: CourseOverrideKind
+    grade?: string
+    majorCode?: string
+    groupId?: string
+    section?: string
+    level?: string
+    classNumber?: string
+    title?: string
+    teacher?: string
+    weeks?: { from: number, to: number }
+    weekday?: number
+    slot?: number
+  }
+  set: { room: string }
+  proposedBy: string
+  proposedAt: string
+  reason: string
+}
+
 export interface LanguageMeeting {
   startWeek: number
   endWeek: number

@@ -13,6 +13,7 @@ from typing import Any
 
 from openpyxl import load_workbook
 from data_contract import format_file, load_contract, major_name
+from overrides import apply_language_overrides, ensure_override_matches, load_override_rules
 
 
 WEEKDAYS = {
@@ -156,7 +157,7 @@ def parse_course_line(line: str) -> dict[str, Any] | None:
     return None
 
 
-def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+def parse_workbook(path: Path, contract: dict[str, Any], override_rules: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str], set[int]]:
     source_match = SOURCE_PATTERN.fullmatch(path.name)
     if not source_match:
         raise ValueError(f"无法从 {path.name} 推断学期")
@@ -263,7 +264,7 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
             int(item["classNumber"]),
         )
     )
-    return {
+    result = {
         "schemaVersion": 1,
         "source": {
             "term": source_match.group("term"),
@@ -273,7 +274,9 @@ def parse_workbook(path: Path, contract: dict[str, Any]) -> tuple[dict[str, Any]
         "validation": {
             "warnings": warnings,
         },
-    }, warnings
+    }
+    matched_overrides = apply_language_overrides(result["classes"], override_rules)
+    return result, warnings, matched_overrides
 
 
 def validate_contract(classes: list[dict[str, Any]], contract: dict[str, Any]) -> None:
@@ -323,13 +326,17 @@ def main() -> int:
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--contract", type=Path, default=Path("data-contract.json"))
+    parser.add_argument("--overrides", type=Path)
     args = parser.parse_args()
 
     contract = load_contract(args.contract)
+    override_path = args.overrides or Path("overrides") / f"{contract['term']}.yml"
+    override_rules = load_override_rules(override_path)
 
     try:
-        result, warnings = parse_workbook(args.input, contract)
+        result, warnings, matched_overrides = parse_workbook(args.input, contract, override_rules)
         validate_contract(result["classes"], contract)
+        ensure_override_matches(override_rules, matched_overrides, {"english", "englishCatchup", "german"})
     except Exception as error:  # noqa: BLE001
         print(f"错误 {args.input.name}：{error}", file=sys.stderr)
         return 1

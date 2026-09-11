@@ -659,7 +659,7 @@ function showToast(message: string) {
   <AnnouncementQueue :enabled="!props.attendance && !loading && activeDialog === null" @active="announcementActive = $event"/>
 
   <Dialog v-model:open="aboutOpen" title="科比在线课程表">
-    <About/>
+    <About :selection="selection"/>
   </Dialog>
 
   <Dialog v-model:open="courseOpen" title="课程详情">
