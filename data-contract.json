@@ -1,5 +1,6 @@
 {
   "term": "2026Autumn",
+  "calendarStart": "2026-08-31",
   "files": {
     "administrative": "a-{grade}-{majorCode}-{groupId}.json",
     "english": "e-{classNumber}.json",

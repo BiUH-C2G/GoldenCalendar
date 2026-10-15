@@ -17,7 +17,7 @@ from typing import Any
 
 from openpyxl import load_workbook
 from data_contract import find_major, format_file, load_contract
-from overrides import apply_administrative_overrides, ensure_override_matches, load_override_rules
+from overrides import apply_administrative_day_moves, apply_administrative_overrides, ensure_day_move_matches, ensure_override_matches, load_day_moves, load_override_rules
 
 
 PARSER_VERSION = "0.2.0"
@@ -386,7 +386,7 @@ def parse_group(
     return group, warnings, calendar_start
 
 
-def parse_workbook(path: Path, contract: dict[str, Any], override_rules: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str], set[int]]:
+def parse_workbook(path: Path, contract: dict[str, Any], override_rules: list[dict[str, Any]], day_moves: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str], set[int], set[int]]:
     source = parse_source_name(path)
     if source["term"] != contract["term"]:
         raise ValueError(
@@ -461,8 +461,12 @@ def parse_workbook(path: Path, contract: dict[str, Any], override_rules: list[di
             for group in groups
         ],
     }
+    if calendar_start != contract["calendarStart"]: raise ValueError(f"{path.name} 反推出的第一周周一 {calendar_start} 与数据约定 {contract['calendarStart']} 不一致")
+
+    # 先按规则改单门课，再整日搬动，搬走的是覆写后的最终课次
     matched_overrides = apply_administrative_overrides(result, override_rules)
-    return result, warnings, matched_overrides
+    matched_day_moves = apply_administrative_day_moves(result, day_moves)
+    return result, warnings, matched_overrides, matched_day_moves
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -498,6 +502,7 @@ def main() -> int:
     contract = load_contract(args.contract)
     override_path = args.overrides or Path("overrides") / f"{contract['term']}.yml"
     override_rules = load_override_rules(override_path)
+    day_moves = load_day_moves(override_path)
     if args.clean:
         clean_generated_json(args.output, contract["term"])
 
@@ -512,13 +517,15 @@ def main() -> int:
 
     total_warnings = 0
     matched_overrides: set[int] = set()
+    matched_day_moves: set[int] = set()
     for path in files:
         try:
-            result, warnings, workbook_matches = parse_workbook(path, contract, override_rules)
+            result, warnings, workbook_matches, workbook_day_moves = parse_workbook(path, contract, override_rules, day_moves)
         except Exception as error:  # noqa: BLE001
             print(f"错误 {path.name}：{error}", file=sys.stderr)
             return 1
         matched_overrides.update(workbook_matches)
+        matched_day_moves.update(workbook_day_moves)
         source = result["source"]
         declared_major = find_major(contract, source["grade"], source["majorCode"])
         parsed_group_ids = [group["groupId"] for group in result["groups"]]
@@ -557,6 +564,7 @@ def main() -> int:
 
     try:
         ensure_override_matches(override_rules, matched_overrides, {"administrative"})
+        ensure_day_move_matches(day_moves, matched_day_moves)
     except ValueError as error:
         print(f"错误：{error}", file=sys.stderr)
         return 1

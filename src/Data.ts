@@ -1,7 +1,7 @@
 import { coordinateFile, dataContract, getGrade } from './Contract'
 import { addIsoDateDays, isoDateToDayNumber, parseIsoDate } from './DateTime'
 import { expectArray, expectIntegerRange, expectNullableString, expectRecord, expectString, expectStringArray } from './Validation'
-import type { CourseOverride, CourseOverrideKind, LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, SelectedLanguageClasses, Selection, PhysicalEducationGroup } from './Types'
+import type { CourseDayMove, CourseOverride, CourseOverrideKind, LanguageClass, ScheduleData, ScheduleEvent, ScheduleNotice, SelectedLanguageClasses, Selection, PhysicalEducationGroup } from './Types'
 
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/${dataContract.term}/`
 
@@ -10,7 +10,7 @@ export function loadDataMetadata(signal?: AbortSignal) {
     const root = expectRecord(value, '课表元数据')
     const generatedAt = expectString(root.generatedAt, '课表元数据.generatedAt')
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(generatedAt) || !Number.isFinite(Date.parse(generatedAt))) throw new Error('课表元数据的生成时间无效')
-    return { schemaVersion: expectIntegerRange(root.schemaVersion, '课表元数据.schemaVersion', 1, Number.MAX_SAFE_INTEGER), generatedAt, overrides: expectArray(root.overrides, '课表元数据.overrides').map(parseCourseOverride) }
+    return { schemaVersion: expectIntegerRange(root.schemaVersion, '课表元数据.schemaVersion', 1, Number.MAX_SAFE_INTEGER), generatedAt, overrides: expectArray(root.overrides, '课表元数据.overrides').map(parseCourseOverride), dayMoves: expectArray(root.dayMoves, '课表元数据.dayMoves').map(parseCourseDayMove) }
   }, signal)
 }
 
@@ -118,8 +118,27 @@ function parseCourseOverride(value: unknown, index: number): CourseOverride {
   }
   if ('weekday' in matchValue) match.weekday = expectIntegerRange(matchValue.weekday, `课表覆写[${index}].match.weekday`, 1, 7)
   if ('slot' in matchValue) match.slot = expectIntegerRange(matchValue.slot, `课表覆写[${index}].match.slot`, 1, 20)
-  const set = expectRecord(root.set, `课表覆写[${index}].set`)
-  return {match, set: {room: expectString(set.room, `课表覆写[${index}].set.room`)}, proposedBy: expectString(root.proposedBy, `课表覆写[${index}].proposedBy`), proposedAt: expectString(root.proposedAt, `课表覆写[${index}].proposedAt`), reason: expectString(root.reason, `课表覆写[${index}].reason`)}
+  const setValue = expectRecord(root.set, `课表覆写[${index}].set`)
+  const set: CourseOverride['set'] = {}
+  if ('room' in setValue) set.room = expectString(setValue.room, `课表覆写[${index}].set.room`)
+  if ('weekday' in setValue) set.weekday = expectIntegerRange(setValue.weekday, `课表覆写[${index}].set.weekday`, 1, 7)
+  if ('slot' in setValue) set.slot = expectIntegerRange(setValue.slot, `课表覆写[${index}].set.slot`, 1, 20)
+  if (!Object.keys(set).length) throw new Error(`课表覆写[${index}].set 至少需要 room、weekday、slot 之一`)
+  return {match, set, proposedBy: expectString(root.proposedBy, `课表覆写[${index}].proposedBy`), proposedAt: expectString(root.proposedAt, `课表覆写[${index}].proposedAt`), reason: expectString(root.reason, `课表覆写[${index}].reason`)}
+}
+
+function parseCourseDayMove(value: unknown, index: number): CourseDayMove {
+  const root = expectRecord(value, `整日调课[${index}]`)
+  const moves = expectArray(root.moves, `整日调课[${index}].moves`).map((item, moveIndex) => {
+    const move = expectRecord(item, `整日调课[${index}].moves[${moveIndex}]`)
+    const from = expectString(move.from, `整日调课[${index}].moves[${moveIndex}].from`)
+    const to = expectString(move.to, `整日调课[${index}].moves[${moveIndex}].to`)
+
+    parseIsoDate(from)
+    parseIsoDate(to)
+    return {from, to}
+  })
+  return {moves, proposedBy: expectString(root.proposedBy, `整日调课[${index}].proposedBy`), proposedAt: expectString(root.proposedAt, `整日调课[${index}].proposedAt`), reason: expectString(root.reason, `整日调课[${index}].reason`)}
 }
 
 function parseScheduleNotice(value: unknown, index: number): ScheduleNotice {

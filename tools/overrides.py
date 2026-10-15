@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -13,25 +14,75 @@ OVERRIDE_KINDS = {"administrative", "english", "englishCatchup", "german", "phys
 LANGUAGE_KINDS = {"english", "englishCatchup", "german"}
 IDENTITY_FIELDS = ("grade", "majorCode", "groupId", "section", "level", "classNumber", "title", "teacher")
 MATCH_FIELDS = set(IDENTITY_FIELDS) | {"kind", "weeks", "weekday", "slot"}
+CHANGE_FIELDS = ("room", "weekday", "slot")
 
 
-def load_override_rules(path: Path) -> list[dict[str, Any]]:
+def _load_override_root(path: Path) -> dict[str, Any]:
     if not path.exists():
-        return []
+        return {}
 
     value = yaml.safe_load(path.read_text(encoding="utf-8"))
     if value is None:
-        return []
+        return {}
     if not isinstance(value, dict):
         raise ValueError(f"覆写规则文件 {path} 的根节点必须是对象")
-    unknown = set(value) - {"rules"}
+    unknown = set(value) - {"rules", "dayMoves"}
     if unknown:
         raise ValueError(f"覆写规则文件 {path} 存在未知字段：{sorted(unknown)}")
+    return value
 
-    raw_rules = value.get("rules", [])
+
+def load_override_rules(path: Path) -> list[dict[str, Any]]:
+    raw_rules = _load_override_root(path).get("rules", [])
     if not isinstance(raw_rules, list):
         raise ValueError(f"覆写规则文件 {path} 的 rules 必须是数组")
     return [_normalize_rule(item, index, path) for index, item in enumerate(raw_rules)]
+
+
+def load_day_moves(path: Path) -> list[dict[str, Any]]:
+    raw_moves = _load_override_root(path).get("dayMoves", [])
+    if not isinstance(raw_moves, list):
+        raise ValueError(f"覆写规则文件 {path} 的 dayMoves 必须是数组")
+
+    day_moves = [_normalize_day_move(item, index, path) for index, item in enumerate(raw_moves)]
+    sources = [move["from"] for item in day_moves for move in item["moves"]]
+    targets = {move["to"] for item in day_moves for move in item["moves"]}
+
+    # 同一天只能搬走一次，且搬入日不能再被搬走，避免连环挪移的歧义
+    duplicated = sorted({day for day in sources if sources.count(day) > 1})
+    if duplicated: raise ValueError(f"整日调课存在重复的原日期：{duplicated}")
+    chained = sorted(set(sources) & targets)
+    if chained: raise ValueError(f"整日调课的目标日期不能同时作为原日期：{chained}")
+    return day_moves
+
+
+def _normalize_day_move(value: Any, index: int, path: Path) -> dict[str, Any]:
+    label = f"整日调课第 {index + 1} 条"
+    item = _expect_dict(value, f"{path} 的 {label}")
+    _reject_unknown(item, {"moves", "proposedBy", "proposedAt", "reason"}, label)
+    raw_moves = item.get("moves")
+    if not isinstance(raw_moves, list) or not raw_moves: raise ValueError(f"{label}.moves 必须是非空数组")
+
+    moves = []
+    for move_index, raw_move in enumerate(raw_moves):
+        move_label = f"{label}.moves[{move_index}]"
+        move = _expect_dict(raw_move, move_label)
+        _reject_unknown(move, {"from", "to"}, move_label)
+        source = _expect_iso_date(move.get("from"), f"{move_label}.from")
+        target = _expect_iso_date(move.get("to"), f"{move_label}.to")
+        if source == target: raise ValueError(f"{move_label} 的 from 与 to 不能相同")
+        moves.append({"from": source, "to": target})
+    return {"moves": moves, "proposedBy": _expect_string(item.get("proposedBy"), f"{label}.proposedBy"), "proposedAt": _expect_string(item.get("proposedAt"), f"{label}.proposedAt"), "reason": _expect_string(item.get("reason"), f"{label}.reason")}
+
+
+def _expect_iso_date(value: Any, label: str) -> str:
+    # YAML 会把未加引号的日期解析成 date 对象，这里统一成 ISO 字符串
+    if isinstance(value, date): return value.isoformat()
+    text = _expect_string(value, label)
+    try:
+        return date.fromisoformat(text).isoformat()
+    except ValueError as error:
+        raise ValueError(f"{label} 必须是 YYYY-MM-DD 格式的日期") from error
 
 
 def _normalize_rule(value: Any, index: int, path: Path) -> dict[str, Any]:
@@ -39,14 +90,9 @@ def _normalize_rule(value: Any, index: int, path: Path) -> dict[str, Any]:
     rule = _expect_dict(value, f"{path} 的 {label}")
     _reject_unknown(rule, {"match", "set", "proposedBy", "proposedAt", "reason"}, label)
     match = _normalize_match(rule.get("match"), label)
-    changes = _expect_dict(rule.get("set"), f"{label}.set")
-    _reject_unknown(changes, {"room"}, f"{label}.set")
-    room = changes.get("room")
-    if not isinstance(room, str) or not room.strip():
-        raise ValueError(f"{label}.set.room 必须是非空字符串")
     return {
         "match": match,
-        "set": {"room": room.strip()},
+        "set": _normalize_changes(rule.get("set"), label),
         "proposedBy": _expect_string(rule.get("proposedBy"), f"{label}.proposedBy"),
         "proposedAt": _expect_string(rule.get("proposedAt"), f"{label}.proposedAt"),
         "reason": _expect_string(rule.get("reason"), f"{label}.reason"),
@@ -91,6 +137,24 @@ def _normalize_match(value: Any, label: str) -> dict[str, Any]:
         if field in match:
             normalized[field] = _expect_integer_range(match[field], f"{label}.match.{field}", minimum, maximum)
     return normalized
+
+
+def _normalize_changes(value: Any, label: str) -> dict[str, Any]:
+    changes = _expect_dict(value, f"{label}.set")
+    _reject_unknown(changes, set(CHANGE_FIELDS), f"{label}.set")
+    if not changes: raise ValueError(f"{label}.set 至少需要 room、weekday、slot 之一")
+
+    normalized: dict[str, Any] = {}
+    if "room" in changes: normalized["room"] = _expect_string(changes["room"], f"{label}.set.room")
+    for field, minimum, maximum in (("weekday", 1, 7), ("slot", 1, 20)):
+        if field in changes: normalized[field] = _expect_integer_range(changes[field], f"{label}.set.{field}", minimum, maximum)
+    return normalized
+
+
+def _apply_changes(record: dict[str, Any], changes: dict[str, Any]) -> None:
+    # 行政班课次带具体日期，改上课日时要在同一周内同步平移
+    if "weekday" in changes and "date" in record: record["date"] = (date.fromisoformat(record["date"]) + timedelta(days=changes["weekday"] - record["weekday"])).isoformat()
+    record.update(changes)
 
 
 def _expect_dict(value: Any, label: str) -> dict[str, Any]:
@@ -141,8 +205,11 @@ def apply_administrative_overrides(result: dict[str, Any], rules: list[dict[str,
         for event in group["events"]:
             for index, rule in enumerate(rules):
                 if _matches_administrative(rule, source, group["groupId"], event):
-                    event["room"] = rule["set"]["room"]
+                    _apply_changes(event, rule["set"])
                     matched.add(index)
+
+        # 改期后恢复按时间排序，稳定排序可保留同节次的原有先后
+        group["events"].sort(key=lambda event: (event["date"], event["slot"]))
     return matched
 
 
@@ -219,7 +286,7 @@ def _apply_language_rule(meeting: dict[str, Any], rule: dict[str, Any]) -> tuple
     for left, right in zip(sorted_boundaries, sorted_boundaries[1:]):
         piece = {**meeting, "startWeek": left, "endWeek": right - 1}
         if left >= overlap_start and right - 1 <= overlap_end:
-            piece["room"] = rule["set"]["room"]
+            _apply_changes(piece, rule["set"])
         pieces.append(piece)
     return pieces, True
 
@@ -230,7 +297,7 @@ def apply_physical_education_overrides(groups: dict[str, list[dict[str, Any]]], 
         for meeting in meetings:
             for index, rule in enumerate(rules):
                 if _matches_physical_education(rule, group_id, meeting):
-                    meeting["room"] = rule["set"]["room"]
+                    _apply_changes(meeting, rule["set"])
                     matched.add(index)
     return matched
 
@@ -266,3 +333,75 @@ def ensure_override_matches(rules: list[dict[str, Any]], matched: set[int], kind
     missing = [index + 1 for index, rule in enumerate(rules) if rule["match"]["kind"] in kinds and index not in matched]
     if missing:
         raise ValueError(f"以下覆写规则没有命中任何课次：{missing}")
+
+
+WEEKDAY_NAMES = "一二三四五六日"
+
+
+def _calendar_position(day: str, calendar_start: str) -> tuple[int, int]:
+    offset = (date.fromisoformat(day) - date.fromisoformat(calendar_start)).days
+    if offset < 0: raise ValueError(f"整日调课日期 {day} 早于学期第一周周一 {calendar_start}")
+    return offset // 7 + 1, offset % 7 + 1
+
+
+def _flatten_day_moves(day_moves: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{**move, "index": index} for index, item in enumerate(day_moves) for move in item["moves"]]
+
+
+def _format_day(day: str) -> str:
+    value = date.fromisoformat(day)
+    return f"{value.month}月{value.day}日（周{WEEKDAY_NAMES[value.weekday()]}）"
+
+
+def _day_move_notices(day_moves: list[dict[str, Any]], calendar_start: str) -> list[dict[str, Any]]:
+    notices = []
+    for move in _flatten_day_moves(day_moves):
+        source_week, _ = _calendar_position(move["from"], calendar_start)
+        target_week, _ = _calendar_position(move["to"], calendar_start)
+
+        # 原日期整天搬空，按假期处理；目标日期所在周给出调课提示
+        notices.append({"label": "Holiday", "startDate": move["from"], "endDate": move["from"], "startWeek": source_week, "endWeek": source_week})
+        notices.append({"label": f"调课：{_format_day(move['to'])}上{_format_day(move['from'])}的课", "startDate": move["to"], "endDate": move["to"], "startWeek": target_week, "endWeek": target_week})
+    return notices
+
+
+def apply_administrative_day_moves(result: dict[str, Any], day_moves: list[dict[str, Any]]) -> set[int]:
+    matched: set[int] = set()
+    calendar_start = result["calendar"]["startDate"]
+    moves = {move["from"]: move for move in _flatten_day_moves(day_moves)}
+    notices = _day_move_notices(day_moves, calendar_start)
+    for group in result["groups"]:
+        for event in group["events"]:
+            move = moves.get(event["date"])
+            if not move: continue
+            event["week"], event["weekday"] = _calendar_position(move["to"], calendar_start)
+            event["date"] = move["to"]
+            matched.add(move["index"])
+
+        group["notices"].extend(dict(notice) for notice in notices)
+        group["notices"].sort(key=lambda notice: (notice["startDate"], notice["endDate"], notice["label"]))
+        group["events"].sort(key=lambda event: (event["date"], event["slot"]))
+    return matched
+
+
+def apply_meeting_day_moves(meetings: list[dict[str, Any]], day_moves: list[dict[str, Any]], calendar_start: str) -> list[dict[str, Any]]:
+    for move in _flatten_day_moves(day_moves):
+        source_week, source_weekday = _calendar_position(move["from"], calendar_start)
+        target_week, target_weekday = _calendar_position(move["to"], calendar_start)
+        next_meetings = []
+        for meeting in meetings:
+            if meeting["weekday"] != source_weekday or not meeting["startWeek"] <= source_week <= meeting["endWeek"]:
+                next_meetings.append(meeting)
+                continue
+
+            # 从按周循环的区间里挖掉原日期那一周，再在目标日期补一个单周课次
+            if meeting["startWeek"] < source_week: next_meetings.append({**meeting, "endWeek": source_week - 1})
+            if source_week < meeting["endWeek"]: next_meetings.append({**meeting, "startWeek": source_week + 1})
+            next_meetings.append({**meeting, "startWeek": target_week, "endWeek": target_week, "weekday": target_weekday})
+        meetings = next_meetings
+    return _deduplicate_meetings(meetings)
+
+
+def ensure_day_move_matches(day_moves: list[dict[str, Any]], matched: set[int]) -> None:
+    missing = [index + 1 for index in range(len(day_moves)) if index not in matched]
+    if missing: raise ValueError(f"以下整日调课没有搬动任何行政班课次：{missing}")

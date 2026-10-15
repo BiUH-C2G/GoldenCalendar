@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from data_contract import load_contract
-from overrides import load_override_rules
+from overrides import load_day_moves, load_override_rules
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     args = parser.parse_args()
     contract = load_contract(args.contract)
     override_path = args.overrides or Path('overrides') / f"{contract['term']}.yml"
-    metadata = {'schemaVersion': 1, 'generatedAt': datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'), 'overrides': load_override_rules(override_path)}
+    metadata = {'schemaVersion': 1, 'generatedAt': datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'), 'overrides': load_override_rules(override_path), 'dayMoves': load_day_moves(override_path)}
     path = args.output / contract['term'] / 'meta.json'
     path.write_text(json.dumps(metadata, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
     print(f'已生成课表元数据：{path}')

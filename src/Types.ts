@@ -55,7 +55,14 @@ export interface CourseOverride {
     weekday?: number
     slot?: number
   }
-  set: { room: string }
+  set: { room?: string, weekday?: number, slot?: number }
+  proposedBy: string
+  proposedAt: string
+  reason: string
+}
+
+export interface CourseDayMove {
+  moves: { from: string, to: string }[]
   proposedBy: string
   proposedAt: string
   reason: string

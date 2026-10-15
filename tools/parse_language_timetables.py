@@ -13,7 +13,7 @@ from typing import Any
 
 from openpyxl import load_workbook
 from data_contract import format_file, load_contract, major_name
-from overrides import apply_language_overrides, ensure_override_matches, load_override_rules
+from overrides import apply_language_overrides, apply_meeting_day_moves, ensure_override_matches, load_day_moves, load_override_rules
 
 
 WEEKDAYS = {
@@ -332,11 +332,13 @@ def main() -> int:
     contract = load_contract(args.contract)
     override_path = args.overrides or Path("overrides") / f"{contract['term']}.yml"
     override_rules = load_override_rules(override_path)
+    day_moves = load_day_moves(override_path)
 
     try:
         result, warnings, matched_overrides = parse_workbook(args.input, contract, override_rules)
         validate_contract(result["classes"], contract)
         ensure_override_matches(override_rules, matched_overrides, {"english", "englishCatchup", "german"})
+        for course in result["classes"]: course["meetings"] = apply_meeting_day_moves(course["meetings"], day_moves, contract["calendarStart"])
     except Exception as error:  # noqa: BLE001
         print(f"错误 {args.input.name}：{error}", file=sys.stderr)
         return 1

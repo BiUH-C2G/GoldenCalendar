@@ -20,6 +20,7 @@ const announcementsError = ref('')
 const selectedAnnouncement = ref<AnnouncementData | null>(null)
 const overrideDialogOpen = ref(false)
 const selectedOverrides = computed(() => metadata.value?.overrides.filter((item) => matchesSelection(item, props.selection)) ?? [])
+const dayMoves = computed(() => metadata.value?.dayMoves ?? [])
 onMounted(async () => {
   try {
     announcements.value = await loadAnnouncements(controller.signal)
@@ -59,6 +60,19 @@ function overrideTitle(item: CourseOverride) {
   return `体育第 ${match.groupId} 组`
 }
 
+function formatMoveDay(value: string) {
+  const [year, month, day] = value.split('-').map(Number)
+  return `${month}月${day}日（周${'日一二三四五六'[new Date(Date.UTC(year, month - 1, day)).getUTCDay()]}）`
+}
+
+function overrideChanges(item: CourseOverride) {
+  const changes = []
+  if (item.set.weekday) changes.push(`改到周${'一二三四五六日'[item.set.weekday - 1]}`)
+  if (item.set.slot) changes.push(`改到第 ${item.set.slot} 节`)
+  if (item.set.room) changes.push(`教室改为 ${item.set.room}`)
+  return changes.join('，')
+}
+
 function overrideScope(item: CourseOverride) {
   const weeks = item.match.weeks
   return weeks ? `第 ${weeks.from} 至 ${weeks.to} 周` : '全部相关课次'
@@ -66,7 +80,7 @@ function overrideScope(item: CourseOverride) {
 </script>
 <template>
   <div class="about-area">
-    <button v-if="selectedOverrides.length" class="override-open-button" type="button" @click="overrideDialogOpen = true">查看对你生效的课表覆写</button>
+    <button v-if="selectedOverrides.length || dayMoves.length" class="override-open-button" type="button" @click="overrideDialogOpen = true">查看对你生效的课表覆写</button>
 
     <section class="announcement-history">
       <h3 class="dialog-group-title">关于本网站</h3>
@@ -100,12 +114,17 @@ function overrideScope(item: CourseOverride) {
   <Dialog :open="overrideDialogOpen" title="当前课表的课程覆写" @update:open="overrideDialogOpen = $event">
     <p v-if="!props.selection">请先完成课程表设置</p>
 
-    <p v-else-if="!selectedOverrides.length">当前课表没有生效的课程覆写</p>
+    <p v-else-if="!selectedOverrides.length && !dayMoves.length">当前课表没有生效的课程覆写</p>
 
     <ul v-else class="override-list">
+      <li v-for="(item, index) in dayMoves" :key="`day-move-${index}`">
+        <strong>全校整日调课</strong>
+        <span>{{ item.moves.map((move) => `${formatMoveDay(move.from)}的课改到${formatMoveDay(move.to)}`).join('，') }}</span>
+        <span>原因：{{ item.reason }}<br>本条规则于 {{ item.proposedAt }} 由 {{ item.proposedBy }} 提出</span>
+      </li>
       <li v-for="(item, index) in selectedOverrides" :key="index">
         <strong>{{ overrideTitle(item) }}</strong>
-        <span>教室改为 {{ item.set.room }} · {{ overrideScope(item) }}</span>
+        <span>{{ overrideChanges(item) }} · {{ overrideScope(item) }}</span>
         <span>原因：{{ item.reason }}<br>本条规则于 {{ item.proposedAt }} 由 {{ item.proposedBy }} 提出</span>
       </li>
     </ul>

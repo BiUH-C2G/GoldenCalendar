@@ -1,7 +1,8 @@
 import argparse, json, re
 from pathlib import Path
 from openpyxl import load_workbook
-from overrides import apply_physical_education_overrides, ensure_override_matches, load_override_rules
+from data_contract import load_contract
+from overrides import apply_meeting_day_moves, apply_physical_education_overrides, ensure_override_matches, load_day_moves, load_override_rules
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,6 +31,9 @@ def main():
     override_rules = load_override_rules(override_path)
     matched_overrides = apply_physical_education_overrides(groups, override_rules)
     ensure_override_matches(override_rules, matched_overrides, {'physicalEducation'})
+    day_moves = load_day_moves(override_path)
+    calendar_start = load_contract()['calendarStart']
+    for group, meetings in groups.items(): groups[group] = apply_meeting_day_moves(meetings, day_moves, calendar_start)
     root = args.output / '2026Autumn'; root.mkdir(parents=True, exist_ok=True)
     for group, meetings in groups.items(): (root / f'pe-{group}.json').write_text(json.dumps({'groupId': group, 'meetings': meetings}, ensure_ascii=False) + '\n', encoding='utf-8')
 if __name__ == '__main__': main()
